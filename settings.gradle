@@ -1,4 +1,5 @@
 rootProject.name = 'server'
 include 'http'
 include 'common'
+include 'test'
 

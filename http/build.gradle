@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'com.ztkmkoo.server.http'
+group 'com.ztkmkoo'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
@@ -15,7 +15,6 @@ dependencies {
 
     compile project(':common')
 
-    implementation 'com.typesafe.akka:akka-actor-typed_2.13:2.6.1'
     implementation 'com.typesafe.akka:akka-http_2.12:10.1.11'
     implementation 'com.typesafe.akka:akka-stream_2.12:2.5.26'
 

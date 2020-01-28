@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'com.ztkmkoo.server'
+group 'com.ztkmkoo'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.11
