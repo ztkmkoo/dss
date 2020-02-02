@@ -1,1 +1,1 @@
-[![Build Status](https://travis-ci.org/ztkmkoo/dss.svg?branch=develop)](https://travis-ci.org/ztkmkoo/dss.svg?branch=develop) [![Coverage Status](https://coveralls.io/repos/github/ztkmkoo/dss/badge.svg?branch=develop)](https://coveralls.io/github/ztkmkoo/dss?branch=develop)
+[![Build Status](https://travis-ci.org/ztkmkoo/dss.svg?branch=develop)](https://travis-ci.org/ztkmkoo/dss.svg?branch=develop)
