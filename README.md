@@ -6,6 +6,18 @@
 
 `DSS` is a distributed server system which enables quick and easy development of clustered server applications. It is dependency on netty network module and akka multi-thread and cluster module.
 
+## CONTRIBUTION
+
+https://github.com/ztkmkoo/dss/blob/develop/CONTRIBUTING.md
+
+## CODE CONVENTION
+
+https://github.com/ztkmkoo/dss/blob/develop/CODE_CONVENTION.md
+
+## CODE OF CONDUCT
+
+https://github.com/ztkmkoo/dss/blob/develop/CODE_OF_CONDUCT.md
+
 ## Last Milestone
 
 - til 20.2.29
