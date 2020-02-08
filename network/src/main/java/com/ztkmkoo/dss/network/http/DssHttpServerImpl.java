@@ -13,13 +13,12 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import javax.net.ssl.SSLException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
+import java.util.logging.Level;
 
 public class DssHttpServerImpl extends AbstractDssServer {
 
     private static final String SCHEME_HTTP = "http";
     private static final String SCHEME_HTTPS = "https";
-
-    public DssHttpServerImpl() {}
 
     @Override
     protected ServerBootstrap configServerBootstrap(DssServerProperty p, ServerBootstrap b) throws InterruptedException {
@@ -36,7 +35,11 @@ public class DssHttpServerImpl extends AbstractDssServer {
                     .handler(new LoggingHandler(LogLevel.DEBUG))
                     .childHandler(new DssHttpServerInitializer(sslContext.isPresent(), sslContext.orElse(null), property.getHandlerCreator()));
 
-            logger.info("Http(s) server is binding to " + scheme + "://" + property.getHost() + ":" + property.getPort());
+            final Object[] param = new Object[3];
+            param[0] = scheme;
+            param[1] = property.getHost();
+            param[2] = property.getPort();
+            logger.log(Level.INFO, "Http(s) server is binding to {0}://{1}:{2}", param);
 
             return b;
 
@@ -56,7 +59,7 @@ public class DssHttpServerImpl extends AbstractDssServer {
             final SelfSignedCertificate ssc = new SelfSignedCertificate();
             return Optional.of(SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build());
         } catch (CertificateException | SSLException e) {
-            logger.warning("Create SelfSignedCertificate error: " + e.getLocalizedMessage());
+            logger.log(Level.WARNING, "Create SelfSignedCertificate error: ", e);
         }
 
         return Optional.empty();

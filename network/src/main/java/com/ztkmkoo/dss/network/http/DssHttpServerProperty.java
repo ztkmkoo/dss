@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 public class DssHttpServerProperty implements DssServerProperty {
 
-    private final DssNetworkType networkType = DssNetworkType.HTTP;
+    private static final DssNetworkType networkType = DssNetworkType.HTTP;
     private final boolean ssl;
     private final String host;
     private final int port;
@@ -26,6 +26,11 @@ public class DssHttpServerProperty implements DssServerProperty {
         this.bossThread = builder.bossThread;
         this.workerThread = builder.workerThread;
         this.handlerCreator = builder.handlerCreator;
+    }
+
+    @Override
+    public DssNetworkType getNetworkType() {
+        return networkType;
     }
 
     public static Builder builder(final boolean ssl) {

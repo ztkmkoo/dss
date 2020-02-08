@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.CharsetUtil;
 
 import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractDssHttpHandler extends SimpleChannelInboundHandler<Object> {
@@ -54,7 +55,7 @@ public abstract class AbstractDssHttpHandler extends SimpleChannelInboundHandler
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
+        logger.log(Level.WARNING, "exceptionCaught", cause);
         ctx.close();
     }
 }
