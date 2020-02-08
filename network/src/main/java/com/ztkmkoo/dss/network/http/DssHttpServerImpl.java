@@ -43,7 +43,7 @@ public class DssHttpServerImpl extends AbstractDssServer {
             final Object[] param = new Object[3];
             param[0] = scheme;
             param[1] = property.getHost();
-            param[2] = property.getPort();
+            param[2] = String.valueOf(property.getPort());
             logger.log(Level.INFO, "Http(s) server is binding to {0}://{1}:{2}", param);
 
             return b;

@@ -3,4 +3,5 @@
 dependencies {
     implementation('io.netty:netty-all:4.1.45.Final')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
 }
