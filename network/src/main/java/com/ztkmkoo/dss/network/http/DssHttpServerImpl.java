@@ -15,6 +15,11 @@ import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.logging.Level;
 
+/**
+ * Project: dss
+ * Created by: @ztkmkoo(ztkmkoo@gmail.com)
+ * Date: 20. 2. 9. 오전 12:52
+ */
 public class DssHttpServerImpl extends AbstractDssServer {
 
     private static final String SCHEME_HTTP = "http";

@@ -10,6 +10,11 @@ import io.netty.handler.ssl.SslContext;
 
 import java.util.Objects;
 
+/**
+ * Project: dss
+ * Created by: @ztkmkoo(ztkmkoo@gmail.com)
+ * Date: 20. 2. 9. 오전 12:52
+ */
 class DssHttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private final boolean ssl;

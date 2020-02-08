@@ -6,6 +6,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
+/**
+ * Project: dss
+ * Created by: @ztkmkoo(ztkmkoo@gmail.com)
+ * Date: 20. 2. 9. 오전 12:52
+ */
 class DssHttpSimpleHandler extends AbstractDssHttpHandler {
 
     @Override

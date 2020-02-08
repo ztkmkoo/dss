@@ -7,6 +7,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+/**
+ * Project: dss
+ * Created by: @ztkmkoo(ztkmkoo@gmail.com)
+ * Date: 20. 2. 9. 오전 12:52
+ */
 public abstract class AbstractDssServer implements DssServer {
 
     protected final Logger logger;
