@@ -1,17 +1,21 @@
-plugins {
-    id 'java'
-}
+subprojects {
+    apply plugin:'java'
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+    group 'org.example'
+    version '1.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    repositories {
+        mavenCentral()
+    }
 
-repositories {
-    mavenCentral()
-}
+    dependencies {
+        compileOnly 'org.projectlombok:lombok:1.18.12'
+        annotationProcessor 'org.projectlombok:lombok:1.18.12'
 
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+        testCompileOnly 'org.projectlombok:lombok:1.18.12'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+    }
+
 }
