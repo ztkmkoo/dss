@@ -11,6 +11,8 @@ import java.util.logging.Logger;
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오전 12:52
+ *
+ * Network abstract server module.
  */
 public abstract class AbstractDssServer implements DssServer {
 

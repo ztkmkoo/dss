@@ -23,7 +23,19 @@ public abstract class AbstractDssHttpHandler extends SimpleChannelInboundHandler
 
     private HttpRequest request;
 
+    /**
+     * handling http request
+     * @param ctx: ChannelHandlerContext, for sending message to client
+     * @param request: HttpRequest, HttpRequestDecoder deserialize it
+     * @param content: HttpContent, UTF-8 encoding
+     */
     protected abstract void handlingHttpRequest(ChannelHandlerContext ctx, HttpRequest request, String content);
+
+    /**
+     * handling http request
+     * @param ctx: ChannelHandlerContext, for sending message to client
+     * @param request: HttpRequest, HttpRequestDecoder deserialize it
+     */
     protected abstract void handlingHttpRequest(ChannelHandlerContext ctx, HttpRequest request);
 
     @Override
