@@ -47,11 +47,25 @@ public class HttpMessages {
         }
 
         public Request(
+                String path,
+                String content) {
+            this(path, content, null, emptyQueue, null);
+        }
+
+        public Request(
                 HttpMessages.Request request,
                 ActorRef<HttpMessages.Response> httpResponseHandlerActor,
                 ActorRef<HttpMessages.Request> businessActor
         ) {
             this(request.path, request.content, httpResponseHandlerActor, emptyQueue, businessActor);
+        }
+
+        public Request(
+                HttpMessages.Request request,
+                ActorRef<HttpMessages.Response> httpResponseHandlerActor,
+                List<ActorRef<Request>> filterQueue,
+                ActorRef<HttpMessages.Request> businessActor) {
+            this(request.path, request.content, httpResponseHandlerActor, new LinkedList<>(filterQueue), businessActor);
         }
     }
 
