@@ -1,4 +1,5 @@
 rootProject.name = 'dss'
 include 'network'
 include 'actor'
+include 'message'
 
