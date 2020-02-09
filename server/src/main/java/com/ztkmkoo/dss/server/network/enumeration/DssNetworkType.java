@@ -1,7 +1,7 @@
-package com.ztkmkoo.dss.network.enumeration;
+package com.ztkmkoo.dss.server.network.enumeration;
 
-import com.ztkmkoo.dss.network.common.creator.DssServerCreator;
-import com.ztkmkoo.dss.network.http.DssHttpServerImpl;
+import com.ztkmkoo.dss.server.network.core.creator.DssServerCreator;
+import com.ztkmkoo.dss.server.network.http.DssHttpServerImpl;
 import lombok.Getter;
 
 /**

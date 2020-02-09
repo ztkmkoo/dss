@@ -1,4 +1,4 @@
-package com.ztkmkoo.dss.network.common;
+package com.ztkmkoo.dss.server.network.core;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;

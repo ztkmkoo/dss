@@ -1,7 +1,7 @@
-package com.ztkmkoo.dss.network.http;
+package com.ztkmkoo.dss.server.network.http;
 
-import com.ztkmkoo.dss.network.common.AbstractDssServer;
-import com.ztkmkoo.dss.network.common.DssServerProperty;
+import com.ztkmkoo.dss.server.network.core.AbstractDssServer;
+import com.ztkmkoo.dss.server.network.core.DssServerProperty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;

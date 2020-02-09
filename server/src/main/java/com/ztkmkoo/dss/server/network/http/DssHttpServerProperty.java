@@ -1,8 +1,8 @@
-package com.ztkmkoo.dss.network.http;
+package com.ztkmkoo.dss.server.network.http;
 
-import com.ztkmkoo.dss.network.common.DssServerProperty;
-import com.ztkmkoo.dss.network.common.creator.DssServerHandlerCreator;
-import com.ztkmkoo.dss.network.enumeration.DssNetworkType;
+import com.ztkmkoo.dss.server.network.core.DssServerProperty;
+import com.ztkmkoo.dss.server.network.core.creator.DssServerHandlerCreator;
+import com.ztkmkoo.dss.server.network.enumeration.DssNetworkType;
 import lombok.Getter;
 
 import java.util.Objects;
