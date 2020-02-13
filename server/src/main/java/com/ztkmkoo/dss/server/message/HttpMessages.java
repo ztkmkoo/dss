@@ -17,7 +17,7 @@ public class HttpMessages {
 
     private HttpMessages() {}
 
-    public static class Request implements Serializable {
+    public static class Request extends ServerMessages.Req {
 
         private static final LinkedList<ActorRef<Request>> emptyQueue = new LinkedList<>();
         private static final long serialVersionUID = -5018351808316127595L;
@@ -66,6 +66,13 @@ public class HttpMessages {
                 List<ActorRef<Request>> filterQueue,
                 ActorRef<HttpMessages.Request> businessActor) {
             this(request.path, request.content, httpResponseHandlerActor, new LinkedList<>(filterQueue), businessActor);
+        }
+
+        @Override
+        public String toString() {
+            return Request.class.getSimpleName() + "@" + hashCode() + ":{"
+                    + "\npath: " + path
+                    + ",\ncontent: "+ content + "\n}";
         }
     }
 
