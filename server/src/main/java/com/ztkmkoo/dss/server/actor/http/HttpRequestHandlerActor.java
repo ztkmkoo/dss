@@ -39,10 +39,10 @@ public class HttpRequestHandlerActor extends AbstractBehavior<HttpMessages.Reque
 
     private Behavior<HttpMessages.Request> onRequest(HttpMessages.Request request) {
 
-        getContext().getLog().trace("on HttpMessages.Request: {}", request);
+        getContext().getLog().info("on HttpMessages.Request: {}", request);
 
         if (!businessActorPathMap.containsKey(request.getPath())) {
-            responseActor.tell(new HttpMessages.Response());
+            responseActor.tell(new HttpMessages.Response(request));
             return this;
         }
 
