@@ -1,6 +1,6 @@
 package com.ztkmkoo.dss.server.network.core;
 
-import com.ztkmkoo.dss.server.network.enumeration.DssNetworkType;
+import com.ztkmkoo.dss.server.enumeration.DssNetworkType;
 
 /**
  * Project: dss
@@ -12,7 +12,7 @@ import com.ztkmkoo.dss.server.network.enumeration.DssNetworkType;
 public interface DssServerProperty {
 
     /**
-     * @return com.ztkmkoo.dss.server.network.enumeration.DssNetworkType
+     * @return com.ztkmkoo.dss.server.enumeration.DssNetworkType
      */
     DssNetworkType getNetworkType();
 

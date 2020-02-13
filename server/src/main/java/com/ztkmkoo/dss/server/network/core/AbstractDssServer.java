@@ -1,11 +1,13 @@
 package com.ztkmkoo.dss.server.network.core;
 
+import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-import java.util.logging.Logger;
 
 /**
  * Project: dss
@@ -20,30 +22,20 @@ public abstract class AbstractDssServer implements DssServer {
 
     protected AbstractDssServer() {
 
-        this.logger = Logger.getLogger(this.getClass().getSimpleName());
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    protected abstract ServerBootstrap configServerBootstrap(DssServerProperty p, ServerBootstrap b) throws InterruptedException;
+    protected abstract ServerBootstrap configServerBootstrap(DssServerProperty p, ServerBootstrap b, ActorRef<ServerMessages.Req> masterActor) throws InterruptedException;
 
     @Override
-    public void bind(DssServerProperty property) throws InterruptedException {
+    public Channel bind(ServerBootstrap b, DssServerProperty property, ActorRef<ServerMessages.Req> masterActor) throws InterruptedException {
 
+        Objects.requireNonNull(b, "ServerBootstrap is null");
         Objects.requireNonNull(property, "DssServerProperty is null");
 
-        final EventLoopGroup boosGroup = new NioEventLoopGroup(property.getBossThread());
-        final EventLoopGroup workerGroup = new NioEventLoopGroup(property.getWorkerThread());
-
-        try {
-            final ServerBootstrap b = new ServerBootstrap().group(boosGroup, workerGroup);
-            configServerBootstrap(property, b)
-                    .bind(property.getHost(), property.getPort())
-                    .sync()
-                    .channel()
-                    .closeFuture()
-                    .sync();
-        } finally {
-            boosGroup.shutdownGracefully();
-            workerGroup.shutdownGracefully();
-        }
+        return configServerBootstrap(property, b, masterActor)
+                .bind(property.getHost(), property.getPort())
+                .sync()
+                .channel();
     }
 }

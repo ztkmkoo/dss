@@ -1,10 +1,12 @@
 package com.ztkmkoo.dss.server.network.http;
 
+import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.server.message.HttpMessages;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
 
 /**
  * Project: dss
@@ -13,17 +15,15 @@ import io.netty.util.CharsetUtil;
  */
 class DssHttpSimpleHandler extends AbstractDssHttpHandler {
 
+    private final ActorRef<ServerMessages.Req> masterActor;
+
+    DssHttpSimpleHandler(ActorRef<ServerMessages.Req> masterActor) {
+        this.masterActor = masterActor;
+    }
+
     @Override
     protected void handlingHttpRequest(ChannelHandlerContext ctx, HttpRequest request, String content) {
-
-        writeResponse(
-                ctx,
-                new DefaultFullHttpResponse(
-                        HttpVersion.HTTP_1_1,
-                        HttpResponseStatus.OK,
-                        Unpooled.copiedBuffer(content, CharsetUtil.UTF_8)
-                )
-        );
+        masterActor.tell(new HttpMessages.Request(ctx, request.uri(), content));
     }
 
     @Override

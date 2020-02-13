@@ -1,5 +1,7 @@
 package com.ztkmkoo.dss.server.network.http;
 
+import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import com.ztkmkoo.dss.server.network.core.creator.DssServerHandlerCreator;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -9,6 +11,7 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.ssl.SslContext;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Project: dss
@@ -17,17 +20,35 @@ import java.util.Objects;
  */
 class DssHttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final boolean ssl;
-    private final SslContext sslContext;
+    private static final Consumer<SocketChannel> NON_SSL_CONSUMER = channel -> {};
+
+    private final ActorRef<ServerMessages.Req> masterActor;
     private final DssServerHandlerCreator handlerCreator;
+    private final Consumer<SocketChannel> socketChannelConsumer;
+
+    DssHttpServerInitializer(ActorRef<ServerMessages.Req> masterActor, DssServerHandlerCreator handlerCreator) {
+        this(masterActor, handlerCreator, NON_SSL_CONSUMER);
+    }
 
     DssHttpServerInitializer(
-            boolean ssl,
+            ActorRef<ServerMessages.Req> masterActor,
             SslContext sslContext,
             DssServerHandlerCreator handlerCreator) {
-        this.ssl = ssl;
-        this.sslContext = sslContext;
+        this(masterActor, handlerCreator, channel -> {
+            Objects.requireNonNull(sslContext);
+            final ChannelPipeline pipeline = channel.pipeline();
+            pipeline.addLast(sslContext.newHandler(channel.alloc()));
+        });
+    }
+
+    DssHttpServerInitializer(
+            ActorRef<ServerMessages.Req> masterActor,
+            DssServerHandlerCreator handlerCreator,
+            Consumer<SocketChannel> socketChannelConsumer
+    ) {
+        this.masterActor = masterActor;
         this.handlerCreator = handlerCreator;
+        this.socketChannelConsumer = socketChannelConsumer;
     }
 
     @Override
@@ -35,13 +56,10 @@ class DssHttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
         final ChannelPipeline p = ch.pipeline();
 
-        if (ssl) {
-            Objects.requireNonNull(sslContext);
-            p.addLast(sslContext.newHandler(ch.alloc()));
-        }
+        socketChannelConsumer.accept(ch);
 
         p.addLast(new HttpRequestDecoder());
         p.addLast(new HttpResponseEncoder());
-        p.addLast(handlerCreator.createChannelHandler());
+        p.addLast(handlerCreator.createChannelHandler(masterActor));
     }
 }

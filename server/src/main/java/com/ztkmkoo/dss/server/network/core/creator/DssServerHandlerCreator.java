@@ -1,5 +1,7 @@
 package com.ztkmkoo.dss.server.network.core.creator;
 
+import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import io.netty.channel.ChannelHandler;
 
 /**
@@ -12,5 +14,5 @@ import io.netty.channel.ChannelHandler;
  */
 public interface DssServerHandlerCreator {
 
-    ChannelHandler createChannelHandler();
+    ChannelHandler createChannelHandler(ActorRef<ServerMessages.Req> masterActor);
 }

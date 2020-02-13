@@ -6,10 +6,10 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Project: dss
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractDssHttpHandler extends SimpleChannelInboundHandler<Object> {
 
-    protected final Logger logger = Logger.getLogger(DssHttpSimpleHandler.class.getSimpleName());
+    protected final Logger logger = LoggerFactory.getLogger(AbstractDssHttpHandler.class);
     private final StringBuilder buffer = new StringBuilder();
 
     private HttpRequest request;
@@ -72,7 +72,7 @@ public abstract class AbstractDssHttpHandler extends SimpleChannelInboundHandler
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        logger.log(Level.WARNING, "exceptionCaught", cause);
+        logger.warn("exceptionCaught", cause);
         ctx.close();
     }
 }
