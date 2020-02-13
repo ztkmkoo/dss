@@ -17,6 +17,7 @@ public class HttpMessagesTest {
     public void requestConstructor() {
 
         final HttpMessages.Request request = new HttpMessages.Request(
+                null,
                 "hi",
                 "",
                 null,

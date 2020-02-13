@@ -27,7 +27,7 @@ import static org.mockito.Matchers.any;
 public class AbstractDssHttpHandlerTest {
 
     @InjectMocks
-    private AbstractDssHttpHandler handler= new DssHttpSimpleHandler();
+    private AbstractDssHttpHandler handler= new DssHttpSimpleHandler(null);
 
     @Mock
     private ChannelHandlerContext ctx;

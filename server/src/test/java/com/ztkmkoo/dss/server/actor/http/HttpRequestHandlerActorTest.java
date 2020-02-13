@@ -28,7 +28,7 @@ public class HttpRequestHandlerActorTest {
 
         final ActorRef<HttpMessages.Request> httpRequestHandler = testKit.spawn(HttpRequestHandlerActor.create(httpResponseHandler.getRef()));
 
-        httpRequestHandler.tell(new HttpMessages.Request("hi", null));
+        httpRequestHandler.tell(new HttpMessages.Request(null, "hi", null));
 
         httpResponseHandler.expectMessageClass(HttpMessages.Response.class);
     }

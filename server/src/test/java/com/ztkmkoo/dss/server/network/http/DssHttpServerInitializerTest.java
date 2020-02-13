@@ -17,7 +17,7 @@ public class DssHttpServerInitializerTest {
     @Test
     public void initChannel() throws Exception {
 
-        final DssHttpServerInitializer dssHttpServerInitializer = new DssHttpServerInitializer(false, null, DssHttpSimpleHandler::new);
+        final DssHttpServerInitializer dssHttpServerInitializer = new DssHttpServerInitializer(null, DssHttpSimpleHandler::new);
 
         final SocketChannel socketChannel = new NioSocketChannel();
 

@@ -1,6 +1,6 @@
 package com.ztkmkoo.dss.server.network.http;
 
-import com.ztkmkoo.dss.server.network.enumeration.DssNetworkType;
+import com.ztkmkoo.dss.server.enumeration.DssNetworkType;
 import io.netty.channel.ChannelHandler;
 import org.junit.Test;
 
@@ -34,7 +34,7 @@ public class DssHttpServerPropertyTest {
         assertEquals(1, property.getBossThread());
         assertEquals(16, property.getWorkerThread());
 
-        final ChannelHandler channelHandler = property.getHandlerCreator().createChannelHandler();
+        final ChannelHandler channelHandler = property.getHandlerCreator().createChannelHandler(null);
         assertNotNull(channelHandler);
         assertEquals(DssHttpSimpleHandler.class, channelHandler.getClass());
     }
