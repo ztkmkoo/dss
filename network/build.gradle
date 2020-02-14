@@ -1,4 +1,6 @@
-
+plugins {
+    id "org.myire.quill.cobertura" version "2.2"
+}
 
 dependencies {
     implementation('io.netty:netty-all:4.1.45.Final')
