@@ -22,7 +22,7 @@ public class DssHttpServerImplTest {
         final DssServerProperty p = DssHttpServerProperty.builder(false).build();
         final ServerBootstrap b = new ServerBootstrap();
 
-        final ServerBootstrap bootstrap = httpServer.configServerBootstrap(p, b);
+        final ServerBootstrap bootstrap = httpServer.configServerBootstrap(p, b, null);
         assertNotNull(bootstrap);
         assertEquals(b, bootstrap);
     }

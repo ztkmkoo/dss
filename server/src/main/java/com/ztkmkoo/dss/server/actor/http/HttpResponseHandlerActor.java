@@ -13,6 +13,8 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
 
+import java.util.Objects;
+
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
@@ -35,13 +37,18 @@ public class HttpResponseHandlerActor extends AbstractBehavior<HttpMessages.Resp
 
     private Behavior<HttpMessages.Response> onResponse(HttpMessages.Response response) {
         getContext().getLog().info("on HttpMessages.Request: {}", response);
-        response
-                .getCtx()
-                .writeAndFlush(new DefaultFullHttpResponse(
-                        HttpVersion.HTTP_1_1,
-                        HttpResponseStatus.OK,
-                        Unpooled.copiedBuffer(response.getContent(), CharsetUtil.UTF_8)
-                )).addListener(ChannelFutureListener.CLOSE);
+
+        if (Objects.nonNull(response.getCtx())) {
+            response
+                    .getCtx()
+                    .writeAndFlush(new DefaultFullHttpResponse(
+                            HttpVersion.HTTP_1_1,
+                            HttpResponseStatus.OK,
+                            Unpooled.copiedBuffer(response.getContent(), CharsetUtil.UTF_8)
+                    )).addListener(ChannelFutureListener.CLOSE);
+        } else {
+            getContext().getLog().debug("ctx is null");
+        }
         return this;
     }
 }

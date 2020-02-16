@@ -2,7 +2,6 @@ package com.ztkmkoo.dss.server.network.http;
 
 import akka.actor.typed.ActorRef;
 import com.ztkmkoo.dss.server.message.HttpMessages;
-import com.ztkmkoo.dss.server.message.ServerMessages;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,9 +14,9 @@ import io.netty.handler.codec.http.*;
  */
 class DssHttpSimpleHandler extends AbstractDssHttpHandler {
 
-    private final ActorRef<ServerMessages.Req> masterActor;
+    private final ActorRef<HttpMessages.Request> masterActor;
 
-    DssHttpSimpleHandler(ActorRef<ServerMessages.Req> masterActor) {
+    DssHttpSimpleHandler(ActorRef<HttpMessages.Request> masterActor) {
         this.masterActor = masterActor;
     }
 

@@ -12,7 +12,7 @@ import io.netty.channel.ChannelHandler;
  * For creating netty handler
  * It was for lambda expression, Do not make additional method
  */
-public interface DssServerHandlerCreator {
+public interface DssServerHandlerCreator<T extends ServerMessages.Req> {
 
-    ChannelHandler createChannelHandler(ActorRef<ServerMessages.Req> masterActor);
+    ChannelHandler createChannelHandler(ActorRef<T> masterActor);
 }
