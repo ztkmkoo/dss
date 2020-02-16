@@ -8,4 +8,5 @@ cache:
     - '$HOME/.m2/repository'
     - '$HOME/.gradle'
 after_success:
-  - gradle cobertura coveralls
+  - gradle cobertura
+  - gradle coveralls
