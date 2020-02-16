@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'net.saliman.cobertura' version '3.0.0'
+    id 'com.github.kt3k.coveralls' version '2.10.0'
 }
 
 group 'com.ztkmkoo.dss'
@@ -19,4 +21,9 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
     testCompile group: 'com.typesafe.akka', name: 'akka-actor-testkit-typed_2.13', version: '2.6.3'
+}
+
+cobertura {
+    coverageFormats = ['html', 'xml']
+    coverageReportDir = new File("$projectDir/build/reports/cobertura")
 }
