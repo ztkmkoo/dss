@@ -1,8 +1,8 @@
+group 'com.ztkmkoo.dss'
+version '1.0-SNAPSHOT'
+
 subprojects {
     apply plugin:'java'
-
-    group 'org.example'
-    version '1.0-SNAPSHOT'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -17,5 +17,4 @@ subprojects {
         testCompileOnly 'org.projectlombok:lombok:1.18.12'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
     }
-
 }
