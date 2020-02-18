@@ -1,13 +1,10 @@
 package com.ztkmkoo.dss.server.network.rest;
 
-import com.ztkmkoo.dss.server.network.core.handler.DssChannelInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.BufferedReader;
@@ -27,9 +24,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class DssRestChannelTest {
 
-    @Mock
-    private DssChannelInitializer<SocketChannel> dssChannelInitializer;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -42,7 +36,7 @@ public class DssRestChannelTest {
         final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            bindServer(bossGroup, workerGroup, 8181);
+            bindServer(bossGroup, workerGroup, new DssRestChannelInitializer(), 8181);
             assertTrue(serverPortIsOpen(8181));
         } finally {
             workerGroup.shutdownGracefully();
@@ -57,7 +51,9 @@ public class DssRestChannelTest {
         final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            bindServer(bossGroup, workerGroup, 8181);
+            final DssRestHandler handler = new DssRestHandler();
+            final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(handler);
+            bindServer(bossGroup, workerGroup, channelInitializer, 8181);
             sendMessageToServer(8181);
         } finally {
             workerGroup.shutdownGracefully();
@@ -68,6 +64,7 @@ public class DssRestChannelTest {
     private void bindServer(
             NioEventLoopGroup bossGroup,
             NioEventLoopGroup workerGroup,
+            DssRestChannelInitializer dssRestChannelInitializer,
             int port
     ) throws InterruptedException {
 
@@ -77,7 +74,7 @@ public class DssRestChannelTest {
                 .group(bossGroup, workerGroup);
 
         final DssRestChannelProperty property = DssRestChannelProperty
-                .builder(dssChannelInitializer)
+                .builder(dssRestChannelInitializer)
                 .port(port)
                 .build();
 

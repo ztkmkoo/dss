@@ -8,6 +8,7 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,22 +23,30 @@ public class DssRestChannelInitializer extends DssChannelInitializer<SocketChann
 
     private final long timeout;
     private final TimeUnit timeUnit;
+    private final Optional<DssRestHandler> handlerOptional;
 
-    public DssRestChannelInitializer(long timeout, TimeUnit timeUnit) {
+    public DssRestChannelInitializer(long timeout, TimeUnit timeUnit, DssRestHandler handler) {
         Objects.requireNonNull(timeUnit);
         this.timeout = timeout;
         this.timeUnit = timeUnit;
+        this.handlerOptional = Optional.ofNullable(handler);
     }
 
     public DssRestChannelInitializer() {
-        this(DEFAULT_TIMEOUT, DEFAULT_TIME_UNIT);
+        this(DEFAULT_TIMEOUT, DEFAULT_TIME_UNIT, null);
+    }
+
+    public DssRestChannelInitializer(DssRestHandler handler) {
+        this(DEFAULT_TIMEOUT, DEFAULT_TIME_UNIT, handler);
     }
 
     @Override
     public void initChannelPipeline(ChannelPipeline p) {
+
         p.addLast(new HttpRequestDecoder());
         p.addLast(new HttpResponseEncoder());
         p.addLast(new ReadTimeoutHandler(timeout, timeUnit));
+        handlerOptional.ifPresent(p::addLast);
     }
 
     @Override
