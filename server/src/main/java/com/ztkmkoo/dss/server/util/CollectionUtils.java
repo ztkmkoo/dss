@@ -1,5 +1,6 @@
 package com.ztkmkoo.dss.server.util;
 
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -10,6 +11,10 @@ import java.util.Objects;
 public class CollectionUtils {
 
     private CollectionUtils() {}
+
+    public static <T extends Collection> boolean isEmpty(T collection) {
+        return Objects.isNull(collection) || collection.isEmpty();
+    }
 
     public static class List {
 
