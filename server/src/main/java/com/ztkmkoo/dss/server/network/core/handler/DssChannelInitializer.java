@@ -17,10 +17,17 @@ public abstract class DssChannelInitializer<T extends Channel> extends ChannelIn
      */
     public abstract void initChannelPipeline(ChannelPipeline p);
 
+    /**
+     * initialize channel pipeline for ssl.
+     * @param p : netty ChannelPipeline
+     */
+    public abstract void initSslChannelPipeline(ChannelPipeline p);
+
     @Override
     protected void initChannel(T ch) throws Exception {
 
         final ChannelPipeline p = ch.pipeline();
+        initSslChannelPipeline(p);
         initChannelPipeline(p);
     }
 }
