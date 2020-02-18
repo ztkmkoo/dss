@@ -8,6 +8,7 @@ import com.ztkmkoo.dss.server.util.BuilderUtils;
 import io.netty.channel.socket.SocketChannel;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -73,12 +74,49 @@ public class DssRestChannelProperty implements DssNetworkChannelProperty {
 
 
         private Builder(DssChannelInitializer<SocketChannel> dssChannelInitializer) {
+            Objects.requireNonNull(dssChannelInitializer, "DssChannelInitializer cannot be null");
             this.dssChannelInitializer = dssChannelInitializer;
         }
 
-        public DssRestChannelProperty build() {
+        public Builder host(String host) {
+            this.host = host;
+            return this;
+        }
 
-            Objects.requireNonNull(dssChannelInitializer, "DssChannelInitializer cannot be null");
+        public Builder port(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public Builder bossThread(int bossThread) {
+            this.bossThread = bossThread;
+            return this;
+        }
+
+        public Builder workerThread(int workerThread) {
+            this.workerThread = workerThread;
+            return this;
+        }
+
+        public Builder channelServiceCreatorList(List<DssServiceCreator> channelServiceCreatorList) {
+            this.channelServiceCreatorList = channelServiceCreatorList;
+            return this;
+        }
+
+        public Builder addChannelServiceCreatorList(DssServiceCreator channelServiceCreator) {
+            if (Objects.isNull(channelServiceCreatorList)) {
+                this.channelServiceCreatorList = new ArrayList<>();
+            }
+            this.channelServiceCreatorList.add(channelServiceCreator);
+            return this;
+        }
+
+        public Builder logLevel(NettyLogLevelWrapperType logLevel) {
+            this.logLevel = logLevel;
+            return this;
+        }
+
+        public DssRestChannelProperty build() {
 
             host = BuilderUtils.getDefaultValueIfEmpty(host, DEFAULT_HOST);
             port = BuilderUtils.getDefaultValueIfEmpty(port, DEFAULT_PORT);
