@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/ztkmkoo/dss.svg?branch=develop)](https://travis-ci.org/ztkmkoo/dss.svg?branch=develop)
-[![Coverage Status](https://coveralls.io/repos/github/ztkmkoo/dss/badge.svg?branch=feature/19_cobertura_coverage)](https://coveralls.io/github/ztkmkoo/dss?branch=feature/19_cobertura_coverage)
-
+[![Coverage Status](https://coveralls.io/repos/github/ztkmkoo/dss/badge.svg)](https://coveralls.io/github/ztkmkoo/dss)
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/distributed-server-system/dss)
 ## DSS
 
 `It is a start project. Not released yet!!`
