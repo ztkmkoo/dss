@@ -50,6 +50,7 @@ public class DssRestChannelInitializerTest {
 
     @Test
     public void initSslChannelPipeline() {
+
         final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer();
         channelInitializer.initSslChannelPipeline(channelPipeline);
         assertTrue(true);

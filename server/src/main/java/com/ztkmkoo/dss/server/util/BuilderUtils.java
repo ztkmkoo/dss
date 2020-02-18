@@ -15,6 +15,7 @@ public class BuilderUtils {
     private BuilderUtils() {}
 
     public static <T extends Object> T getDefaultValueIfEmpty(T v, T defaultValue) {
+
         Objects.requireNonNull(defaultValue);
         return Objects.isNull(v) ? defaultValue : v;
     }
