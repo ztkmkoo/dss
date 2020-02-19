@@ -1,4 +1,4 @@
-package com.ztkmkoo.dss.server.network.rest;
+package com.ztkmkoo.dss.server.network.rest.handler;
 
 import com.ztkmkoo.dss.server.network.core.handler.DssChannelInitializer;
 import io.netty.channel.ChannelPipeline;

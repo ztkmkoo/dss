@@ -1,5 +1,6 @@
 package com.ztkmkoo.dss.server.network.rest;
 
+import com.ztkmkoo.dss.server.network.rest.handler.DssRestChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import org.junit.Before;
 import org.junit.Test;
