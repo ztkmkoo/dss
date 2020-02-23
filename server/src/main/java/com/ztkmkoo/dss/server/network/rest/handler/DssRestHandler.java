@@ -1,19 +1,26 @@
 package com.ztkmkoo.dss.server.network.rest.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztkmkoo.dss.server.network.rest.entity.DssRestErrorResponses;
 import com.ztkmkoo.dss.server.network.rest.entity.DssRestRequest;
+import com.ztkmkoo.dss.server.network.rest.entity.DssRestResponse;
 import com.ztkmkoo.dss.server.network.rest.enumeration.DssRestMethod;
+import com.ztkmkoo.dss.server.network.rest.service.DssResHandlerService;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.netty.util.CharsetUtil;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -25,6 +32,8 @@ public class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     protected final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
     private final StringBuilder buffer = new StringBuilder();
+    @Getter
+    private final Map<String, DssResHandlerService> simpleHandlerServiceMap = new HashMap<>();
 
     private HttpRequest request;
 
@@ -53,6 +62,24 @@ public class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
         final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
         logger.info("channelReadComplete: {}", dssRestRequest);
+
+        if (isInSimpleHandlerService(dssRestRequest)) {
+            final DssRestResponse dssRestResponse = simpleHandlerServiceMap
+                    .get(dssRestRequest.getUri())
+                    .handle(dssRestRequest);
+            final HttpResponse response = dssRestResponse(dssRestResponse);
+            ctx
+                    .writeAndFlush(response)
+                    .addListener(ChannelFutureListener.CLOSE);
+        } else {
+            ctx
+                    .writeAndFlush(new DefaultFullHttpResponse(
+                            HttpVersion.HTTP_1_1,
+                            HttpResponseStatus.BAD_REQUEST,
+                            Unpooled.EMPTY_BUFFER
+                    ))
+                    .addListener(ChannelFutureListener.CLOSE);
+        }
     }
 
     @Override
@@ -68,6 +95,10 @@ public class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         }
     }
 
+    private boolean isInSimpleHandlerService(DssRestRequest request) {
+        return simpleHandlerServiceMap.containsKey(request.getUri());
+    }
+
     private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
 
         Objects.requireNonNull(request);
@@ -79,5 +110,32 @@ public class DssRestHandler extends SimpleChannelInboundHandler<Object> {
                 .method(DssRestMethod.fromNettyHttpMethod(request.method()))
                 .content(content)
                 .build();
+    }
+
+    private static HttpResponse dssRestResponse(DssRestResponse restResponse) {
+
+        Objects.requireNonNull(restResponse);
+
+        try {
+            final ByteBuf responseContent = responseContent(restResponse);
+            return new DefaultFullHttpResponse(
+                    HttpVersion.HTTP_1_1,
+                    HttpResponseStatus.OK,
+                    responseContent
+            );
+        } catch (Exception e) {
+            return new DefaultFullHttpResponse(
+                    HttpVersion.HTTP_1_1,
+                    HttpResponseStatus.INTERNAL_SERVER_ERROR,
+                    Unpooled.EMPTY_BUFFER
+            );
+        }
+    }
+
+    private static ByteBuf responseContent(DssRestResponse restResponse) throws JsonProcessingException {
+
+        final ObjectMapper mapper = new ObjectMapper();
+        final String json = mapper.writeValueAsString(restResponse);
+        return Unpooled.copiedBuffer(json, CharsetUtil.UTF_8);
     }
 }

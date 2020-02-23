@@ -33,7 +33,7 @@ public class DssRestRequest implements DssRequest {
 
     @Override
     public String toString() {
-        return "DssRestRequest{\n" +
+        return "DssRestRequest {\n" +
                 "uri=" + uri + ",\n" +
                 "method=" + method + ",\n" +
                 "content=" + content + "\n" +
