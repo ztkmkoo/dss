@@ -2,13 +2,16 @@ package com.ztkmkoo.dss.server.core;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.ActorSystem;
+import akka.actor.typed.Props;
 import akka.actor.typed.SpawnProtocol;
 import akka.actor.typed.javadsl.AskPattern;
 import com.ztkmkoo.dss.server.actor.core.DssServerMasterActor;
 import com.ztkmkoo.dss.server.core.exception.DssServerApplicationRuntimeException;
 import com.ztkmkoo.dss.server.enumeration.DssNetworkType;
 import com.ztkmkoo.dss.server.message.ServerMessages;
-import com.ztkmkoo.dss.server.network.core.DssServerProperty;
+import com.ztkmkoo.dss.server.network.core.DssNetworkChannel;
+import com.ztkmkoo.dss.server.network.core.DssNetworkChannelProperty;
+import com.ztkmkoo.dss.server.network.rest.DssRestChannel;
 import com.ztkmkoo.dss.server.util.CollectionUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -41,6 +44,10 @@ public class DssServerApplication {
         }
 
         final ActorSystem<SpawnProtocol.Command> system = ActorSystem.create(DssServerMasterActor.create(), "system");
+        run(propertyList, system);
+    }
+
+    public static void run(List<DssServerApplicationProperty> propertyList, ActorSystem<SpawnProtocol.Command> system) {
         propertyList.forEach(property -> handlingDssServerApplicationProperty(property, system));
     }
 
@@ -49,38 +56,56 @@ public class DssServerApplication {
         run(Collections.singletonList(property));
     }
 
+    public static void run(DssServerApplicationProperty property, ActorSystem<SpawnProtocol.Command> system) {
+        Objects.requireNonNull(property);
+        run(Collections.singletonList(property), system);
+    }
+
     private static void handlingDssServerApplicationProperty(DssServerApplicationProperty property, ActorSystem<SpawnProtocol.Command> system) {
 
-        final DssNetworkType networkType = property.getNetworkProperty().getNetworkType();
+        final DssNetworkType networkType = property.getNetworkType();
+        Objects.requireNonNull(networkType);
 
-        CompletionStage<ActorRef<ServerMessages.Req>> cs = AskPattern
+        if (DssNetworkType.REST.equals(networkType)) {
+            askForActorAndDssChannelBind(system, property, new DssRestChannel());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void askForActorAndDssChannelBind(ActorSystem<SpawnProtocol.Command> system, DssServerApplicationProperty property, DssNetworkChannel networkChannel) {
+
+        final CompletionStage<ActorRef<ServerMessages.Req>> cs = AskPattern
                 .ask(
                         system,
-                        networkType::spawnMessage,
+                        replyTo -> new SpawnProtocol.Spawn(
+                                property.getDssServerActorProperty().getMasterBehavior(),
+                                property.getDssServerActorProperty().getMasterName(),
+                                Props.empty(),
+                                replyTo),
                         Duration.ofSeconds(3),
                         system.scheduler()
                 );
 
         cs.whenComplete((requestActorRef, throwable) -> {
             try {
-                serverBind(property, networkType, requestActorRef);
-            } catch (InterruptedException e) {
+                Objects.requireNonNull(requestActorRef);
+                // CHECK - need new thread?
+                serverBind(property.getNetworkProperty(), networkChannel);
+            } catch (Exception e) {
                 logger.error("Server bind error: ", e);
                 Thread.currentThread().interrupt();
             }
         });
     }
 
-    private static void serverBind(DssServerApplicationProperty property, DssNetworkType networkType, ActorRef<ServerMessages.Req> masterActor) throws InterruptedException {
+    private static void serverBind(DssNetworkChannelProperty property, DssNetworkChannel networkChannel) throws InterruptedException {
 
-        final DssServerProperty serverProperty = property.getNetworkProperty();
-
-        final EventLoopGroup boosGroup = new NioEventLoopGroup(serverProperty.getBossThread());
-        final EventLoopGroup workerGroup = new NioEventLoopGroup(serverProperty.getWorkerThread());
+        final EventLoopGroup boosGroup = new NioEventLoopGroup(property.getBossThread());
+        final EventLoopGroup workerGroup = new NioEventLoopGroup(property.getWorkerThread());
 
         try {
             final ServerBootstrap b = new ServerBootstrap().group(boosGroup, workerGroup);
-            final Channel channel = networkType.getCreator().create().bind(b, serverProperty, masterActor);
+            final Channel channel = networkChannel.bind(b, property);
 
             Objects.requireNonNull(channel);
 

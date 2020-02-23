@@ -40,7 +40,7 @@ public class HttpMasterActorTest extends AbstractActorTest<HttpMasterActor> {
         Constructor<HttpMasterActor> constructor = getActorClass().getDeclaredConstructor(ActorContext.class);
         assertTrue(Modifier.isPrivate(constructor.getModifiers()));
         constructor.setAccessible(true);
-        constructor.newInstance(null);
+        constructor.newInstance();
     }
 
     @Test
@@ -49,7 +49,6 @@ public class HttpMasterActorTest extends AbstractActorTest<HttpMasterActor> {
         final ActorRef<HttpMessages.Request> httpMaster = testKit.spawn(HttpMasterActor.create());
         httpMaster.tell(new HttpMessages.Request(null, "/hi", "Hello World"));
 
-        Thread.sleep(100);
         assertTrue(true);
     }
 }

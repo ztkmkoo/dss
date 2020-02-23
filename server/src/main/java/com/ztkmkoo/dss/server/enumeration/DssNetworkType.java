@@ -17,7 +17,9 @@ import lombok.Getter;
  */
 public enum DssNetworkType {
 
+    @Deprecated
     HTTP(DssHttpServerImpl::new, HttpMasterActor.create(), "http-master"),
+    REST(null, null, null)
     ;
 
     @Getter

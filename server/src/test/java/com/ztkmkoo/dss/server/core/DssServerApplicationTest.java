@@ -1,7 +1,11 @@
 package com.ztkmkoo.dss.server.core;
 
+import com.ztkmkoo.dss.server.actor.rest.DssRestMasterActor;
+import com.ztkmkoo.dss.server.actor.rest.DssRestServerActorProperty;
 import com.ztkmkoo.dss.server.core.exception.DssServerApplicationRuntimeException;
-import com.ztkmkoo.dss.server.network.http.DssHttpServerProperty;
+import com.ztkmkoo.dss.server.enumeration.DssNetworkType;
+import com.ztkmkoo.dss.server.network.rest.DssRestChannelProperty;
+import com.ztkmkoo.dss.server.network.rest.handler.DssRestChannelInitializer;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -26,11 +30,16 @@ public class DssServerApplicationTest {
     public void run() throws InterruptedException {
 
         final DssServerApplicationProperty property = DssServerApplicationProperty
-                .builder()
-                .networkProperty(DssHttpServerProperty
-                        .builder(false)
-                        .build()
+                .builder(DssNetworkType.REST)
+                .networkProperty(
+                        DssRestChannelProperty
+                                .builder(new DssRestChannelInitializer())
+                                .build()
                 )
+                .dssServerActorProperty(
+                        DssRestServerActorProperty
+                                .builder(DssRestMasterActor.create())
+                                .build())
                 .build();
         assertNotNull(property);
 

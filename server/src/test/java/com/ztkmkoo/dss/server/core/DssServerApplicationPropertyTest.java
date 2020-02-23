@@ -1,6 +1,9 @@
 package com.ztkmkoo.dss.server.core;
 
+import com.ztkmkoo.dss.server.enumeration.DssNetworkType;
 import com.ztkmkoo.dss.server.network.http.DssHttpServerProperty;
+import com.ztkmkoo.dss.server.network.rest.DssRestChannelProperty;
+import com.ztkmkoo.dss.server.network.rest.handler.DssRestChannelInitializer;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -14,14 +17,14 @@ public class DssServerApplicationPropertyTest {
 
     @Test
     public void builder() {
-        final DssServerApplicationProperty.Builder builder = DssServerApplicationProperty.builder();
+        final DssServerApplicationProperty.Builder builder = DssServerApplicationProperty.builder(DssNetworkType.REST);
         assertNotNull(builder);
     }
 
     @Test
     public void getNetworkPropertyWithoutServerProperty() {
         final DssServerApplicationProperty property = DssServerApplicationProperty
-                .builder().build();
+                .builder(DssNetworkType.REST).build();
         assertNotNull(property);
         assertNull(property.getNetworkProperty());
     }
@@ -29,9 +32,9 @@ public class DssServerApplicationPropertyTest {
     @Test
     public void getNetworkProperty() {
         final DssServerApplicationProperty property = DssServerApplicationProperty
-                .builder()
-                .networkProperty(DssHttpServerProperty
-                        .builder(false)
+                .builder(DssNetworkType.REST)
+                .networkProperty(DssRestChannelProperty
+                        .builder(new DssRestChannelInitializer())
                         .build()
                 ).build();
         assertNotNull(property);
