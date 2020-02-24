@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.*;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오전 12:52
  */
+@Deprecated
 class DssHttpSimpleHandler extends AbstractDssHttpHandler {
 
     private final ActorRef<HttpMessages.Request> masterActor;

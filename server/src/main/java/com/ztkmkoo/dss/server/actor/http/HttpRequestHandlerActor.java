@@ -15,6 +15,7 @@ import java.util.*;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오전 3:27
  */
+@Deprecated
 public class HttpRequestHandlerActor extends AbstractBehavior<HttpMessages.Request> {
 
     private final Map<String, ActorRef<HttpMessages.Request>> businessActorPathMap = new HashMap<>();

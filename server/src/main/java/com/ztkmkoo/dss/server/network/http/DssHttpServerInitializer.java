@@ -18,6 +18,7 @@ import java.util.function.Consumer;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오전 12:52
  */
+@Deprecated
 class DssHttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private static final Consumer<SocketChannel> NON_SSL_CONSUMER = channel -> {};

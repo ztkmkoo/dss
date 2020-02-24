@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오후 6:07
  */
+@Deprecated
 public class HttpMessages {
 
     private HttpMessages() {}

@@ -10,6 +10,7 @@ import com.ztkmkoo.dss.server.network.core.AbstractDssServer;
  * @com.ztkmkoo.dss.network.enumeration.DssNetworkType for creating DssServer
  * It was for lambda expression, Do not make additional method
  */
+@Deprecated
 public interface DssServerCreator {
 
     /**

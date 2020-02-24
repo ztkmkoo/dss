@@ -20,6 +20,7 @@ import java.util.Objects;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 13. 오후 9:43
  */
+@Deprecated
 public class HttpResponseHandlerActor extends AbstractBehavior<HttpMessages.Response> {
 
     public static Behavior<HttpMessages.Response> create() {

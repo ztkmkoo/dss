@@ -9,6 +9,7 @@ import com.ztkmkoo.dss.server.enumeration.DssNetworkType;
  *
  * Property for running server
  */
+@Deprecated
 public interface DssServerProperty {
 
     /**

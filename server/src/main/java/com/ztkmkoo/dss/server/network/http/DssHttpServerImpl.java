@@ -21,6 +21,7 @@ import java.util.Optional;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오전 12:52
  */
+@Deprecated
 public class DssHttpServerImpl extends AbstractDssServer {
 
     private static final String SCHEME_HTTP = "http";

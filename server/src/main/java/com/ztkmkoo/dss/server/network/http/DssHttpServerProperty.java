@@ -12,6 +12,7 @@ import java.util.Objects;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오전 12:52
  */
+@Deprecated
 @Getter
 public class DssHttpServerProperty implements DssServerProperty {
 

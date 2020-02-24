@@ -16,6 +16,7 @@ import java.util.Objects;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 2. 9. 오전 12:52
  */
+@Deprecated
 public abstract class AbstractDssHttpHandler extends SimpleChannelInboundHandler<Object> {
 
     protected final Logger logger = LoggerFactory.getLogger(AbstractDssHttpHandler.class);

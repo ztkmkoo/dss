@@ -16,6 +16,7 @@ import com.ztkmkoo.dss.server.message.HttpMessages;
  * Manager total http master actor
  * Request handler actor and Response handler actor are its child actor
  */
+@Deprecated
 public class HttpMasterActor extends AbstractBehavior<HttpMessages.Request> {
 
     private final ActorRef<HttpMessages.Request> requestActor;

@@ -12,6 +12,7 @@ import io.netty.channel.Channel;
  *
  * Network server module interface.
  */
+@Deprecated
 public interface DssServer {
 
     /**
