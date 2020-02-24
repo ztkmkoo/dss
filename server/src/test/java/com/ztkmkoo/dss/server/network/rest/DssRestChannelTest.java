@@ -2,10 +2,10 @@ package com.ztkmkoo.dss.server.network.rest;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ztkmkoo.dss.server.network.core.creator.DssChannelInitializerCreator;
 import com.ztkmkoo.dss.server.network.rest.entity.DssRestResponse;
 import com.ztkmkoo.dss.server.network.rest.entity.DssRestSuccessResponse;
 import com.ztkmkoo.dss.server.network.rest.handler.DssRestChannelInitializer;
-import com.ztkmkoo.dss.server.network.rest.handler.DssRestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -40,7 +40,7 @@ public class DssRestChannelTest {
         final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            bindServer(bossGroup, workerGroup, new DssRestChannelInitializer(), 8181);
+            bindServer(bossGroup, workerGroup, DssRestChannelInitializer::new, 8181);
             assertTrue(serverPortIsOpen(8181));
         } finally {
             workerGroup.shutdownGracefully();
@@ -55,9 +55,7 @@ public class DssRestChannelTest {
         final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            final DssRestHandler handler = new DssRestHandler();
-            final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(handler);
-            bindServer(bossGroup, workerGroup, channelInitializer, 8181);
+            bindServer(bossGroup, workerGroup, DssRestChannelInitializer::new, 8181);
             sendMessageToServer(8181);
         } finally {
             workerGroup.shutdownGracefully();
@@ -72,9 +70,7 @@ public class DssRestChannelTest {
         final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            final DssRestHandler handler = new DssRestHandler();
-            final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(handler);
-            bindServer(bossGroup, workerGroup, channelInitializer, 8181);
+            bindServer(bossGroup, workerGroup, DssRestChannelInitializer::new, 8181);
 
             final String url = "http://localhost:8181/test";
 
@@ -102,10 +98,7 @@ public class DssRestChannelTest {
         final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-            final DssRestHandler handler = new DssRestHandler();
-            handler.getSimpleHandlerServiceMap().put("/hello/pure", request -> new DssRestSuccessResponse(200, "I love you pure sin."));
-            final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(handler);
-            bindServer(bossGroup, workerGroup, channelInitializer, 8181);
+            bindServer(bossGroup, workerGroup, DssRestChannelInitializer::new, 8181);
 
             final String url = "http://localhost:8181/hello/pure";
 
@@ -134,7 +127,7 @@ public class DssRestChannelTest {
     private void bindServer(
             NioEventLoopGroup bossGroup,
             NioEventLoopGroup workerGroup,
-            DssRestChannelInitializer dssRestChannelInitializer,
+            DssChannelInitializerCreator dssChannelInitializerCreator,
             int port
     ) throws InterruptedException {
 
@@ -144,11 +137,11 @@ public class DssRestChannelTest {
                 .group(bossGroup, workerGroup);
 
         final DssRestChannelProperty property = DssRestChannelProperty
-                .builder(dssRestChannelInitializer)
+                .builder(dssChannelInitializerCreator)
                 .port(port)
                 .build();
 
-        final Channel channel = dssRestChannel.bind(b, property);
+        final Channel channel = dssRestChannel.bind(b, property, null);
         channel.closeFuture();
     }
 

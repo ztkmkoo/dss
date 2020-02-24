@@ -31,7 +31,7 @@ public class DssRestChannelInitializerTest {
     @Test
     public void defaultConstructor() throws NoSuchFieldException, IllegalAccessException {
 
-        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer();
+        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(null);
         assertNotNull(channelInitializer);
 
         final long timeout = getDssRestChannelInitializerReflectionFieldValue("timeout", channelInitializer, Long.class);
@@ -44,7 +44,7 @@ public class DssRestChannelInitializerTest {
     @Test
     public void initChannelPipeline() {
 
-        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer();
+        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(null);
         channelInitializer.initChannelPipeline(channelPipeline);
         assertTrue(true);
     }
@@ -52,7 +52,7 @@ public class DssRestChannelInitializerTest {
     @Test
     public void initSslChannelPipeline() {
 
-        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer();
+        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(null);
         channelInitializer.initSslChannelPipeline(channelPipeline);
         assertTrue(true);
     }

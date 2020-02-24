@@ -1,5 +1,7 @@
 package com.ztkmkoo.dss.server.network.rest;
 
+import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import com.ztkmkoo.dss.server.network.core.DssNetworkChannel;
 import com.ztkmkoo.dss.server.network.core.DssNetworkChannelProperty;
 import io.netty.bootstrap.ServerBootstrap;
@@ -17,7 +19,7 @@ import java.util.Objects;
 public class DssRestChannel implements DssNetworkChannel {
 
     @Override
-    public Channel bind(ServerBootstrap b, DssNetworkChannelProperty p) throws InterruptedException {
+    public Channel bind(ServerBootstrap b, DssNetworkChannelProperty p, ActorRef<ServerMessages.Req> requestActorRef) throws InterruptedException {
 
         Objects.requireNonNull(b);
         Objects.requireNonNull(p);
@@ -29,7 +31,7 @@ public class DssRestChannel implements DssNetworkChannel {
             return b
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(property.getLogLevel().getNettyLogLevel()))
-                    .childHandler(property.getDssChannelInitializer())
+                    .childHandler(property.getDssChannelInitializerCreator().newDssChannelInitializer(requestActorRef))
                     .bind(property.getHost(), property.getPort())
                     .sync()
                     .channel();

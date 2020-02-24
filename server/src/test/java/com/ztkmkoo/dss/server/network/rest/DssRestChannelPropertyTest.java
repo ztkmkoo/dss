@@ -1,9 +1,8 @@
 package com.ztkmkoo.dss.server.network.rest;
 
+import com.ztkmkoo.dss.server.network.core.creator.DssChannelInitializerCreator;
 import com.ztkmkoo.dss.server.network.core.enumeration.NettyLogLevelWrapperType;
-import com.ztkmkoo.dss.server.network.core.handler.DssChannelInitializer;
 import com.ztkmkoo.dss.server.network.core.service.DssServiceCreator;
-import io.netty.channel.socket.SocketChannel;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,7 +25,7 @@ public class DssRestChannelPropertyTest {
     private final Logger logger = LoggerFactory.getLogger(DssRestChannelPropertyTest.class);
 
     @Mock
-    private DssChannelInitializer<SocketChannel> dssChannelInitializer;
+    private DssChannelInitializerCreator dssChannelInitializerCreator;
 
     @Before
     public void setUp() {
@@ -39,7 +38,7 @@ public class DssRestChannelPropertyTest {
         logger.info("testEmpty starts");
 
         final DssRestChannelProperty property = DssRestChannelProperty
-                .builder(dssChannelInitializer)
+                .builder(dssChannelInitializerCreator)
                 .build();
 
         assertNotNull(property);
@@ -58,7 +57,7 @@ public class DssRestChannelPropertyTest {
         logger.info("testBuild starts");
 
         final DssRestChannelProperty property = DssRestChannelProperty
-                .builder(dssChannelInitializer)
+                .builder(dssChannelInitializerCreator)
                 .host("127.0.0.1")
                 .port(8181)
                 .bossThread(16)
@@ -85,7 +84,7 @@ public class DssRestChannelPropertyTest {
         final DssServiceCreator creator = Mockito.mock(DssServiceCreator.class);
 
         final DssRestChannelProperty property = DssRestChannelProperty
-                .builder(dssChannelInitializer)
+                .builder(dssChannelInitializerCreator)
                 .addChannelServiceCreatorList(creator)
                 .build();
 

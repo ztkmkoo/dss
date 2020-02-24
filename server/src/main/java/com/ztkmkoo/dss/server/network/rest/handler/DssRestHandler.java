@@ -1,7 +1,9 @@
 package com.ztkmkoo.dss.server.network.rest.handler;
 
+import akka.actor.typed.ActorRef;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import com.ztkmkoo.dss.server.network.rest.entity.DssRestErrorResponses;
 import com.ztkmkoo.dss.server.network.rest.entity.DssRestRequest;
 import com.ztkmkoo.dss.server.network.rest.entity.DssRestResponse;
@@ -32,10 +34,15 @@ public class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     protected final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
     private final StringBuilder buffer = new StringBuilder();
+    private final ActorRef<ServerMessages.Req> masterActorRef;
     @Getter
     private final Map<String, DssResHandlerService> simpleHandlerServiceMap = new HashMap<>();
 
     private HttpRequest request;
+
+    public DssRestHandler(ActorRef<ServerMessages.Req> masterActorRef) {
+        this.masterActorRef = masterActorRef;
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) {

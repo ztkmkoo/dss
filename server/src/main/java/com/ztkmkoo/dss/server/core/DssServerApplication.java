@@ -5,6 +5,7 @@ import akka.actor.typed.ActorSystem;
 import akka.actor.typed.Props;
 import akka.actor.typed.SpawnProtocol;
 import akka.actor.typed.javadsl.AskPattern;
+import com.ztkmkoo.dss.server.actor.core.DssServerActorProperty;
 import com.ztkmkoo.dss.server.actor.core.DssServerMasterActor;
 import com.ztkmkoo.dss.server.core.exception.DssServerApplicationRuntimeException;
 import com.ztkmkoo.dss.server.enumeration.DssNetworkType;
@@ -24,7 +25,6 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletionStage;
 
 /**
  * Project: dss
@@ -71,41 +71,51 @@ public class DssServerApplication {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchcked")
     private static void askForActorAndDssChannelBind(ActorSystem<SpawnProtocol.Command> system, DssServerApplicationProperty property, DssNetworkChannel networkChannel) {
 
-        final CompletionStage<ActorRef<ServerMessages.Req>> cs = AskPattern
+        AskPattern
                 .ask(
                         system,
-                        replyTo -> new SpawnProtocol.Spawn(
-                                property.getDssServerActorProperty().getMasterBehavior(),
-                                property.getDssServerActorProperty().getMasterName(),
-                                Props.empty(),
-                                replyTo),
+                        replyTo -> newSpawnProtocol(replyTo, property.getDssServerActorProperty()),
                         Duration.ofSeconds(3),
                         system.scheduler()
-                );
-
-        cs.whenComplete((requestActorRef, throwable) -> {
-            try {
-                Objects.requireNonNull(requestActorRef);
-                // CHECK - need new thread?
-                serverBind(property.getNetworkProperty(), networkChannel);
-            } catch (Exception e) {
-                logger.error("Server bind error: ", e);
-                Thread.currentThread().interrupt();
-            }
-        });
+                )
+                .whenComplete((o, throwable) -> {
+                    try {
+                        Objects.requireNonNull(o);
+                        if (o instanceof ActorRef) {
+                            // CHECK - need new thread?
+                            serverBind(property.getNetworkProperty(), networkChannel, (ActorRef<ServerMessages.Req>)o);
+                        } else {
+                            throw new DssServerApplicationRuntimeException("Akka spawn new actor error: " + o.getClass().getName());
+                        }
+                    } catch (Exception e) {
+                        logger.error("Server bind error: ", e);
+                        Thread.currentThread().interrupt();
+                    }
+                });
     }
 
-    private static void serverBind(DssNetworkChannelProperty property, DssNetworkChannel networkChannel) throws InterruptedException {
+    @SuppressWarnings("unchecked")
+    private static SpawnProtocol.Spawn<ActorRef<ServerMessages.Req>> newSpawnProtocol(ActorRef<Object> replyTo, DssServerActorProperty dssServerActorProperty) {
+
+        return new SpawnProtocol.Spawn(
+                dssServerActorProperty.getMasterBehavior(),
+                dssServerActorProperty.getMasterName(),
+                Props.empty(),
+                replyTo
+        );
+    }
+
+    private static void serverBind(DssNetworkChannelProperty property, DssNetworkChannel networkChannel, ActorRef<ServerMessages.Req> requestActorRef) throws InterruptedException {
 
         final EventLoopGroup boosGroup = new NioEventLoopGroup(property.getBossThread());
         final EventLoopGroup workerGroup = new NioEventLoopGroup(property.getWorkerThread());
 
         try {
             final ServerBootstrap b = new ServerBootstrap().group(boosGroup, workerGroup);
-            final Channel channel = networkChannel.bind(b, property);
+            final Channel channel = networkChannel.bind(b, property, requestActorRef);
 
             Objects.requireNonNull(channel);
 

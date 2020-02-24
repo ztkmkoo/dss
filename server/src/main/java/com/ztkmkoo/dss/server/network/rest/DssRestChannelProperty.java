@@ -1,6 +1,7 @@
 package com.ztkmkoo.dss.server.network.rest;
 
 import com.ztkmkoo.dss.server.network.core.DssNetworkChannelProperty;
+import com.ztkmkoo.dss.server.network.core.creator.DssChannelInitializerCreator;
 import com.ztkmkoo.dss.server.network.core.enumeration.NettyLogLevelWrapperType;
 import com.ztkmkoo.dss.server.network.core.handler.DssChannelInitializer;
 import com.ztkmkoo.dss.server.network.core.service.DssServiceCreator;
@@ -41,6 +42,9 @@ public class DssRestChannelProperty implements DssNetworkChannelProperty {
     @Getter
     private final DssChannelInitializer<SocketChannel> dssChannelInitializer;
 
+    @Getter
+    private final DssChannelInitializerCreator dssChannelInitializerCreator;
+
     private DssRestChannelProperty(Builder builder) {
         this.host = builder.host;
         this.port = builder.port;
@@ -49,10 +53,11 @@ public class DssRestChannelProperty implements DssNetworkChannelProperty {
         this.channelServiceCreatorList = Collections.unmodifiableList(builder.channelServiceCreatorList);
         this.logLevel = builder.logLevel;
         this.dssChannelInitializer = builder.dssChannelInitializer;
+        this.dssChannelInitializerCreator = builder.dssChannelInitializerCreator;
     }
 
-    public static Builder builder(DssChannelInitializer<SocketChannel> dssChannelInitializer) {
-        return new Builder(dssChannelInitializer);
+    public static Builder builder(DssChannelInitializerCreator dssChannelInitializerCreator) {
+        return new Builder(dssChannelInitializerCreator);
     }
 
     public static class Builder {
@@ -63,7 +68,8 @@ public class DssRestChannelProperty implements DssNetworkChannelProperty {
         private static final int DEFAULT_WORKER_THREAD = 0;
         private static final NettyLogLevelWrapperType DEFAULT_LOG_LEVEL = NettyLogLevelWrapperType.INFO;
 
-        private final DssChannelInitializer<SocketChannel> dssChannelInitializer;
+        private final DssChannelInitializer<SocketChannel> dssChannelInitializer = null;
+        private final DssChannelInitializerCreator dssChannelInitializerCreator;
 
         private String host;
         private Integer port;
@@ -73,9 +79,9 @@ public class DssRestChannelProperty implements DssNetworkChannelProperty {
         private NettyLogLevelWrapperType logLevel;
 
 
-        private Builder(DssChannelInitializer<SocketChannel> dssChannelInitializer) {
-            Objects.requireNonNull(dssChannelInitializer, "DssChannelInitializer cannot be null");
-            this.dssChannelInitializer = dssChannelInitializer;
+        private Builder(DssChannelInitializerCreator dssChannelInitializerCreator) {
+            Objects.requireNonNull(dssChannelInitializerCreator, "DssChannelInitializerCreator cannot be null");
+            this.dssChannelInitializerCreator = dssChannelInitializerCreator;
         }
 
         public Builder host(String host) {

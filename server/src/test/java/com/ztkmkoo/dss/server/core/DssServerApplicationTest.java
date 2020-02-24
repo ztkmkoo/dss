@@ -27,13 +27,13 @@ public class DssServerApplicationTest {
 
 
     @Test @Ignore("Local Test")
-    public void run() throws InterruptedException {
+    public void run() {
 
         final DssServerApplicationProperty property = DssServerApplicationProperty
                 .builder(DssNetworkType.REST)
                 .networkProperty(
                         DssRestChannelProperty
-                                .builder(new DssRestChannelInitializer())
+                                .builder(DssRestChannelInitializer::new)
                                 .build()
                 )
                 .dssServerActorProperty(

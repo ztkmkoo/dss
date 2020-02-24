@@ -1,5 +1,6 @@
 package com.ztkmkoo.dss.server.network.core;
 
+import com.ztkmkoo.dss.server.network.core.creator.DssChannelInitializerCreator;
 import com.ztkmkoo.dss.server.network.core.enumeration.NettyLogLevelWrapperType;
 import com.ztkmkoo.dss.server.network.core.handler.DssChannelInitializer;
 import com.ztkmkoo.dss.server.network.core.service.DssServiceCreator;
@@ -47,5 +48,11 @@ public interface DssNetworkChannelProperty {
     /**
      * @return : DssChannelInitializer
      */
+    @Deprecated
     <T extends Channel> DssChannelInitializer<T> getDssChannelInitializer();
+
+    /**
+     * @return : DssChannelInitializerCreator
+     */
+    DssChannelInitializerCreator getDssChannelInitializerCreator();
 }

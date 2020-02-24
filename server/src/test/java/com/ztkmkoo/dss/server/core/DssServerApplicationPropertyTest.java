@@ -34,7 +34,7 @@ public class DssServerApplicationPropertyTest {
         final DssServerApplicationProperty property = DssServerApplicationProperty
                 .builder(DssNetworkType.REST)
                 .networkProperty(DssRestChannelProperty
-                        .builder(new DssRestChannelInitializer())
+                        .builder(DssRestChannelInitializer::new)
                         .build()
                 ).build();
         assertNotNull(property);

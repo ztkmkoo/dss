@@ -1,5 +1,7 @@
 package com.ztkmkoo.dss.server.network.core;
 
+import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 
@@ -10,5 +12,5 @@ import io.netty.channel.Channel;
  */
 public interface DssNetworkChannel {
 
-    Channel bind(ServerBootstrap b, DssNetworkChannelProperty property) throws InterruptedException;
+    Channel bind(ServerBootstrap b, DssNetworkChannelProperty property, ActorRef<ServerMessages.Req> requestActorRef) throws InterruptedException;
 }

@@ -1,5 +1,7 @@
 package com.ztkmkoo.dss.server.network.rest.handler;
 
+import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.server.message.ServerMessages;
 import com.ztkmkoo.dss.server.network.core.handler.DssChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -8,7 +10,6 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,21 +24,17 @@ public class DssRestChannelInitializer extends DssChannelInitializer<SocketChann
 
     private final long timeout;
     private final TimeUnit timeUnit;
-    private final Optional<DssRestHandler> handlerOptional;
+    private final ActorRef<ServerMessages.Req> masterActorRef;
 
-    public DssRestChannelInitializer(long timeout, TimeUnit timeUnit, DssRestHandler handler) {
+    public DssRestChannelInitializer(long timeout, TimeUnit timeUnit, ActorRef<ServerMessages.Req> masterActorRef) {
         Objects.requireNonNull(timeUnit);
         this.timeout = timeout;
         this.timeUnit = timeUnit;
-        this.handlerOptional = Optional.ofNullable(handler);
+        this.masterActorRef = masterActorRef;
     }
 
-    public DssRestChannelInitializer() {
-        this(DEFAULT_TIMEOUT, DEFAULT_TIME_UNIT, null);
-    }
-
-    public DssRestChannelInitializer(DssRestHandler handler) {
-        this(DEFAULT_TIMEOUT, DEFAULT_TIME_UNIT, handler);
+    public DssRestChannelInitializer(ActorRef<ServerMessages.Req> masterActorRef) {
+        this(DEFAULT_TIMEOUT, DEFAULT_TIME_UNIT, masterActorRef);
     }
 
     @Override
@@ -46,7 +43,7 @@ public class DssRestChannelInitializer extends DssChannelInitializer<SocketChann
         p.addLast(new HttpRequestDecoder());
         p.addLast(new HttpResponseEncoder());
         p.addLast(new ReadTimeoutHandler(timeout, timeUnit));
-        handlerOptional.ifPresent(p::addLast);
+        p.addLast(new DssRestHandler(masterActorRef));
     }
 
     @Override
