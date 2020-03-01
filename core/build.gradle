@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+group 'com.ztkmkoo.dss'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // akka
+    implementation('com.typesafe.akka:akka-actor-typed_2.13:2.6.3')
+
+    // netty
+    implementation('io.netty:netty-all:4.1.45.Final')
+
+    // jackson
+    implementation('com.fasterxml.jackson.core:jackson-core:2.10.2')
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.10.2')
+
+    // test
+    testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
+    testCompile group: 'com.typesafe.akka', name: 'akka-actor-testkit-typed_2.13', version: '2.6.3'
+}
