@@ -2,6 +2,9 @@ package com.ztkmkoo.dss.core.actor;
 
 import akka.actor.testkit.typed.javadsl.ActorTestKit;
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Project: dss
@@ -10,10 +13,18 @@ import org.junit.AfterClass;
  */
 public abstract class AbstractDssActorTest {
 
-    protected static final ActorTestKit testKit = ActorTestKit.create();
+    private static final Logger logger = LoggerFactory.getLogger(AbstractDssActorTest.class);
+
+    protected static ActorTestKit testKit;
+
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        testKit = ActorTestKit.create();
+    }
 
     @AfterClass
     public static void cleanup() {
+        logger.info("AbstractDssActorTest cleanup.");
         testKit.shutdownTestKit();
     }
 }
