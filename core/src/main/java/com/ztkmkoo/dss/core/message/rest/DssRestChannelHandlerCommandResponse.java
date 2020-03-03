@@ -17,4 +17,11 @@ public class DssRestChannelHandlerCommandResponse implements DssRestChannelHandl
     private DssRestChannelHandlerCommandResponse(String channelId) {
         this.channelId = channelId;
     }
+
+    @Override
+    public String toString() {
+        return "DssRestChannelHandlerCommandResponse{" +
+                "channelId: '" + channelId + "'" +
+                "}";
+    }
 }
