@@ -11,6 +11,7 @@ import lombok.Getter;
 @Getter
 public class DssRestChannelHandlerCommandResponse implements DssRestChannelHandlerCommand {
 
+    private static final long serialVersionUID = -8946124853931183362L;
     private final String channelId;
 
     @Builder

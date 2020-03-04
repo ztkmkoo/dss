@@ -4,6 +4,8 @@ import akka.actor.typed.ActorRef;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
@@ -12,6 +14,7 @@ import lombok.Getter;
 @Getter
 public class DssRestMasterActorCommandRequest implements DssRestMasterActorCommand {
 
+    private static final long serialVersionUID = 6046370337632314401L;
     private final String channelId;
     private final ActorRef<DssRestChannelHandlerCommand> sender;
 
@@ -25,7 +28,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     public String toString() {
         return "DssRestMasterActorCommandRequest{" +
                 "channelId: '" + channelId + "', " +
-                "sender: '" + sender.path().name() + "'" +
+                "sender: '" + (Objects.nonNull(sender)? sender.path().name() : "null") + "'" +
                 "}";
     }
 }

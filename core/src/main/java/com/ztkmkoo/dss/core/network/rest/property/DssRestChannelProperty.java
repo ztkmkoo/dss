@@ -3,14 +3,17 @@ package com.ztkmkoo.dss.core.network.rest.property;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.io.Serializable;
+
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 2. 오전 12:44
  */
 @Getter
-public class DssRestChannelProperty {
+public class DssRestChannelProperty implements Serializable {
 
+    private static final long serialVersionUID = -6904414304979344025L;
     private final String host;
     private final int port;
 

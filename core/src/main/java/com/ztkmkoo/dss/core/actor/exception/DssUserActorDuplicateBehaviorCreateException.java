@@ -7,6 +7,8 @@ package com.ztkmkoo.dss.core.actor.exception;
  */
 public class DssUserActorDuplicateBehaviorCreateException extends RuntimeException {
 
+    private static final long serialVersionUID = 4627936611243117800L;
+
     public DssUserActorDuplicateBehaviorCreateException(String message) {
         super(message);
     }
