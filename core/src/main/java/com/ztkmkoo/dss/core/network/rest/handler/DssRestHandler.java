@@ -121,6 +121,7 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
     private Behavior<DssRestChannelHandlerCommand> dssRestHandler(ActorContext<DssRestChannelHandlerCommand> context) {
 
         this.context = context;
+        context.getLog().info("Setup dssRestHandler");
         if (Objects.isNull(this.restMasterActorRef)) {
             this.restMasterActorRef = this.context.spawn(DssRestMasterActor.create(), "rest-master");
         }

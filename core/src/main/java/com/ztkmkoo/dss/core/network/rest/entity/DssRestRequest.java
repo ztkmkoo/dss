@@ -20,7 +20,7 @@ public class DssRestRequest implements Serializable {
     private final String content;
 
     @Builder
-    private DssRestRequest(DssRestMethodType methodType, String uri, String content) {
+    protected DssRestRequest(DssRestMethodType methodType, String uri, String content) {
         this.methodType = methodType;
         this.uri = uri;
         this.content = content;

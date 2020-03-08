@@ -10,6 +10,8 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,12 +26,15 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
 
     private static final AtomicInteger handlerIndex = new AtomicInteger(0);
 
+    private final Logger logger = LoggerFactory.getLogger(DssRestChannelInitializer.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
 
     private ActorContext<DssRestChannelInitializerCommand> context;
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
+
+        logger.info("Try to initChannel");
 
         final ChannelPipeline p = ch.pipeline();
         p.addLast(new HttpRequestDecoder());
@@ -39,6 +44,8 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
     }
 
     private void addHandler(ChannelPipeline p) {
+
+        logger.info("Try to addHandler");
 
         final DssRestHandler restHandler = new DssRestHandler();
 
@@ -62,6 +69,7 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
     private Behavior<DssRestChannelInitializerCommand> dssRestChannelInitializer(ActorContext<DssRestChannelInitializerCommand> context) {
 
         this.context = context;
+        context.getLog().info("Setup dssRestChannelInitializer");
 
         return Behaviors
                 .receive(DssRestChannelInitializerCommand.class)
