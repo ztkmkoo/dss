@@ -5,6 +5,7 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import com.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
+import com.ztkmkoo.dss.core.actor.rest.DssRestActorService;
 import com.ztkmkoo.dss.core.actor.rest.DssRestMasterActor;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
@@ -16,6 +17,8 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,8 +34,13 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
 
     private final Logger logger = LoggerFactory.getLogger(DssRestChannelInitializer.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
+    private final List<DssRestActorService> serviceList;
 
     private ActorContext<DssRestChannelInitializerCommand> context;
+
+    public DssRestChannelInitializer(List<DssRestActorService> serviceList) {
+        this.serviceList = new ArrayList<>(serviceList);
+    }
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
@@ -49,7 +57,7 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
         logger.info("Try to addHandler");
 
         if (Objects.nonNull(context)) {
-            final ActorRef<DssRestMasterActorCommand> restMasterActorRef = context.spawn(DssRestMasterActor.create(), "rest-master");
+            final ActorRef<DssRestMasterActorCommand> restMasterActorRef = context.spawn(DssRestMasterActor.create(serviceList), "rest-master");
             final DssRestHandler restHandler = new DssRestHandler(restMasterActorRef);
 
             context.spawn(restHandler.create(), "rest-handler-" + handlerIndex.incrementAndGet());

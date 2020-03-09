@@ -1,6 +1,7 @@
 package com.ztkmkoo.dss.server.rest;
 
 import akka.actor.typed.ActorSystem;
+import com.ztkmkoo.dss.core.actor.rest.DssRestActorService;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import com.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import com.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
@@ -26,23 +27,16 @@ public class DssRestServer {
     private final Logger logger = LoggerFactory.getLogger(DssRestServer.class);
     private final String host;
     private final int port;
-    private final List<AbstractDssRestService> serviceList = new ArrayList<>();
-    private final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer();
-    private final ActorSystem<DssRestChannelInitializerCommand> system;
+    private final List<DssRestActorService> serviceList = new ArrayList<>();
 
     private Channel channel;
+    private ActorSystem<DssRestChannelInitializerCommand> system;
 
     public DssRestServer(String host, int port) {
         this.host = host;
         this.port = port;
-        this.system = createActorSystem();
     }
 
-    private ActorSystem<DssRestChannelInitializerCommand> createActorSystem() {
-        final ActorSystem<DssRestChannelInitializerCommand> newSystem = ActorSystem.create(channelInitializer.create(), "system");
-        newSystem.getWhenTerminated().toCompletableFuture().thenAccept(done -> logger.info("Actor system terminated."));
-        return newSystem;
-    }
 
     public DssRestServer addDssRestService(AbstractDssRestService service) {
         Objects.requireNonNull(service);
@@ -51,6 +45,10 @@ public class DssRestServer {
     }
 
     public void start() throws InterruptedException {
+        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(serviceList);
+        system = createActorSystem(channelInitializer);
+        logger.info("Create actor system: {}", system);
+
         final EventLoopGroup bossGroup = new NioEventLoopGroup();
         final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -68,6 +66,12 @@ public class DssRestServer {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
+    }
+
+    private ActorSystem<DssRestChannelInitializerCommand> createActorSystem(DssRestChannelInitializer channelInitializer) {
+        final ActorSystem<DssRestChannelInitializerCommand> newSystem = ActorSystem.create(channelInitializer.create(), "system");
+        newSystem.getWhenTerminated().toCompletableFuture().thenAccept(done -> logger.info("Actor system terminated."));
+        return newSystem;
     }
 
     public void stop() throws InterruptedException {

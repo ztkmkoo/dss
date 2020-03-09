@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -36,7 +37,7 @@ public class DssRestChannelTest {
                 .port(8181)
                 .build();
 
-        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer();
+        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(Collections.emptyList());
 
         try {
             final DssRestChannel dssRestChannel = new DssRestChannel();

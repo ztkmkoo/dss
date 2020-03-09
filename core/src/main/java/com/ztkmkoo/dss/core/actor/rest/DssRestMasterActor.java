@@ -7,6 +7,8 @@ import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
 import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
 import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
 
+import java.util.List;
+
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
@@ -14,14 +16,15 @@ import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
  */
 public class DssRestMasterActor {
 
-    public static Behavior<DssRestMasterActorCommand> create() {
-        return Behaviors.setup(context -> new DssRestMasterActor(context).dssRestMasterActor());
+    public static Behavior<DssRestMasterActorCommand> create(List<DssRestActorService> serviceList) {
+        return Behaviors.setup(context -> new DssRestMasterActor(context, serviceList).dssRestMasterActor());
     }
 
     private final ActorContext<DssRestMasterActorCommand> context;
 
-    private DssRestMasterActor(ActorContext<DssRestMasterActorCommand> context) {
+    private DssRestMasterActor(ActorContext<DssRestMasterActorCommand> context, List<DssRestActorService> serviceList) {
         this.context = context;
+        serviceList.forEach(dssRestActorService -> {});
     }
 
     private Behavior<DssRestMasterActorCommand> dssRestMasterActor() {

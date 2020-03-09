@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
@@ -47,7 +49,7 @@ public class DssRestChannelInitializerTest {
     @Test
     public void create() {
 
-        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer();
+        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer(Collections.emptyList());
         final Behavior<DssRestChannelInitializerCommand> behavior = dssRestChannelInitializer.create();
 
         assertNotNull(behavior);
@@ -59,7 +61,7 @@ public class DssRestChannelInitializerTest {
     @Test(expected = DssUserActorDuplicateBehaviorCreateException.class)
     public void createTwiceForOneObject() {
 
-        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer();
+        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer(Collections.emptyList());
         dssRestChannelInitializer.create();
         dssRestChannelInitializer.create();
     }
@@ -79,7 +81,7 @@ public class DssRestChannelInitializerTest {
                 .when(channelPipeline.first())
                 .thenReturn(new HttpRequestDecoder());
 
-        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer();
+        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer(Collections.emptyList());
         dssRestChannelInitializer.initChannel(socketChannel);
 
         final ChannelPipeline p = socketChannel.pipeline();

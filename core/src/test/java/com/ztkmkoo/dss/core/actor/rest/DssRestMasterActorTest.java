@@ -9,6 +9,8 @@ import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
 import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
 import org.junit.Test;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -22,7 +24,7 @@ public class DssRestMasterActorTest extends AbstractDssActorTest {
     public void handlingDssRestMasterActorCommandRequest() {
 
         final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
-        final ActorRef<DssRestMasterActorCommand> restMasterActorRef = testKit.spawn(DssRestMasterActor.create(), "rest-master");
+        final ActorRef<DssRestMasterActorCommand> restMasterActorRef = testKit.spawn(DssRestMasterActor.create(Collections.emptyList()), "rest-master");
 
         restMasterActorRef.tell(DssRestMasterActorCommandRequest
                 .builder()
