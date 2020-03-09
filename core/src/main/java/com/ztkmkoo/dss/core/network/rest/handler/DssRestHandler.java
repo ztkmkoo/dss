@@ -5,7 +5,6 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import com.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
-import com.ztkmkoo.dss.core.actor.rest.DssRestMasterActor;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
 import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
@@ -37,12 +36,10 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
     private final StringBuilder buffer = new StringBuilder();
     private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
+    private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
 
     private ActorContext<DssRestChannelHandlerCommand> context;
-    private ActorRef<DssRestMasterActorCommand> restMasterActorRef;
     private HttpRequest request;
-
-    DssRestHandler() {}
 
     DssRestHandler(ActorRef<DssRestMasterActorCommand> restMasterActorRef) {
         this.restMasterActorRef = restMasterActorRef;
@@ -122,9 +119,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
         this.context = context;
         context.getLog().info("Setup dssRestHandler");
-        if (Objects.isNull(this.restMasterActorRef)) {
-            this.restMasterActorRef = this.context.spawn(DssRestMasterActor.create(), "rest-master");
-        }
 
         return Behaviors
                 .receive(DssRestChannelHandlerCommand.class)

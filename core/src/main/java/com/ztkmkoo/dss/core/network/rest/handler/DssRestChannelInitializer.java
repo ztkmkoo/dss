@@ -1,10 +1,13 @@
 package com.ztkmkoo.dss.core.network.rest.handler;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import com.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
+import com.ztkmkoo.dss.core.actor.rest.DssRestMasterActor;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
+import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -33,7 +36,6 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
-
         logger.info("Try to initChannel");
 
         final ChannelPipeline p = ch.pipeline();
@@ -44,20 +46,19 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
     }
 
     private void addHandler(ChannelPipeline p) {
-
         logger.info("Try to addHandler");
 
-        final DssRestHandler restHandler = new DssRestHandler();
-
         if (Objects.nonNull(context)) {
-            context.spawn(restHandler.create(), "rest-handler-" + handlerIndex.incrementAndGet());
-        }
+            final ActorRef<DssRestMasterActorCommand> restMasterActorRef = context.spawn(DssRestMasterActor.create(), "rest-master");
+            final DssRestHandler restHandler = new DssRestHandler(restMasterActorRef);
 
-        p.addLast(restHandler);
+            context.spawn(restHandler.create(), "rest-handler-" + handlerIndex.incrementAndGet());
+
+            p.addLast(restHandler);
+        }
     }
 
     public Behavior<DssRestChannelInitializerCommand> create() {
-
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
         }
@@ -67,7 +68,6 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
     }
 
     private Behavior<DssRestChannelInitializerCommand> dssRestChannelInitializer(ActorContext<DssRestChannelInitializerCommand> context) {
-
         this.context = context;
         context.getLog().info("Setup dssRestChannelInitializer");
 

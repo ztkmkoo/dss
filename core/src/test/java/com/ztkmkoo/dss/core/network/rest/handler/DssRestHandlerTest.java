@@ -49,7 +49,8 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     @Test
     public void channelRead0() throws Exception {
 
-        final DssRestHandler handler = new DssRestHandler();
+        final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
+        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
         handler.channelRead0(ctx, request);
 
         final HttpRequest httpRequest = getDssRestHandlerFieldWithReflection(handler, "request", HttpRequest.class);
@@ -68,7 +69,6 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
-
         final DssRestHandler handler = new DssRestHandler(testProbe.ref());
         testKit.spawn(handler.create());
 
@@ -85,7 +85,8 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
-        final DssRestHandler handler = new DssRestHandler();
+        final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
+        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
 
         addChannelHandlerContextToDssRestHandlerMap(handler, ctx);
 
@@ -99,7 +100,8 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
-        final DssRestHandler handler = new DssRestHandler();
+        final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
+        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
         handler.exceptionCaught(ctx, new NullPointerException());
 
         assertTrue(true);
@@ -113,7 +115,8 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         final ChannelFuture channelFuture = Mockito.mock(ChannelFuture.class);
         Mockito.when(ctx.writeAndFlush(Mockito.anyObject())).thenReturn(channelFuture);
 
-        final DssRestHandler handler = new DssRestHandler();
+        final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
+        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
 
         addChannelHandlerContextToDssRestHandlerMap(handler, ctx);
 
