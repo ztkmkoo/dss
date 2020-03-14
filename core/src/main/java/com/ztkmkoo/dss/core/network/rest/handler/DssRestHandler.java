@@ -5,21 +5,21 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import com.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
-import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
-import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
+import com.ztkmkoo.dss.core.message.rest.*;
 import com.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,19 +30,28 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 9:23
  */
+@ChannelHandler.Sharable
 class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
     private final StringBuilder buffer = new StringBuilder();
     private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
+    private final ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor;
     private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
+    @Getter
+    private final String name;
 
     private ActorContext<DssRestChannelHandlerCommand> context;
     private HttpRequest request;
 
-    DssRestHandler(ActorRef<DssRestMasterActorCommand> restMasterActorRef) {
+    DssRestHandler(
+            ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor,
+            ActorRef<DssRestMasterActorCommand> restMasterActorRef,
+            String name) {
+        this.restChannelInitializerActor = restChannelInitializerActor;
         this.restMasterActorRef = restMasterActorRef;
+        this.name = name;
     }
 
     @Override
@@ -74,20 +83,23 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     private void handlingDssRestRequest(DssRestRequest dssRestRequest, ChannelHandlerContext ctx) {
 
+        Objects.requireNonNull(ctx);
+        final String channelId = ctx.channel().id().asLongText();
+        channelHandlerContextMap.put(channelId, ctx);
+
         Objects.requireNonNull(context);
         Objects.requireNonNull(restMasterActorRef);
         Objects.requireNonNull(dssRestRequest);
-        Objects.requireNonNull(ctx);
 
-        final String channelId = ctx.channel().id().asLongText();
+        context.getLog().info("handlingDssRestRequest: {}", name);
 
         final DssRestMasterActorCommandRequest dssRestMasterActorCommandRequest = DssRestMasterActorCommandRequest
                 .builder()
                 .channelId(channelId)
                 .sender(context.getSelf())
+                .path(dssRestRequest.getUri())
                 .build();
 
-        channelHandlerContextMap.put(channelId, ctx);
         restMasterActorRef.tell(dssRestMasterActorCommandRequest);
     }
 
@@ -103,6 +115,23 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         }
 
         ctx.close();
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelUnregistered(ctx);
+
+        context.getLog().info("channelUnregistered: {}", name);
+
+        context.scheduleOnce(
+                Duration.ofMillis(10000),
+                restChannelInitializerActor,
+                DssRestChannelInitializerCommandHandlerUnregistered
+                        .builder()
+                        .name(name)
+                        .handlerActor(context.getSelf())
+                        .build()
+        );
     }
 
     public Behavior<DssRestChannelHandlerCommand> create() {
