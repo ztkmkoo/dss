@@ -3,10 +3,7 @@ package com.ztkmkoo.dss.core.network.rest.handler;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import com.ztkmkoo.dss.core.actor.AbstractDssActorTest;
-import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
-import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
+import com.ztkmkoo.dss.core.message.rest.*;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -50,7 +47,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     public void channelRead0() throws Exception {
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
-        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
+        final DssRestHandler handler = newDssRestHandlerForTest(testProbe);
         handler.channelRead0(ctx, request);
 
         final HttpRequest httpRequest = getDssRestHandlerFieldWithReflection(handler, "request", HttpRequest.class);
@@ -69,7 +66,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
-        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
+        final DssRestHandler handler = newDssRestHandlerForTest(testProbe);
         testKit.spawn(handler.create());
 
         handler.channelRead0(ctx, request);
@@ -86,7 +83,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
-        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
+        final DssRestHandler handler = newDssRestHandlerForTest(testProbe);
 
         addChannelHandlerContextToDssRestHandlerMap(handler, ctx);
 
@@ -101,7 +98,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
-        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
+        final DssRestHandler handler = newDssRestHandlerForTest(testProbe);
         handler.exceptionCaught(ctx, new NullPointerException());
 
         assertTrue(true);
@@ -116,7 +113,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         Mockito.when(ctx.writeAndFlush(Mockito.anyObject())).thenReturn(channelFuture);
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
-        final DssRestHandler handler = new DssRestHandler(testProbe.ref());
+        final DssRestHandler handler = newDssRestHandlerForTest(testProbe);
 
         addChannelHandlerContextToDssRestHandlerMap(handler, ctx);
 
@@ -124,6 +121,11 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         assertNotNull(handlerActorRef);
 
         handlerActorRef.tell(DssRestChannelHandlerCommandResponse.builder().channelId("abcedf").build());
+    }
+
+    private static DssRestHandler newDssRestHandlerForTest(TestProbe<DssRestMasterActorCommand> testProbe) {
+        final TestProbe<DssRestChannelInitializerCommand> testProbe1 = testKit.createTestProbe();
+        return new DssRestHandler(testProbe1.ref(), testProbe.ref(),"test-handler");
     }
 
     private static void addChannelHandlerContextToDssRestHandlerMap(DssRestHandler handler, ChannelHandlerContext ctx) throws NoSuchFieldException, IllegalAccessException {
