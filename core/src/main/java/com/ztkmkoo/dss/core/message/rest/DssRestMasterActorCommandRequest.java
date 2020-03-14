@@ -17,18 +17,21 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     private static final long serialVersionUID = 6046370337632314401L;
     private final String channelId;
     private final ActorRef<DssRestChannelHandlerCommand> sender;
+    private final String path;
 
     @Builder
-    private DssRestMasterActorCommandRequest(String channelId, ActorRef<DssRestChannelHandlerCommand> sender) {
+    DssRestMasterActorCommandRequest(String channelId, ActorRef<DssRestChannelHandlerCommand> sender, String path) {
         this.channelId = channelId;
         this.sender = sender;
+        this.path = path;
     }
 
     @Override
     public String toString() {
         return "DssRestMasterActorCommandRequest{" +
                 "channelId: '" + channelId + "', " +
-                "sender: '" + (Objects.nonNull(sender)? sender.path().name() : "null") + "'" +
+                "sender: '" + (Objects.nonNull(sender)? sender.path().name() : "null") + "', " +
+                "path: '" + path + "'" +
                 "}";
     }
 }
