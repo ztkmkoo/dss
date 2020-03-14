@@ -1,5 +1,6 @@
 package com.ztkmkoo.dss.core.message.rest;
 
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,16 +14,19 @@ public class DssRestChannelHandlerCommandResponse implements DssRestChannelHandl
 
     private static final long serialVersionUID = -8946124853931183362L;
     private final String channelId;
+    private final DssRestServiceResponse response;
 
     @Builder
-    private DssRestChannelHandlerCommandResponse(String channelId) {
+    private DssRestChannelHandlerCommandResponse(String channelId, DssRestServiceResponse response) {
         this.channelId = channelId;
+        this.response = response;
     }
 
     @Override
     public String toString() {
         return "DssRestChannelHandlerCommandResponse{" +
-                "channelId: '" + channelId + "'" +
+                "channelId: '" + channelId + "', " +
+                "response: '" + response + "'" +
                 "}";
     }
 }

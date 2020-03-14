@@ -1,13 +1,13 @@
 package com.ztkmkoo.dss.core.actor.rest;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
-import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
+import com.ztkmkoo.dss.core.message.rest.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Project: dss
@@ -21,10 +21,32 @@ public class DssRestMasterActor {
     }
 
     private final ActorContext<DssRestMasterActorCommand> context;
+    private final DssRestPathResolver dssRestPathResolver;
 
     private DssRestMasterActor(ActorContext<DssRestMasterActorCommand> context, List<DssRestActorService> serviceList) {
         this.context = context;
-        serviceList.forEach(dssRestActorService -> {});
+        this.dssRestPathResolver = dssRestPathResolver(serviceList);
+    }
+
+    private DssRestPathResolver dssRestPathResolver(List<DssRestActorService> serviceList) {
+        if (serviceList.isEmpty()) {
+            context.getLog().warn("Service list is empty");
+        }
+
+        final DssRestPathResolver.Builder builder = DssRestPathResolver.builder();
+        serviceList.forEach(service -> {
+            final ActorRef<DssRestServiceActorCommand> serviceActor = context.spawn(DssRestServiceActor.create(service), service.getName());
+            switch (service.getMethodType()) {
+                case GET:
+                    builder.addGetServiceActor(service.getPath(), serviceActor);
+                    break;
+                case POST:
+                    // do nothing
+                default:
+                    // do nothing
+            }
+        });
+        return builder.build();
     }
 
     private Behavior<DssRestMasterActorCommand> dssRestMasterActor() {
@@ -38,7 +60,12 @@ public class DssRestMasterActor {
 
         context.getLog().info("DssRestMasterActorCommandRequest: {}", request);
 
-        request.getSender().tell(DssRestChannelHandlerCommandResponse.builder().channelId(request.getChannelId()).build());
+        final Optional<ActorRef<DssRestServiceActorCommand>> optional = dssRestPathResolver.getServiceActorByPath(request.getPath());
+        if (optional.isPresent()) {
+            optional.get().tell((DssRestServiceActorCommandRequest) request);
+        } else {
+            request.getSender().tell(DssRestChannelHandlerCommandResponse.builder().channelId(request.getChannelId()).build());
+        }
 
         return Behaviors.same();
     }
