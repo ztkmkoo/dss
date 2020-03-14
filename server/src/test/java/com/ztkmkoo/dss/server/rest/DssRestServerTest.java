@@ -1,6 +1,9 @@
 package com.ztkmkoo.dss.server.rest;
 
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import com.ztkmkoo.dss.server.rest.entity.DssRestServiceRequestWrapper;
+import com.ztkmkoo.dss.server.rest.entity.DssRestServiceResponseWrapper;
+import com.ztkmkoo.dss.server.rest.service.AbstractDssRestService;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -16,9 +19,9 @@ public class DssRestServerTest {
     public void start() throws Exception {
 
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
-        dssRestServer.addDssRestService(new AbstractDssRestService("/hi", DssRestMethodType.GET) {
+        dssRestServer.addDssRestService(new AbstractDssRestService("test", "/hi", DssRestMethodType.GET) {
             @Override
-            public Object handling(Object request) {
+            public DssRestServiceResponseWrapper handling(DssRestServiceRequestWrapper request) {
                 return null;
             }
         });

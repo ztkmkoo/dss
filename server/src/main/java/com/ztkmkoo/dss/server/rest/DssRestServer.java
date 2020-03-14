@@ -6,6 +6,7 @@ import com.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import com.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import com.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
 import com.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
+import com.ztkmkoo.dss.server.rest.service.AbstractDssRestService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
