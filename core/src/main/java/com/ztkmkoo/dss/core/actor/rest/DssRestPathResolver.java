@@ -2,6 +2,9 @@ package com.ztkmkoo.dss.core.actor.rest;
 
 import akka.actor.typed.ActorRef;
 import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommand;
+import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -12,14 +15,24 @@ import java.util.*;
  */
 public class DssRestPathResolver {
 
-    private final Map<String, ActorRef<DssRestServiceActorCommand>> fixedGetServiceActorMap;
+    private static final Logger logger = LoggerFactory.getLogger(DssRestPathResolver.class);
+    private final Map<DssRestMethodType, Map<String, ActorRef<DssRestServiceActorCommand>>> staticServiceActorMap;
 
-    private DssRestPathResolver(Map<String, ActorRef<DssRestServiceActorCommand>> fixedGetServiceActorMap) {
-        this.fixedGetServiceActorMap = Collections.unmodifiableMap(new HashMap<>(fixedGetServiceActorMap));
+    private DssRestPathResolver(Builder builder) {
+        this.staticServiceActorMap = Collections.unmodifiableMap(builder.staticServiceActorMap);
     }
 
-    public Optional<ActorRef<DssRestServiceActorCommand>> getServiceActorByPath(String path) {
-        return Optional.ofNullable(fixedGetServiceActorMap.get(path));
+    public Optional<ActorRef<DssRestServiceActorCommand>> getStaticServiceActorByPath(String path) {
+        return getStaticServiceActor(DssRestMethodType.GET, path);
+    }
+
+    public Optional<ActorRef<DssRestServiceActorCommand>> getStaticServiceActor(DssRestMethodType methodType, String path) {
+        return Optional
+                .ofNullable(
+                        staticServiceActorMap
+                                .getOrDefault(methodType, Collections.emptyMap())
+                                .get(path)
+                );
     }
 
     public static Builder builder() {
@@ -28,17 +41,29 @@ public class DssRestPathResolver {
 
     public static class Builder {
 
-        private Map<String, ActorRef<DssRestServiceActorCommand>> serviceActorMap = new HashMap<>();
+        private Map<DssRestMethodType, Map<String, ActorRef<DssRestServiceActorCommand>>> staticServiceActorMap = new EnumMap<>(DssRestMethodType.class);
 
-        public Builder addGetServiceActor(String path, ActorRef<DssRestServiceActorCommand> serviceActor) {
+        public Builder addServiceActor(DssRestMethodType methodType, String path, ActorRef<DssRestServiceActorCommand> serviceActor) {
+            Objects.requireNonNull(methodType);
             Objects.requireNonNull(path);
             Objects.requireNonNull(serviceActor);
-            serviceActorMap.put(path, serviceActor);
+
+            if (!staticServiceActorMap.containsKey(methodType)) {
+                staticServiceActorMap.put(methodType, new HashMap<>());
+            }
+            staticServiceActorMap.get(methodType).put(path, serviceActor);
             return this;
         }
 
         public DssRestPathResolver build() {
-            return new DssRestPathResolver(serviceActorMap);
+            if (!staticServiceActorMap.isEmpty()) {
+                staticServiceActorMap.forEach((methodType, map) -> map.forEach((path, actorRef) ->
+                    logger.info("Add mapping {} {} to {}",
+                            methodType.name(), path, actorRef.path().name())
+                ));
+            }
+
+            return new DssRestPathResolver(this);
         }
     }
 }

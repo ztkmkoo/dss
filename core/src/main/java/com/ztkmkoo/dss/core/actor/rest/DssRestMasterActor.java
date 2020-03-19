@@ -36,15 +36,7 @@ public class DssRestMasterActor {
         final DssRestPathResolver.Builder builder = DssRestPathResolver.builder();
         serviceList.forEach(service -> {
             final ActorRef<DssRestServiceActorCommand> serviceActor = context.spawn(DssRestServiceActor.create(service), service.getName());
-            switch (service.getMethodType()) {
-                case GET:
-                    builder.addGetServiceActor(service.getPath(), serviceActor);
-                    break;
-                case POST:
-                    // do nothing
-                default:
-                    // do nothing
-            }
+            builder.addServiceActor(service.getMethodType(), service.getPath(), serviceActor);
         });
         return builder.build();
     }
@@ -60,7 +52,7 @@ public class DssRestMasterActor {
 
         context.getLog().info("DssRestMasterActorCommandRequest: {}", request);
 
-        final Optional<ActorRef<DssRestServiceActorCommand>> optional = dssRestPathResolver.getServiceActorByPath(request.getPath());
+        final Optional<ActorRef<DssRestServiceActorCommand>> optional = dssRestPathResolver.getStaticServiceActorByPath(request.getPath());
         if (optional.isPresent()) {
             optional.get().tell((DssRestServiceActorCommandRequest) request);
         } else {

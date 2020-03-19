@@ -41,6 +41,7 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
     private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
     @Getter
     private final String name;
+    private final String restMasterActorName;
 
     private ActorContext<DssRestChannelHandlerCommand> context;
     private HttpRequest request;
@@ -52,6 +53,7 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         this.restChannelInitializerActor = restChannelInitializerActor;
         this.restMasterActorRef = restMasterActorRef;
         this.name = name;
+        this.restMasterActorName = restMasterActorRef.path().name();
     }
 
     @Override
@@ -91,12 +93,13 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         Objects.requireNonNull(restMasterActorRef);
         Objects.requireNonNull(dssRestRequest);
 
-        context.getLog().info("handlingDssRestRequest: {}", name);
+        context.getLog().info("handlingDssRestRequest: {} -> {}", name, restMasterActorName);
 
         final DssRestMasterActorCommandRequest dssRestMasterActorCommandRequest = DssRestMasterActorCommandRequest
                 .builder()
                 .channelId(channelId)
                 .sender(context.getSelf())
+                .methodType(dssRestRequest.getMethodType())
                 .path(dssRestRequest.getUri())
                 .build();
 
@@ -147,7 +150,7 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
     private Behavior<DssRestChannelHandlerCommand> dssRestHandler(ActorContext<DssRestChannelHandlerCommand> context) {
 
         this.context = context;
-        context.getLog().info("Setup dssRestHandler");
+        context.getLog().info("Setup dssRestHandler: {}", name);
 
         return Behaviors
                 .receive(DssRestChannelHandlerCommand.class)
