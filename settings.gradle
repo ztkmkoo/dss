@@ -1,3 +1,4 @@
 rootProject.name = 'dss'
 include 'server'
+include 'core'
 
