@@ -35,11 +35,10 @@ public class DssRestServiceActor {
                 .build();
     }
 
-    @SuppressWarnings("unchecked")
     private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(DssRestServiceActorCommandRequest request) {
         context.getLog().info("onHandlingDssRestServiceActorCommandRequest: {}", request);
 
-        final DssRestServiceRequest dssRestServiceRequest = new DssRestServiceRequest();
+        final DssRestServiceRequest dssRestServiceRequest = new DssRestServiceRequest() {};
         final DssRestServiceResponse dssRestServiceResponse = dssRestActorService.handling(dssRestServiceRequest);
 
         request

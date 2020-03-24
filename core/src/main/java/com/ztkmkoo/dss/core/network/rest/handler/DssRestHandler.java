@@ -9,6 +9,7 @@ import com.ztkmkoo.dss.core.message.rest.*;
 import com.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -58,7 +59,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-
         if (msg instanceof HttpRequest) {
 
             request = (HttpRequest) msg;
@@ -78,13 +78,11 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-
         final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
         handlingDssRestRequest(dssRestRequest, ctx);
     }
 
     private void handlingDssRestRequest(DssRestRequest dssRestRequest, ChannelHandlerContext ctx) {
-
         Objects.requireNonNull(ctx);
         final String channelId = ctx.channel().id().asLongText();
         channelHandlerContextMap.put(channelId, ctx);
@@ -108,7 +106,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-
         logger.error("exceptionCaught", cause);
 
         final String channelId = ctx.channel().id().asLongText();
@@ -138,7 +135,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     public Behavior<DssRestChannelHandlerCommand> create() {
-
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
         }
@@ -148,28 +144,31 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     private Behavior<DssRestChannelHandlerCommand> dssRestHandler(ActorContext<DssRestChannelHandlerCommand> context) {
-
         this.context = context;
         context.getLog().info("Setup dssRestHandler: {}", name);
 
         return Behaviors
                 .receive(DssRestChannelHandlerCommand.class)
+                .onMessage(DssRestChannelHandlerCommandInvalidUriResponse.class, this::handlingDssRestChannelHandlerCommandInvalidUriResponse)
                 .onMessage(DssRestChannelHandlerCommandResponse.class, this::handlingDssRestChannelHandlerCommandResponse)
                 .build();
     }
 
-    private Behavior<DssRestChannelHandlerCommand> handlingDssRestChannelHandlerCommandResponse(DssRestChannelHandlerCommandResponse response) {
+    private Behavior<DssRestChannelHandlerCommand> handlingDssRestChannelHandlerCommandInvalidUriResponse(
+            DssRestChannelHandlerCommandInvalidUriResponse response) {
+        context.getLog().info("DssRestChannelHandlerCommandInvalidUriResponse: {}", response);
 
+        final String channelId = response.getChannelId();
+        sendResponse(channelHandlerContextMap, channelId, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
+
+        return Behaviors.same();
+    }
+
+    private Behavior<DssRestChannelHandlerCommand> handlingDssRestChannelHandlerCommandResponse(DssRestChannelHandlerCommandResponse response) {
         context.getLog().info("DssRestChannelHandlerCommandResponse: {}", response);
 
         final String channelId = response.getChannelId();
-
-        final ChannelHandlerContext ctx = channelHandlerContextMap.remove(channelId);
-        if (Objects.nonNull(ctx)) {
-            ctx
-                    .writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK))
-                    .addListener(ChannelFutureListener.CLOSE);
-        }
+        sendResponse(channelHandlerContextMap, channelId, responseFromServiceActor(response));
 
         return Behaviors.same();
     }
@@ -188,5 +187,25 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
                 .uri(uri)
                 .content(content)
                 .build();
+    }
+
+    private static void sendResponse(
+            Map<String, ChannelHandlerContext> channelHandlerContextMap,
+            String channelId,
+            HttpResponse response) {
+        final ChannelHandlerContext ctx = channelHandlerContextMap.remove(channelId);
+        if (Objects.nonNull(ctx)) {
+            ctx
+                    .writeAndFlush(response)
+                    .addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
+    private static HttpResponse responseFromServiceActor(DssRestChannelHandlerCommandResponse response) {
+        if (Objects.nonNull(response.getResponse())) {
+            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("Some Content", CharsetUtil.UTF_8));
+        } else {
+            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        }
     }
 }

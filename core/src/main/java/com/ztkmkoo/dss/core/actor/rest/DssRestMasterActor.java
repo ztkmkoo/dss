@@ -54,9 +54,9 @@ public class DssRestMasterActor {
 
         final Optional<ActorRef<DssRestServiceActorCommand>> optional = dssRestPathResolver.getStaticServiceActorByPath(request.getPath());
         if (optional.isPresent()) {
-            optional.get().tell((DssRestServiceActorCommandRequest) request);
+            optional.get().tell(new DssRestServiceActorCommandRequest(request));
         } else {
-            request.getSender().tell(DssRestChannelHandlerCommandResponse.builder().channelId(request.getChannelId()).build());
+            request.getSender().tell(DssRestChannelHandlerCommandInvalidUriResponse.builder().channelId(request.getChannelId()).build());
         }
 
         return Behaviors.same();

@@ -2,8 +2,6 @@ package com.ztkmkoo.dss.server.rest.service;
 
 import com.ztkmkoo.dss.core.actor.rest.DssRestActorService;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
-import com.ztkmkoo.dss.server.rest.entity.DssRestServiceRequestWrapper;
-import com.ztkmkoo.dss.server.rest.entity.DssRestServiceResponseWrapper;
 import lombok.Getter;
 
 /**
@@ -12,7 +10,7 @@ import lombok.Getter;
  * Date: 20. 3. 5. 오전 2:03
  */
 @Getter
-public abstract class AbstractDssRestService implements DssRestActorService<DssRestServiceRequestWrapper, DssRestServiceResponseWrapper> {
+public abstract class AbstractDssRestService implements DssRestActorService {
 
     private final String name;
     private final String path;

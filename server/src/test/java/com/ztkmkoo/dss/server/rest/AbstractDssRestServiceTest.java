@@ -1,8 +1,8 @@
 package com.ztkmkoo.dss.server.rest;
 
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
-import com.ztkmkoo.dss.server.rest.entity.DssRestServiceRequestWrapper;
-import com.ztkmkoo.dss.server.rest.entity.DssRestServiceResponseWrapper;
 import com.ztkmkoo.dss.server.rest.service.AbstractDssRestService;
 import org.junit.Test;
 
@@ -19,8 +19,9 @@ public class AbstractDssRestServiceTest {
     @Test
     public void abstractDssRestService() {
         final AbstractDssRestService dssRestService = new AbstractDssRestService("test", "/hi", DssRestMethodType.POST) {
+
             @Override
-            public DssRestServiceResponseWrapper handling(DssRestServiceRequestWrapper request) {
+            public DssRestServiceResponse handling(DssRestServiceRequest request) {
                 return null;
             }
         };

@@ -7,7 +7,7 @@ package com.ztkmkoo.dss.core.message.rest;
  */
 public class DssRestServiceActorCommandRequest extends DssRestMasterActorCommandRequest implements DssRestServiceActorCommand {
 
-    DssRestServiceActorCommandRequest(DssRestMasterActorCommandRequest request) {
+    public DssRestServiceActorCommandRequest(DssRestMasterActorCommandRequest request) {
         super(request.getChannelId(), request.getSender(), request.getMethodType(), request.getPath());
     }
 }
