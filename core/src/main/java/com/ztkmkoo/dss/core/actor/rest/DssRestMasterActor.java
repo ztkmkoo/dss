@@ -53,7 +53,7 @@ public class DssRestMasterActor {
 
         context.getLog().info("DssRestMasterActorCommandRequest: {}", request);
 
-        final Optional<ActorRef<DssRestServiceActorCommand>> optional = dssRestPathResolver.getStaticServiceActorByPath(request.getPath());
+        final Optional<ActorRef<DssRestServiceActorCommand>> optional = dssRestPathResolver.getStaticServiceActor(request.getMethodType(), request.getPath());
         if (optional.isPresent()) {
             optional.get().tell(new DssRestServiceActorCommandRequest(request));
         } else {

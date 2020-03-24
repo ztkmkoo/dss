@@ -27,6 +27,11 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
             ActorRef<DssRestChannelHandlerCommand> sender,
             DssRestMethodType methodType,
             String path) {
+        Objects.requireNonNull(channelId);
+        Objects.requireNonNull(sender);
+        Objects.requireNonNull(methodType);
+        Objects.requireNonNull(path);
+
         this.channelId = channelId;
         this.sender = sender;
         this.methodType = methodType;

@@ -22,10 +22,6 @@ public class DssRestPathResolver {
         this.staticServiceActorMap = Collections.unmodifiableMap(builder.staticServiceActorMap);
     }
 
-    public Optional<ActorRef<DssRestServiceActorCommand>> getStaticServiceActorByPath(String path) {
-        return getStaticServiceActor(DssRestMethodType.GET, path);
-    }
-
     public Optional<ActorRef<DssRestServiceActorCommand>> getStaticServiceActor(DssRestMethodType methodType, String path) {
         return Optional
                 .ofNullable(
