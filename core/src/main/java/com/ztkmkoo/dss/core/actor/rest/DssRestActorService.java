@@ -1,5 +1,6 @@
 package com.ztkmkoo.dss.core.actor.rest;
 
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
@@ -16,4 +17,12 @@ public interface DssRestActorService {
     DssRestMethodType getMethodType();
 
     DssRestServiceResponse handling(DssRestServiceRequest request);
+
+    default DssRestContentInfo consume() {
+        return DssRestContentInfo.APPLICATION_JSON_UTF8;
+    }
+
+    default DssRestContentInfo produce() {
+        return DssRestContentInfo.APPLICATION_JSON_UTF8;
+    }
 }
