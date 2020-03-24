@@ -149,19 +149,8 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
         return Behaviors
                 .receive(DssRestChannelHandlerCommand.class)
-                .onMessage(DssRestChannelHandlerCommandInvalidUriResponse.class, this::handlingDssRestChannelHandlerCommandInvalidUriResponse)
                 .onMessage(DssRestChannelHandlerCommandResponse.class, this::handlingDssRestChannelHandlerCommandResponse)
                 .build();
-    }
-
-    private Behavior<DssRestChannelHandlerCommand> handlingDssRestChannelHandlerCommandInvalidUriResponse(
-            DssRestChannelHandlerCommandInvalidUriResponse response) {
-        context.getLog().info("DssRestChannelHandlerCommandInvalidUriResponse: {}", response);
-
-        final String channelId = response.getChannelId();
-        sendResponse(channelHandlerContextMap, channelId, new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST));
-
-        return Behaviors.same();
     }
 
     private Behavior<DssRestChannelHandlerCommand> handlingDssRestChannelHandlerCommandResponse(DssRestChannelHandlerCommandResponse response) {
@@ -203,9 +192,9 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     private static HttpResponse responseFromServiceActor(DssRestChannelHandlerCommandResponse response) {
         if (Objects.nonNull(response.getResponse())) {
-            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("Some Content", CharsetUtil.UTF_8));
+            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()), Unpooled.copiedBuffer("Some Content", CharsetUtil.UTF_8));
         } else {
-            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()));
         }
     }
 }

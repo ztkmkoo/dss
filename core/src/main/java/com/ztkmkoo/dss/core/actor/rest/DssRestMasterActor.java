@@ -5,6 +5,7 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import com.ztkmkoo.dss.core.message.rest.*;
+import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +57,14 @@ public class DssRestMasterActor {
         if (optional.isPresent()) {
             optional.get().tell(new DssRestServiceActorCommandRequest(request));
         } else {
-            request.getSender().tell(DssRestChannelHandlerCommandInvalidUriResponse.builder().channelId(request.getChannelId()).build());
+            request
+                    .getSender()
+                    .tell(DssRestChannelHandlerCommandResponse
+                            .builder()
+                            .channelId(request.getChannelId())
+                            .status(HttpResponseStatus.BAD_REQUEST.code())
+                            .build()
+                    );
         }
 
         return Behaviors.same();

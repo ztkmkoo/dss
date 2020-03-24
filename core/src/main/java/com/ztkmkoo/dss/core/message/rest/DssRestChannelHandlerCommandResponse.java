@@ -1,8 +1,11 @@
 package com.ztkmkoo.dss.core.message.rest;
 
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.Objects;
 
 /**
  * Project: dss
@@ -14,11 +17,13 @@ public class DssRestChannelHandlerCommandResponse implements DssRestChannelHandl
 
     private static final long serialVersionUID = -8946124853931183362L;
     private final String channelId;
+    private final Integer status;
     private final DssRestServiceResponse response;
 
     @Builder
-    private DssRestChannelHandlerCommandResponse(String channelId, DssRestServiceResponse response) {
+    private DssRestChannelHandlerCommandResponse(String channelId, Integer status, DssRestServiceResponse response) {
         this.channelId = channelId;
+        this.status = (Objects.nonNull(status) ? status : HttpResponseStatus.OK.code());
         this.response = response;
     }
 
@@ -26,6 +31,7 @@ public class DssRestChannelHandlerCommandResponse implements DssRestChannelHandl
     public String toString() {
         return "DssRestChannelHandlerCommandResponse{" +
                 "channelId: '" + channelId + "', " +
+                "status: '" + status + "', " +
                 "response: '" + response + "'" +
                 "}";
     }
