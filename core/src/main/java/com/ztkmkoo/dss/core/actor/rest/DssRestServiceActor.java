@@ -5,6 +5,7 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
 import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommand;
 import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;

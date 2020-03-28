@@ -1,4 +1,4 @@
-package com.ztkmkoo.dss.core.actor.rest;
+package com.ztkmkoo.dss.core.actor.rest.service;
 
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;

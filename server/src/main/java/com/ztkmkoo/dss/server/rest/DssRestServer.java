@@ -1,7 +1,7 @@
 package com.ztkmkoo.dss.server.rest;
 
 import akka.actor.typed.ActorSystem;
-import com.ztkmkoo.dss.core.actor.rest.DssRestActorService;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import com.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import com.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;

@@ -1,6 +1,6 @@
 package com.ztkmkoo.dss.server.rest.service;
 
-import com.ztkmkoo.dss.core.actor.rest.DssRestActorService;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import lombok.Getter;
 
