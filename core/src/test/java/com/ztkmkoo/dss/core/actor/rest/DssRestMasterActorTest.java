@@ -3,13 +3,11 @@ package com.ztkmkoo.dss.core.actor.rest;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import com.ztkmkoo.dss.core.actor.AbstractDssActorTest;
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
-import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
-import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
+import com.ztkmkoo.dss.core.message.rest.*;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import org.junit.Test;
 
@@ -81,7 +79,22 @@ public class DssRestMasterActorTest extends AbstractDssActorTest {
             }
 
             @Override
+            public DssRestContentInfo getConsume() {
+                return DssRestContentInfo.APPLICATION_JSON_UTF8;
+            }
+
+            @Override
+            public DssRestContentInfo getProduce() {
+                return DssRestContentInfo.APPLICATION_JSON_UTF8;
+            }
+
+            @Override
             public DssRestServiceResponse handling(DssRestServiceRequest request) {
+                return null;
+            }
+
+            @Override
+            public DssRestServiceRequest convertRequest(DssRestServiceActorCommandRequest commandRequest) {
                 return null;
             }
         });

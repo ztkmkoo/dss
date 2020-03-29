@@ -28,7 +28,7 @@ public class DssRestContentInfo {
     private final Charset charset;
 
     @Builder
-    private DssRestContentInfo(DssRestContentType contentType, Charset charset) {
+    protected DssRestContentInfo(DssRestContentType contentType, Charset charset) {
         this.contentType = (Objects.nonNull(contentType) ? contentType : DEFAULT_CONTENT_TYPE);
         this.charset = (Objects.nonNull(charset) ? charset : DEFAULT_CHARSET);
     }

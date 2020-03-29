@@ -20,13 +20,15 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     private final ActorRef<DssRestChannelHandlerCommand> sender;
     private final DssRestMethodType methodType;
     private final String path;
+    private final String content;
 
     @Builder
     DssRestMasterActorCommandRequest(
             String channelId,
             ActorRef<DssRestChannelHandlerCommand> sender,
             DssRestMethodType methodType,
-            String path) {
+            String path,
+            String content) {
         Objects.requireNonNull(channelId);
         Objects.requireNonNull(sender);
         Objects.requireNonNull(methodType);
@@ -36,6 +38,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         this.sender = sender;
         this.methodType = methodType;
         this.path = path;
+        this.content = content;
     }
 
     @Override
@@ -44,7 +47,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 "channelId: '" + channelId + "', " +
                 "sender: '" + (Objects.nonNull(sender)? sender.path().name() : "null") + "', " +
                 "methodType: '" + methodType.name() + "', " +
-                "path: '" + path + "'" +
+                "path: '" + path + "', " +
+                "content: '" + content + "'" +
                 "}";
     }
 }

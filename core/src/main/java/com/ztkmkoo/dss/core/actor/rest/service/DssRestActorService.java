@@ -3,26 +3,25 @@ package com.ztkmkoo.dss.core.actor.rest.service;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+
+import java.io.Serializable;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 10. 오전 1:51
  */
-public interface DssRestActorService {
+public interface DssRestActorService<S extends Serializable> {
 
     String getName();
     String getPath();
     DssRestMethodType getMethodType();
+    DssRestContentInfo getConsume();
+    DssRestContentInfo getProduce();
 
-    DssRestServiceResponse handling(DssRestServiceRequest request);
+    DssRestServiceResponse handling(DssRestServiceRequest<S> request);
 
-    default DssRestContentInfo consume() {
-        return DssRestContentInfo.APPLICATION_JSON_UTF8;
-    }
-
-    default DssRestContentInfo produce() {
-        return DssRestContentInfo.APPLICATION_JSON_UTF8;
-    }
+    DssRestServiceRequest<S> convertRequest(DssRestServiceActorCommandRequest commandRequest);
 }

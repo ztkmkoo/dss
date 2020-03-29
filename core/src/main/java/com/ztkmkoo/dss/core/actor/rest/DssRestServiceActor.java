@@ -39,7 +39,7 @@ public class DssRestServiceActor {
     private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(DssRestServiceActorCommandRequest request) {
         context.getLog().info("onHandlingDssRestServiceActorCommandRequest: {}", request);
 
-        final DssRestServiceRequest dssRestServiceRequest = new DssRestServiceRequest() {};
+        final DssRestServiceRequest dssRestServiceRequest = dssRestActorService.convertRequest(request);
         final DssRestServiceResponse dssRestServiceResponse = dssRestActorService.handling(dssRestServiceRequest);
 
         request
