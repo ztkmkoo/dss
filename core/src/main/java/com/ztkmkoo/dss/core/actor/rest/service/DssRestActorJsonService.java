@@ -74,6 +74,7 @@ public abstract class DssRestActorJsonService<S extends Serializable> implements
     @SuppressWarnings("unchecked")
     @Override
     public DssRestServiceRequestJsonImpl<S> convertRequest(DssRestServiceActorCommandRequest commandRequest) {
+        validContentType(commandRequest);
         final S body = getBody(commandRequest.getContent());
         return (DssRestServiceRequestJsonImpl<S>) DssRestServiceRequestJsonImpl
                 .builder()
