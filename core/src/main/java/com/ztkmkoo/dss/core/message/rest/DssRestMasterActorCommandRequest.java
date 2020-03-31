@@ -1,6 +1,7 @@
 package com.ztkmkoo.dss.core.message.rest;
 
 import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     private final String channelId;
     private final ActorRef<DssRestChannelHandlerCommand> sender;
     private final DssRestMethodType methodType;
+    private final DssRestContentType contentType;
     private final String path;
     private final String content;
 
@@ -27,6 +29,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
             String channelId,
             ActorRef<DssRestChannelHandlerCommand> sender,
             DssRestMethodType methodType,
+            DssRestContentType contentType,
             String path,
             String content) {
         Objects.requireNonNull(channelId);
@@ -37,6 +40,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         this.channelId = channelId;
         this.sender = sender;
         this.methodType = methodType;
+        this.contentType = contentType;
         this.path = path;
         this.content = content;
     }
@@ -47,6 +51,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 "channelId: '" + channelId + "', " +
                 "sender: '" + (Objects.nonNull(sender)? sender.path().name() : "null") + "', " +
                 "methodType: '" + methodType.name() + "', " +
+                "contentType: '" + contentType.name() + "', " +
                 "path: '" + path + "', " +
                 "content: '" + content + "'" +
                 "}";

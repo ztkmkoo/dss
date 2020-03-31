@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public enum DssRestContentType {
     // application
     APPLICATION_JSON("application/json"),
-    APPLICATION_WWW_FORM_URL_ENCODE("application/x-www-form-urlencode"),
+    APPLICATION_WWW_FORM_URL_ENCODED("application/x-www-form-urlencoded"),
     // audio
     // multipart
     MULTIPART_FORM_DATA("multipart/form-data"),
