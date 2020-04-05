@@ -1,10 +1,13 @@
 package com.ztkmkoo.dss.server.rest;
 
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorFormDataService;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
-import com.ztkmkoo.dss.server.rest.entity.DssRestServiceRequestWrapper;
-import com.ztkmkoo.dss.server.rest.entity.DssRestServiceResponseWrapper;
-import com.ztkmkoo.dss.server.rest.service.AbstractDssRestService;
 import org.junit.Test;
+
+import java.util.HashMap;
 
 import static org.junit.Assert.assertTrue;
 
@@ -19,12 +22,21 @@ public class DssRestServerTest {
     public void start() throws Exception {
 
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
-        dssRestServer.addDssRestService(new AbstractDssRestService("test", "/hi", DssRestMethodType.GET) {
-            @Override
-            public DssRestServiceResponseWrapper handling(DssRestServiceRequestWrapper request) {
-                return null;
-            }
-        });
+        dssRestServer
+                .addDssRestService(new DssRestActorJsonService("test", "/hi", DssRestMethodType.GET) {
+                    @Override
+                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
+                        return null;
+                    }
+                })
+                .addDssRestService(new DssRestActorFormDataService("test2", "/hello", DssRestMethodType.GET) {
+                    @Override
+                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Object>> request) {
+                        return null;
+                    }
+                });
+
+
         new Thread(() -> {
             try {
                 dssRestServer.start();

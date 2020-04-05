@@ -1,7 +1,8 @@
-package com.ztkmkoo.dss.core.actor.rest;
+package com.ztkmkoo.dss.core.actor.rest.service;
 
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 
 /**
@@ -14,6 +15,8 @@ public interface DssRestActorService {
     String getName();
     String getPath();
     DssRestMethodType getMethodType();
+    DssRestContentInfo getConsume();
+    DssRestContentInfo getProduce();
 
-    DssRestServiceResponse handling(DssRestServiceRequest request);
+    DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest);
 }

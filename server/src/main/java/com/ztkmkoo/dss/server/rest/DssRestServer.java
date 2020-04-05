@@ -1,12 +1,11 @@
 package com.ztkmkoo.dss.server.rest;
 
 import akka.actor.typed.ActorSystem;
-import com.ztkmkoo.dss.core.actor.rest.DssRestActorService;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import com.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import com.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
 import com.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
-import com.ztkmkoo.dss.server.rest.service.AbstractDssRestService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -39,7 +38,7 @@ public class DssRestServer {
     }
 
 
-    public DssRestServer addDssRestService(AbstractDssRestService service) {
+    public DssRestServer addDssRestService(DssRestActorService service) {
         Objects.requireNonNull(service);
         this.serviceList.add(service);
         return this;

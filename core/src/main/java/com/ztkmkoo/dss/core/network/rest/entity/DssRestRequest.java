@@ -1,5 +1,6 @@
 package com.ztkmkoo.dss.core.network.rest.entity;
 
+import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,12 +17,14 @@ public class DssRestRequest implements Serializable {
 
     private static final long serialVersionUID = 8456589353995730809L;
     private final DssRestMethodType methodType;
+    private final DssRestContentType contentType;
     private final String uri;
     private final String content;
 
     @Builder
-    protected DssRestRequest(DssRestMethodType methodType, String uri, String content) {
+    protected DssRestRequest(DssRestMethodType methodType, String uri, DssRestContentType contentType, String content) {
         this.methodType = methodType;
+        this.contentType = contentType;
         this.uri = uri;
         this.content = content;
     }

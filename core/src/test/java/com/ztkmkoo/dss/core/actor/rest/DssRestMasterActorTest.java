@@ -5,6 +5,8 @@ import akka.actor.typed.ActorRef;
 import com.ztkmkoo.dss.core.actor.AbstractDssActorTest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
 import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
@@ -63,24 +65,10 @@ public class DssRestMasterActorTest extends AbstractDssActorTest {
 
     private static List<DssRestActorService> testServiceList() {
         final List<DssRestActorService> serviceList = new ArrayList<>();
-        serviceList.add(new DssRestActorService() {
-            @Override
-            public String getName() {
-                return "hi";
-            }
+        serviceList.add(new DssRestActorJsonService("hi", "/test", DssRestMethodType.GET) {
 
             @Override
-            public String getPath() {
-                return "/test";
-            }
-
-            @Override
-            public DssRestMethodType getMethodType() {
-                return DssRestMethodType.GET;
-            }
-
-            @Override
-            public DssRestServiceResponse handling(DssRestServiceRequest request) {
+            protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
                 return null;
             }
         });

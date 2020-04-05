@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import com.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
 import com.ztkmkoo.dss.core.message.rest.*;
 import com.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
+import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -98,7 +99,9 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
                 .channelId(channelId)
                 .sender(context.getSelf())
                 .methodType(dssRestRequest.getMethodType())
+                .contentType(dssRestRequest.getContentType())
                 .path(dssRestRequest.getUri())
+                .content(dssRestRequest.getContent())
                 .build();
 
         restMasterActorRef.tell(dssRestMasterActorCommandRequest);
@@ -168,11 +171,13 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         Objects.requireNonNull(content);
 
         final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
+        final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
         final String uri = request.uri();
 
         return DssRestRequest
                 .builder()
                 .methodType(methodType)
+                .contentType(contentType)
                 .uri(uri)
                 .content(content)
                 .build();
