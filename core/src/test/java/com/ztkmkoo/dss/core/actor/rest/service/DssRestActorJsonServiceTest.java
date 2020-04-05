@@ -86,7 +86,7 @@ public class DssRestActorJsonServiceTest extends AbstractDssActorTest {
         }
 
         @Override
-        public DssRestServiceResponse handling(DssRestServiceRequest<HashMap<String, Serializable>> request) {
+        protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Serializable>> request) {
             return null;
         }
     }

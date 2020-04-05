@@ -3,11 +3,14 @@ package com.ztkmkoo.dss.core.actor.rest;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import com.ztkmkoo.dss.core.actor.AbstractDssActorTest;
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
 import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
-import com.ztkmkoo.dss.core.message.rest.*;
+import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
+import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
+import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
+import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import org.junit.Test;
 
@@ -62,39 +65,10 @@ public class DssRestMasterActorTest extends AbstractDssActorTest {
 
     private static List<DssRestActorService> testServiceList() {
         final List<DssRestActorService> serviceList = new ArrayList<>();
-        serviceList.add(new DssRestActorService() {
-            @Override
-            public String getName() {
-                return "hi";
-            }
+        serviceList.add(new DssRestActorJsonService("hi", "/test", DssRestMethodType.GET) {
 
             @Override
-            public String getPath() {
-                return "/test";
-            }
-
-            @Override
-            public DssRestMethodType getMethodType() {
-                return DssRestMethodType.GET;
-            }
-
-            @Override
-            public DssRestContentInfo getConsume() {
-                return DssRestContentInfo.APPLICATION_JSON_UTF8;
-            }
-
-            @Override
-            public DssRestContentInfo getProduce() {
-                return DssRestContentInfo.APPLICATION_JSON_UTF8;
-            }
-
-            @Override
-            public DssRestServiceResponse handling(DssRestServiceRequest request) {
-                return null;
-            }
-
-            @Override
-            public DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) {
+            protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
                 return null;
             }
         });

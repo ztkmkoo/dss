@@ -4,10 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequestDefaultImpl;
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
-import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import com.ztkmkoo.dss.core.util.StringUtils;
@@ -25,14 +21,9 @@ import java.util.Objects;
  * Date: 20. 3. 29. 오전 6:37
  */
 @Getter
-public abstract class DssRestActorJsonService<S extends Serializable> implements DssRestActorService<S> {
+public abstract class DssRestActorJsonService<S extends Serializable> extends AbstractDssRestActorService<S> {
 
     private static final TypeReference<HashMap<String, Serializable>> DEFAULT_TYPE_REFERENCE = new TypeReference<HashMap<String, Serializable>>() {};
-    private final String name;
-    private final String path;
-    private final DssRestMethodType methodType;
-    private final DssRestContentInfo consume;
-    private final DssRestContentInfo produce;
     private final TypeReference<S> typeReference = new TypeReference<S>() {};
 
     public DssRestActorJsonService(
@@ -41,15 +32,13 @@ public abstract class DssRestActorJsonService<S extends Serializable> implements
             DssRestMethodType methodType,
             Charset consumeCharset,
             DssRestContentInfo produce) {
-        Objects.requireNonNull(name);
-        Objects.requireNonNull(path);
-        Objects.requireNonNull(methodType);
-
-        this.name = name;
-        this.path = path;
-        this.methodType = methodType;
-        this.consume = fromCharset(consumeCharset);
-        this.produce = (Objects.nonNull(produce) ? produce : DssRestContentInfo.APPLICATION_JSON_UTF8);
+        super(
+                name,
+                path,
+                methodType,
+                fromCharset(consumeCharset),
+                (Objects.nonNull(produce) ? produce : DssRestContentInfo.APPLICATION_JSON_UTF8)
+        );
     }
 
     public DssRestActorJsonService(
@@ -60,24 +49,9 @@ public abstract class DssRestActorJsonService<S extends Serializable> implements
         this(name, path, methodType, CharsetUtil.UTF_8, DssRestContentInfo.APPLICATION_JSON_UTF8);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public final DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) {
-        final DssRestServiceRequest<S> req = makeRequest(commandRequest);
-        return handling(req);
-    }
-
-    @SuppressWarnings("unchecked")
-    private DssRestServiceRequest<S> makeRequest(DssRestServiceActorCommandRequest commandRequest) {
-        validContentType(commandRequest);
-        final S body = getBody(commandRequest.getContent());
-        return (DssRestServiceRequestDefaultImpl<S>)DssRestServiceRequestDefaultImpl
-                .builder()
-                .body(body)
-                .build();
-    }
-
-    @SuppressWarnings("unchecked")
-    private S getBody(String content) {
+    protected S getBody(String content) {
         if (StringUtils.isEmpty(content)) {
             if (DEFAULT_TYPE_REFERENCE.getType().equals(typeReference.getType())) {
                 return (S) new HashMap<String, Serializable>();

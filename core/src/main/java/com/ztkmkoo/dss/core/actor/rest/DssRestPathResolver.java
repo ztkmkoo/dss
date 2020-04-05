@@ -1,6 +1,7 @@
 package com.ztkmkoo.dss.core.actor.rest;
 
 import akka.actor.typed.ActorRef;
+import com.ztkmkoo.dss.core.exception.DssRestServiceMappingException;
 import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommand;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import org.slf4j.Logger;
@@ -46,6 +47,10 @@ public class DssRestPathResolver {
 
             if (!staticServiceActorMap.containsKey(methodType)) {
                 staticServiceActorMap.put(methodType, new HashMap<>());
+            }
+
+            if (staticServiceActorMap.get(methodType).containsKey(path)) {
+                throw new DssRestServiceMappingException("Cannot map same path: " + path);
             }
             staticServiceActorMap.get(methodType).put(path, serviceActor);
             return this;
