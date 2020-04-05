@@ -81,7 +81,9 @@ public class DssRestChannelInitializerTest {
                 .when(channelPipeline.first())
                 .thenReturn(new HttpRequestDecoder());
 
-        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer(Collections.emptyList());
+        final DssRestChannelInitializer dssRestChannelInitializer = Mockito.mock(DssRestChannelInitializer.class);
+        dssRestChannelInitializer.create();
+
         dssRestChannelInitializer.initChannel(socketChannel);
 
         final ChannelPipeline p = socketChannel.pipeline();
