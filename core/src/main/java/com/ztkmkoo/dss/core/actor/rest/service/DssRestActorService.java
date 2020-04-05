@@ -26,7 +26,7 @@ public interface DssRestActorService<S extends Serializable> {
 
     DssRestServiceResponse handling(DssRestServiceRequest<S> request);
 
-    DssRestServiceRequest<S> convertRequest(DssRestServiceActorCommandRequest commandRequest);
+    DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest);
 
     default void validContentType(DssRestServiceActorCommandRequest commandRequest) {
         final DssRestContentType requiredContentType = getConsume().getContentType();

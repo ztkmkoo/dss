@@ -25,7 +25,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     private final String content;
 
     @Builder
-    DssRestMasterActorCommandRequest(
+    private DssRestMasterActorCommandRequest(
             String channelId,
             ActorRef<DssRestChannelHandlerCommand> sender,
             DssRestMethodType methodType,
@@ -43,6 +43,17 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         this.contentType = contentType;
         this.path = path;
         this.content = content;
+    }
+
+    protected DssRestMasterActorCommandRequest(DssRestMasterActorCommandRequest request) {
+        this(
+                request.getChannelId(),
+                request.getSender(),
+                request.getMethodType(),
+                request.getContentType(),
+                request.getPath(),
+                request.getContent()
+        );
     }
 
     @Override

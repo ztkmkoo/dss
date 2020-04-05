@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequestJsonImpl;
+import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequestDefaultImpl;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import com.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
@@ -60,27 +60,20 @@ public abstract class DssRestActorJsonService<S extends Serializable> implements
         this(name, path, methodType, CharsetUtil.UTF_8, DssRestContentInfo.APPLICATION_JSON_UTF8);
     }
 
-    protected abstract DssRestServiceResponse handling(DssRestServiceRequestJsonImpl<S> request);
-
     @Override
-    public DssRestServiceResponse handling(DssRestServiceRequest<S> request) {
-        if (request instanceof DssRestServiceRequestJsonImpl) {
-            return handling((DssRestServiceRequestJsonImpl<S>)request);
-        } else {
-            return null;
-        }
+    public final DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) {
+        final DssRestServiceRequest<S> req = makeRequest(commandRequest);
+        return handling(req);
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public DssRestServiceRequestJsonImpl<S> convertRequest(DssRestServiceActorCommandRequest commandRequest) {
+    private DssRestServiceRequest<S> makeRequest(DssRestServiceActorCommandRequest commandRequest) {
         validContentType(commandRequest);
         final S body = getBody(commandRequest.getContent());
-        return (DssRestServiceRequestJsonImpl<S>) DssRestServiceRequestJsonImpl
+        return (DssRestServiceRequestDefaultImpl<S>)DssRestServiceRequestDefaultImpl
                 .builder()
                 .body(body)
                 .build();
-
     }
 
     @SuppressWarnings("unchecked")

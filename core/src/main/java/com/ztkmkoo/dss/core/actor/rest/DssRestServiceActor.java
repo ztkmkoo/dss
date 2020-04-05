@@ -3,7 +3,6 @@ package com.ztkmkoo.dss.core.actor.rest;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
@@ -38,9 +37,7 @@ public class DssRestServiceActor {
 
     private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(DssRestServiceActorCommandRequest request) {
         context.getLog().info("onHandlingDssRestServiceActorCommandRequest: {}", request);
-
-        final DssRestServiceRequest dssRestServiceRequest = dssRestActorService.convertRequest(request);
-        final DssRestServiceResponse dssRestServiceResponse = dssRestActorService.handling(dssRestServiceRequest);
+        final DssRestServiceResponse dssRestServiceResponse = dssRestActorService.handling(request);
 
         request
                 .getSender()

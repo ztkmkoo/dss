@@ -38,7 +38,7 @@ public class AbstractDssRestServiceTest {
             }
 
             @Override
-            public DssRestServiceRequest convertRequest(DssRestServiceActorCommandRequest commandRequest) {
+            public DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) {
                 return null;
             }
         };

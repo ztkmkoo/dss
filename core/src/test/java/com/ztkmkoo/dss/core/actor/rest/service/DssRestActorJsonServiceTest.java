@@ -3,7 +3,6 @@ package com.ztkmkoo.dss.core.actor.rest.service;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import com.ztkmkoo.dss.core.actor.AbstractDssActorTest;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
-import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequestJsonImpl;
 import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import com.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
 import com.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
@@ -16,7 +15,6 @@ import org.junit.Test;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import static org.junit.Assert.*;
 
@@ -46,31 +44,8 @@ public class DssRestActorJsonServiceTest extends AbstractDssActorTest {
 
     @Test
     public void handling() {
-        final DssRestServiceRequest<HashMap<String, Serializable>> requestJson = testService.convertRequest(sampleCommandRequest);
-        final DssRestServiceResponse response = testService.handling(requestJson);
+        final DssRestServiceResponse response = testService.handling(sampleCommandRequest);
         assertNull(response);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void convertRequest() {
-        final DssRestServiceRequestJsonImpl<HashMap<String, Serializable>> requestJson = testService.convertRequest(sampleCommandRequest);
-
-        final HashMap<String, Serializable> requestBody = requestJson.getBody();
-        assertNotNull(requestBody);
-        assertFalse(requestBody.isEmpty());
-
-        final int age = (int)requestBody.get("age");
-        assertEquals(15, age);
-
-        final LinkedHashMap<String, Integer> pointMap = (LinkedHashMap<String, Integer>) requestBody.get("point");
-        assertNotNull(pointMap);
-        assertFalse(pointMap.isEmpty());
-
-        final int point1 = pointMap.get("type1");
-        final int point2 = pointMap.get("type2");
-        assertEquals(100, point1);
-        assertEquals(500, point2);
     }
 
     @Test
@@ -111,7 +86,7 @@ public class DssRestActorJsonServiceTest extends AbstractDssActorTest {
         }
 
         @Override
-        protected DssRestServiceResponse handling(DssRestServiceRequestJsonImpl<HashMap<String, Serializable>> request) {
+        public DssRestServiceResponse handling(DssRestServiceRequest<HashMap<String, Serializable>> request) {
             return null;
         }
     }
