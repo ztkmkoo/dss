@@ -99,6 +99,7 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
                 .channelId(channelId)
                 .sender(context.getSelf())
                 .methodType(dssRestRequest.getMethodType())
+                .contentType(dssRestRequest.getContentType())
                 .path(dssRestRequest.getUri())
                 .content(dssRestRequest.getContent())
                 .build();

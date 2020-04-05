@@ -61,8 +61,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         return "DssRestMasterActorCommandRequest{" +
                 "channelId: '" + channelId + "', " +
                 "sender: '" + (Objects.nonNull(sender)? sender.path().name() : "null") + "', " +
-                "methodType: '" + methodType.name() + "', " +
-                "contentType: '" + contentType.name() + "', " +
+                "methodType: '" + methodType + "', " +
+                "contentType: '" + contentType + "', " +
                 "path: '" + path + "', " +
                 "content: '" + content + "'" +
                 "}";
