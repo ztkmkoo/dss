@@ -17,6 +17,8 @@ public abstract class AbstractDssActorTest {
 
     protected static ActorTestKit testKit;
 
+    protected AbstractDssActorTest() {}
+
     @BeforeClass
     public static void setUpBeforeClass() {
         testKit = ActorTestKit.create();
