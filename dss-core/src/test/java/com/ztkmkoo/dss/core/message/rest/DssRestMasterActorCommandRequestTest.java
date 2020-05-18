@@ -1,8 +1,12 @@
 package com.ztkmkoo.dss.core.message.rest;
 
+import akka.actor.testkit.typed.javadsl.ActorTestKit;
+import akka.actor.testkit.typed.javadsl.TestProbe;
+import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
  * Project: dss
@@ -13,19 +17,36 @@ public class DssRestMasterActorCommandRequestTest {
 
     @Test
     public void testToString() {
-        final DssRestMasterActorCommandRequest request = DssRestMasterActorCommandRequest.builder().build();
+        final ActorTestKit testKit = ActorTestKit.create();
+        final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
+
+        final DssRestMasterActorCommandRequest request = DssRestMasterActorCommandRequest
+                .builder()
+                .channelId("TEST_CHANNEL_ID")
+                .sender(probe.getRef())
+                .methodType(DssRestMethodType.GET)
+                .path("/test")
+                .build();
         assertFalse(request.toString().isEmpty());
     }
 
     @Test
     public void getChannelId() {
-        final DssRestMasterActorCommandRequest request = DssRestMasterActorCommandRequest.builder().channelId("hi").build();
+        final ActorTestKit testKit = ActorTestKit.create();
+        final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
+
+        final DssRestMasterActorCommandRequest request = DssRestMasterActorCommandRequest
+                .builder()
+                .channelId("hi")
+                .sender(probe.getRef())
+                .methodType(DssRestMethodType.GET)
+                .path("/test")
+                .build();
         assertEquals("hi", request.getChannelId());
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void getSender() {
-        final DssRestMasterActorCommandRequest request = DssRestMasterActorCommandRequest.builder().sender(null).build();
-        assertNull(request.getSender());
+        DssRestMasterActorCommandRequest.builder().sender(null).build();
     }
 }
