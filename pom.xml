@@ -10,6 +10,8 @@
     <version>0.0.1</version>
     <modules>
         <module>common</module>
+        <module>core</module>
+        <module>server</module>
     </modules>
 
     <name>Dss Project</name>
