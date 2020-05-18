@@ -10,6 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# ignore all files in the target/ directory
+target/
+
 # Package Files #
 *.jar
 *.war
