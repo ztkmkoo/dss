@@ -1,12 +1,12 @@
 language: java
 jdk:
   - openjdk8
+install: true
 script:
-  - gradle assemble
+  - mvn install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true -B -V
+  - mvn test -B
 cache:
   directories:
-    - '$HOME/.m2/repository'
-    - '$HOME/.gradle'
+    - '$HOME/.m2'
 after_success:
-  - gradle cobertura
-  - gradle coveralls
+  - mvn clean test jacoco:report coveralls:report
