@@ -4,6 +4,8 @@ import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
 import com.ztkmkoo.dss.core.message.rest.*;
 import com.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
@@ -197,7 +199,13 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
 
     private static HttpResponse responseFromServiceActor(DssRestChannelHandlerCommandResponse response) {
         if (Objects.nonNull(response.getResponse())) {
-            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()), Unpooled.copiedBuffer("Some Content", CharsetUtil.UTF_8));
+            final ObjectMapper mapper = new ObjectMapper();
+            try {
+                final String json = mapper.writeValueAsString(response.getResponse());
+                return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()), Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
+            } catch (JsonProcessingException e) {
+                return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
             return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()));
         }
