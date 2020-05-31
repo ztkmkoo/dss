@@ -5,10 +5,13 @@ import com.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorFormDataService;
 import com.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
 import com.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import org.awaitility.Awaitility;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.*;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -39,13 +42,21 @@ public class DssRestServerTest {
 
         new Thread(() -> {
             try {
-                dssRestServer.start();
-            } catch (Exception e) {
+                await()
+                        .atMost(10, TimeUnit.SECONDS)
+                        .until(dssRestServer::isActivated);
+                dssRestServer.stop();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
 
-        dssRestServer.stop();
-        assertTrue(true);
+        dssRestServer.start();
+
+        await()
+                .atMost(15, TimeUnit.SECONDS)
+                .until(dssRestServer::isShutdown);
+
+        assertTrue(dssRestServer.isShutdown());
     }
 }

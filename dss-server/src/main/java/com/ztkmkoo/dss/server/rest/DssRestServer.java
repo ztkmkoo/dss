@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Project: dss
@@ -28,6 +29,8 @@ public class DssRestServer {
     private final String host;
     private final int port;
     private final List<DssRestActorService> serviceList = new ArrayList<>();
+    private final AtomicBoolean active = new AtomicBoolean(false);
+    private final AtomicBoolean shutdown = new AtomicBoolean(true);
 
     private Channel channel;
     private ActorSystem<DssRestChannelInitializerCommand> system;
@@ -60,11 +63,14 @@ public class DssRestServer {
         try {
             final DssRestChannel dssRestChannel = new DssRestChannel();
             channel = dssRestChannel.bind(bootstrap, property, channelInitializer);
+            active.set(true);
+            shutdown.set(false);
             channel.closeFuture().sync();
         } finally {
             logger.info("Shut down worker and boss group gracefully");
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
+            shutdown.set(true);
         }
     }
 
@@ -78,6 +84,7 @@ public class DssRestServer {
         if (Objects.nonNull(channel)) {
             logger.info("Channel try to close. [Active: {}][Open: {}]", channel.isActive(), channel.isOpen());
             channel.close();
+            active.set(false);
         }
 
         if (Objects.nonNull(system)) {
@@ -105,5 +112,13 @@ public class DssRestServer {
                 .host(host)
                 .port(port)
                 .build();
+    }
+
+    public boolean isActivated() {
+        return active.get();
+    }
+
+    public boolean isShutdown() {
+        return shutdown.get();
     }
 }
