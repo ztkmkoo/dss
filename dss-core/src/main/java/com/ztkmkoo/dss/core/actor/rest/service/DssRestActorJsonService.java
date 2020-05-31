@@ -24,9 +24,10 @@ import java.util.Objects;
 public abstract class DssRestActorJsonService<S extends Serializable> extends AbstractDssRestActorService<S> {
 
     private static final TypeReference<HashMap<String, Serializable>> DEFAULT_TYPE_REFERENCE = new TypeReference<HashMap<String, Serializable>>() {};
-    private final TypeReference<S> typeReference = new TypeReference<S>() {};
+    private final TypeReference<S> typeReference;
 
     public DssRestActorJsonService(
+            TypeReference<S> typeReference,
             String name,
             String path,
             DssRestMethodType methodType,
@@ -39,6 +40,7 @@ public abstract class DssRestActorJsonService<S extends Serializable> extends Ab
                 fromCharset(consumeCharset),
                 (Objects.nonNull(produce) ? produce : DssRestContentInfo.APPLICATION_JSON_UTF8)
         );
+        this.typeReference = typeReference;
     }
 
     public DssRestActorJsonService(
@@ -46,7 +48,16 @@ public abstract class DssRestActorJsonService<S extends Serializable> extends Ab
             String path,
             DssRestMethodType methodType
     ) {
-        this(name, path, methodType, CharsetUtil.UTF_8, DssRestContentInfo.APPLICATION_JSON_UTF8);
+        this(new TypeReference<S>() {}, name, path, methodType, CharsetUtil.UTF_8, DssRestContentInfo.APPLICATION_JSON_UTF8);
+    }
+
+    public DssRestActorJsonService(
+            TypeReference<S> typeReference,
+            String name,
+            String path,
+            DssRestMethodType methodType
+    ) {
+        this(typeReference, name, path, methodType, CharsetUtil.UTF_8, DssRestContentInfo.APPLICATION_JSON_UTF8);
     }
 
     @SuppressWarnings("unchecked")
