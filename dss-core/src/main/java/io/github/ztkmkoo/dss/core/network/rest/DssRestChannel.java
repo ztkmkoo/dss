@@ -25,7 +25,7 @@ public class DssRestChannel {
 
         return serverBootstrap
                 .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.INFO))
+                .handler(new LoggingHandler(LogLevel.DEBUG))
                 .childHandler(dssRestChannelInitializer)
                 .bind(dssRestChannelProperty.getHost(), dssRestChannelProperty.getPort())
                 .sync()

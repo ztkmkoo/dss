@@ -5,11 +5,13 @@ import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import io.github.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
+import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestSslChannelInitializer;
 import io.github.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.handler.ssl.SslContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,8 @@ public class DssRestServer {
     private final Logger logger = LoggerFactory.getLogger(DssRestServer.class);
     private final String host;
     private final int port;
+    private final boolean ssl;
+    private final SslContext sslContext;
     private final List<DssRestActorService> serviceList = new ArrayList<>();
     private final AtomicBoolean active = new AtomicBoolean(false);
     private final AtomicBoolean shutdown = new AtomicBoolean(true);
@@ -36,8 +40,14 @@ public class DssRestServer {
     private ActorSystem<DssRestChannelInitializerCommand> system;
 
     public DssRestServer(String host, int port) {
+        this(host, port, false, null);
+    }
+
+    public DssRestServer(String host, int port, boolean ssl, SslContext sslContext) {
         this.host = host;
         this.port = port;
+        this.ssl = ssl;
+        this.sslContext = sslContext;
     }
 
 
@@ -48,7 +58,7 @@ public class DssRestServer {
     }
 
     public void start() throws InterruptedException {
-        final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(serviceList);
+        final DssRestChannelInitializer channelInitializer = ssl ? new DssRestSslChannelInitializer(serviceList, sslContext) : new DssRestChannelInitializer(serviceList);
         system = createActorSystem(channelInitializer);
         logger.info("Create actor system: {}", system);
 
