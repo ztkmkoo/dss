@@ -58,7 +58,7 @@ public class DssRestServer {
     }
 
     public void start() throws InterruptedException {
-        final DssRestChannelInitializer channelInitializer = ssl ? new DssRestSslChannelInitializer(serviceList, sslContext) : new DssRestChannelInitializer(serviceList);
+        final DssRestChannelInitializer channelInitializer = dssRestChannelInitializer();
         system = createActorSystem(channelInitializer);
         logger.info("Create actor system: {}", system);
 
@@ -122,6 +122,10 @@ public class DssRestServer {
                 .host(host)
                 .port(port)
                 .build();
+    }
+
+    private DssRestChannelInitializer dssRestChannelInitializer() throws InterruptedException {
+        return ssl ? new DssRestSslChannelInitializer(serviceList, sslContext) : new DssRestChannelInitializer(serviceList);
     }
 
     public boolean isActivated() {
