@@ -88,7 +88,7 @@ public class DssRestServerTest {
         dssRestServer
                 .addDssRestService(new TestService("test", "/hi", DssRestMethodType.GET));
 
-//        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
+        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
 
         dssRestServer.start();
 
