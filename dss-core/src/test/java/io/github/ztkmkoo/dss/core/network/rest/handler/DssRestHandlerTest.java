@@ -45,9 +45,12 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
 
     @Test
     public void channelRead0() throws Exception {
+        mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
         final DssRestHandler handler = newDssRestHandlerForTest(testProbe);
+        testKit.spawn(handler.create());
+
         handler.channelRead0(ctx, request);
 
         final HttpRequest httpRequest = getDssRestHandlerFieldWithReflection(handler, "request", HttpRequest.class);
@@ -62,7 +65,6 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
 
     @Test
     public void channelReadComplete() throws Exception {
-
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
