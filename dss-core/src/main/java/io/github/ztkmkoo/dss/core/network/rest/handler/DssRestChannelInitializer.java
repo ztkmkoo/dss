@@ -33,8 +33,8 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
 
     private static final AtomicInteger handlerIndex = new AtomicInteger(0);
     private static final String HANDLER_NAME_PREFIX = "rest-handler-";
-    private static final int MAX_FREE_HANDLER_SIZE = 1;
-    private static final int INITIAL_FREE_HANDLER_SIZE = 1;
+    private static final int MAX_FREE_HANDLER_SIZE = 16;
+    private static final int INITIAL_FREE_HANDLER_SIZE = 2;
 
     private final Logger logger = LoggerFactory.getLogger(DssRestChannelInitializer.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);

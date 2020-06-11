@@ -6,11 +6,24 @@ import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorFormDataService;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;
 
-import java.io.Serializable;
+import javax.net.ssl.SSLException;
+import java.io.*;
+import java.nio.file.NoSuchFileException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +36,8 @@ import static org.junit.Assert.assertTrue;
  * Date: 20. 3. 8. 오후 4:59
  */
 public class DssRestServerTest {
+
+    private static final String SSL_PASSWORD = "dss123";
 
     @Test
     public void start() throws Exception {
@@ -56,6 +71,24 @@ public class DssRestServerTest {
                 .addDssRestService(new TestService("test", "/hi", DssRestMethodType.GET));
 
         stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
+
+        dssRestServer.start();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    public void testSsl() throws Exception {
+        final PrivateKey privateKey = loadPrivateKeyFromFile(loadFromTestResources("ssl/private.der"));
+        final X509Certificate certificate = loadX509CertificateFromFile(loadFromTestResources("ssl/private.crt"));
+
+        final SslContext sslContext = SslContextBuilder.forServer(privateKey, SSL_PASSWORD, certificate).build();
+
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181, true, sslContext);
+        dssRestServer
+                .addDssRestService(new TestService("test", "/hi", DssRestMethodType.GET));
+
+//        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
 
         dssRestServer.start();
 
@@ -109,5 +142,33 @@ public class DssRestServerTest {
                 e.printStackTrace();
             }
         });
+    }
+
+    private static PrivateKey loadPrivateKeyFromFile(File file) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        final FileInputStream fis = new FileInputStream(file);
+        final byte[] buffer = new byte[fis.available()];
+        fis.read(buffer);
+        fis.close();
+
+        final KeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
+        final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
+    }
+
+    private static X509Certificate loadX509CertificateFromFile(File file) throws IOException, CertificateException {
+        final FileInputStream fis = new FileInputStream(file);
+        final byte[] buffer = new byte[fis.available()];
+        fis.read(buffer);
+        fis.close();
+
+        final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+
+        final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        return (X509Certificate)factory.generateCertificate(bais);
+    }
+
+    private static File loadFromTestResources(String path) {
+        final ClassLoader classLoader = DssRestServerTest.class.getClassLoader();
+        return new File(classLoader.getResource(path).getFile());
     }
 }
