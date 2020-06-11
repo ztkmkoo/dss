@@ -60,6 +60,50 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         this.restMasterActorName = restMasterActorRef.path().name();
     }
 
+    private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
+
+        Objects.requireNonNull(request);
+        Objects.requireNonNull(content);
+
+        final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
+        final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
+        final String uri = request.uri();
+
+        return DssRestRequest
+                .builder()
+                .methodType(methodType)
+                .contentType(contentType)
+                .uri(uri)
+                .content(content)
+                .build();
+    }
+
+    private static void sendResponse(
+            Map<String, ChannelHandlerContext> channelHandlerContextMap,
+            String channelId,
+            HttpResponse response) {
+        final ChannelHandlerContext ctx = channelHandlerContextMap.remove(channelId);
+        if (Objects.nonNull(ctx)) {
+            ctx
+                    .writeAndFlush(response)
+                    .addListener(ChannelFutureListener.CLOSE);
+        }
+    }
+
+    private static HttpResponse responseFromServiceActor(DssRestChannelHandlerCommandResponse response) {
+        if (Objects.nonNull(response.getResponse())) {
+            final ObjectMapper mapper = new ObjectMapper();
+            try {
+                final String json = mapper.writeValueAsString(response.getResponse());
+                return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()), Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
+            } catch (JsonProcessingException e) {
+                return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()));
+        }
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
@@ -76,13 +120,17 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
             if (content.isReadable()) {
                 buffer.append(content.toString(CharsetUtil.UTF_8));
             }
+
+            if (msg instanceof LastHttpContent) {
+                final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
+                handlingDssRestRequest(dssRestRequest, ctx);
+            }
         }
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
-        handlingDssRestRequest(dssRestRequest, ctx);
+        ctx.flush();
     }
 
     private void handlingDssRestRequest(DssRestRequest dssRestRequest, ChannelHandlerContext ctx) {
@@ -165,49 +213,5 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         sendResponse(channelHandlerContextMap, channelId, responseFromServiceActor(response));
 
         return Behaviors.same();
-    }
-
-    private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
-
-        Objects.requireNonNull(request);
-        Objects.requireNonNull(content);
-
-        final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
-        final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
-        final String uri = request.uri();
-
-        return DssRestRequest
-                .builder()
-                .methodType(methodType)
-                .contentType(contentType)
-                .uri(uri)
-                .content(content)
-                .build();
-    }
-
-    private static void sendResponse(
-            Map<String, ChannelHandlerContext> channelHandlerContextMap,
-            String channelId,
-            HttpResponse response) {
-        final ChannelHandlerContext ctx = channelHandlerContextMap.remove(channelId);
-        if (Objects.nonNull(ctx)) {
-            ctx
-                    .writeAndFlush(response)
-                    .addListener(ChannelFutureListener.CLOSE);
-        }
-    }
-
-    private static HttpResponse responseFromServiceActor(DssRestChannelHandlerCommandResponse response) {
-        if (Objects.nonNull(response.getResponse())) {
-            final ObjectMapper mapper = new ObjectMapper();
-            try {
-                final String json = mapper.writeValueAsString(response.getResponse());
-                return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()), Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
-            } catch (JsonProcessingException e) {
-                return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()));
-        }
     }
 }
