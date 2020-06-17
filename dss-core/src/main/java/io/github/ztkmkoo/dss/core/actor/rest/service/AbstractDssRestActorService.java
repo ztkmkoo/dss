@@ -8,6 +8,7 @@ import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import lombok.Getter;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -50,18 +51,20 @@ public abstract class AbstractDssRestActorService<S extends Serializable> implem
     }
 
     protected abstract DssRestServiceResponse handlingRequest(DssRestServiceRequest<S> request);
-    protected abstract S getBody(String content);
+
+    protected abstract S getBody(DssRestServiceActorCommandRequest commandRequest) throws IOException;
 
     @Override
-    public final DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) {
+    public final DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) throws IOException {
         final DssRestServiceRequest<S> req = makeRequest(commandRequest);
         return handlingRequest(req);
+
     }
 
     @SuppressWarnings("unchecked")
-    private DssRestServiceRequest<S> makeRequest(DssRestServiceActorCommandRequest commandRequest) {
+    private DssRestServiceRequest<S> makeRequest(DssRestServiceActorCommandRequest commandRequest) throws IOException {
         Objects.requireNonNull(commandRequest);
-        final S body = getBody(commandRequest.getContent());
+        final S body = getBody(commandRequest);
         return (DssRestServiceRequest<S>) DssRestServiceRequestDefaultImpl
                 .builder()
                 .body(body)

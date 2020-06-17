@@ -34,7 +34,7 @@ public enum DssRestContentType {
     }
 
     public static DssRestContentType fromText(String text) {
-        return textMap.get(text);
+        return textMap.getOrDefault(text, fromTextMatchRegEx(text));
     }
 
     private static Map<String, DssRestContentType> initTextMap() {
@@ -48,5 +48,15 @@ public enum DssRestContentType {
                         )
                 )
         );
+    }
+
+    private static DssRestContentType fromTextMatchRegEx(String text) {
+        final int index = text.indexOf(';');
+        if (index < 0) {
+            return null;
+        }
+
+        final String rawContentTypeText = text.substring(0, index).trim();
+        return textMap.get(rawContentTypeText);
     }
 }

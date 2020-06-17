@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
 import io.github.ztkmkoo.dss.core.message.rest.*;
-import io.github.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import io.netty.buffer.ByteBuf;
@@ -60,24 +59,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         this.restMasterActorName = restMasterActorRef.path().name();
     }
 
-    private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
-
-        Objects.requireNonNull(request);
-        Objects.requireNonNull(content);
-
-        final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
-        final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
-        final String uri = request.uri();
-
-        return DssRestRequest
-                .builder()
-                .methodType(methodType)
-                .contentType(contentType)
-                .uri(uri)
-                .content(content)
-                .build();
-    }
-
     private static void sendResponse(
             Map<String, ChannelHandlerContext> channelHandlerContextMap,
             String channelId,
@@ -122,8 +103,7 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
             }
 
             if (msg instanceof LastHttpContent) {
-                final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
-                handlingDssRestRequest(dssRestRequest, ctx);
+                handlingDssRestRequest(ctx, request, buffer.toString());
             }
         }
     }
@@ -133,25 +113,32 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         ctx.flush();
     }
 
-    private void handlingDssRestRequest(DssRestRequest dssRestRequest, ChannelHandlerContext ctx) {
+    private void handlingDssRestRequest(ChannelHandlerContext ctx, HttpRequest request, String content) {
         Objects.requireNonNull(ctx);
-        final String channelId = ctx.channel().id().asLongText();
+        final String channelId = ctx.channel().id().asShortText();
         channelHandlerContextMap.put(channelId, ctx);
 
+        Objects.requireNonNull(request);
+        Objects.requireNonNull(content);
         Objects.requireNonNull(context);
         Objects.requireNonNull(restMasterActorRef);
-        Objects.requireNonNull(dssRestRequest);
 
-        context.getLog().info("handlingDssRestRequest: {} -> {}", name, restMasterActorName);
+        final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
+        final String rawContentTypeText = request.headers().get("Content-Type");
+        final DssRestContentType contentType = DssRestContentType.fromText(rawContentTypeText);
+        final String uri = request.uri();
+
+        context.getLog().debug("handlingDssRestRequest[{}]: {} -> {}", uri, name, restMasterActorName);
 
         final DssRestMasterActorCommandRequest dssRestMasterActorCommandRequest = DssRestMasterActorCommandRequest
                 .builder()
                 .channelId(channelId)
                 .sender(context.getSelf())
-                .methodType(dssRestRequest.getMethodType())
-                .contentType(dssRestRequest.getContentType())
-                .path(dssRestRequest.getUri())
-                .content(dssRestRequest.getContent())
+                .methodType(methodType)
+                .contentType(contentType)
+                .rawContentType(rawContentTypeText)
+                .path(uri)
+                .content(content)
                 .build();
 
         restMasterActorRef.tell(dssRestMasterActorCommandRequest);

@@ -2,6 +2,7 @@ package io.github.ztkmkoo.dss.core.actor.rest.service;
 
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class AbstractDssRestActorServiceTest {
             }
 
             @Override
-            protected Serializable getBody(String content) {
+            protected Serializable getBody(DssRestServiceActorCommandRequest commandRequest) {
                 return null;
             }
         };

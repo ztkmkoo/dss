@@ -12,9 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.Test;
 
-import javax.net.ssl.SSLException;
 import java.io.*;
-import java.nio.file.NoSuchFileException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -52,7 +50,7 @@ public class DssRestServerTest {
                 })
                 .addDssRestService(new DssRestActorFormDataService("test2", "/hello", DssRestMethodType.GET) {
                     @Override
-                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Object>> request) {
+                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Serializable>> request) {
                         return null;
                     }
                 });
@@ -95,13 +93,18 @@ public class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Getter
-    private static class TestResponse implements DssRestServiceResponse {
-        private final String message;
+    @Test
+    public void testFormData() throws InterruptedException {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssRestService(new TestFormDataService("test", "/hi", DssRestMethodType.GET))
+                .addDssRestService(new TestFormDataService("test2", "/hello", DssRestMethodType.POST));
 
-        public TestResponse(String name) {
-            this.message = "Hi " + name;
-        }
+//        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
+
+        dssRestServer.start();
+
+        assertTrue(dssRestServer.isShutdown());
     }
 
     @Getter @Setter

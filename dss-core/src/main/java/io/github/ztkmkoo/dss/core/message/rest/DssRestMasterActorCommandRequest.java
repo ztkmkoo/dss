@@ -21,6 +21,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     private final ActorRef<DssRestChannelHandlerCommand> sender;
     private final DssRestMethodType methodType;
     private final DssRestContentType contentType;
+    private final String rawContentType;
     private final String path;
     private final String content;
 
@@ -30,6 +31,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
             ActorRef<DssRestChannelHandlerCommand> sender,
             DssRestMethodType methodType,
             DssRestContentType contentType,
+            String rawContentType,
             String path,
             String content) {
         Objects.requireNonNull(channelId);
@@ -37,10 +39,15 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         Objects.requireNonNull(methodType);
         Objects.requireNonNull(path);
 
+        if (Objects.nonNull(content)) {
+            Objects.requireNonNull(rawContentType);
+        }
+
         this.channelId = channelId;
         this.sender = sender;
         this.methodType = methodType;
         this.contentType = contentType;
+        this.rawContentType = rawContentType;
         this.path = path;
         this.content = content;
     }
@@ -51,6 +58,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 request.getSender(),
                 request.getMethodType(),
                 request.getContentType(),
+                request.getRawContentType(),
                 request.getPath(),
                 request.getContent()
         );

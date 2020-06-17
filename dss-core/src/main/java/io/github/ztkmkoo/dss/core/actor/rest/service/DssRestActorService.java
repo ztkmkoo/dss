@@ -5,6 +5,8 @@ import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 
+import java.io.IOException;
+
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
@@ -18,5 +20,5 @@ public interface DssRestActorService {
     DssRestContentInfo getConsume();
     DssRestContentInfo getProduce();
 
-    DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest);
+    DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) throws IOException;
 }

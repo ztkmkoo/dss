@@ -13,6 +13,7 @@ import io.netty.util.CharsetUtil;
 import lombok.Builder;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -43,7 +44,7 @@ public class DssRestActorJsonServiceTest extends AbstractDssActorTest {
             .build();
 
     @Test
-    public void handling() {
+    public void handling() throws IOException {
         final DssRestServiceResponse response = testService.handling(sampleCommandRequest);
         assertNull(response);
     }
