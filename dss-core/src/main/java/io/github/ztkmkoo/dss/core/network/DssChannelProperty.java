@@ -1,9 +1,17 @@
 package io.github.ztkmkoo.dss.core.network;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 
-public interface DssChannelProperty extends Serializable {
+@Getter
+public abstract class DssChannelProperty implements Serializable {
 
-    String getHost();
-    int getPort();
+    private final String host;
+    private final int port;
+
+    protected DssChannelProperty(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
 }
