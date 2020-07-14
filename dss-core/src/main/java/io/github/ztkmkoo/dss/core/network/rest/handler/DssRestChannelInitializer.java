@@ -70,15 +70,15 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
         p.addLast(new HttpRequestDecoder());
         p.addLast(new HttpResponseEncoder());
 
-        addHandler(p);
+//        addHandler(p);
     }
 
     protected void addHandler(ChannelPipeline p) {
         logger.info("Try to addHandler");
 
-        Objects.requireNonNull(context);
+//        Objects.requireNonNull(context);
 
-        initRestMasterActorRef();
+//        initRestMasterActorRef();
 
         final DssRestHandler restHandler = getFreeDssRestHandler();
 

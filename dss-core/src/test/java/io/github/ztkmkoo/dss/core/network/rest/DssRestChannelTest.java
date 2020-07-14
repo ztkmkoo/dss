@@ -8,12 +8,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import org.junit.Test;
 
-import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.Collections;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Project: dss
@@ -25,8 +22,8 @@ public class DssRestChannelTest {
     @Test
     public void bind() throws Exception {
 
-        final EventLoopGroup bossGroup = new NioEventLoopGroup();
-        final EventLoopGroup workerGroup = new NioEventLoopGroup();
+        final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+        final EventLoopGroup workerGroup = new NioEventLoopGroup(1);
 
         final ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(bossGroup, workerGroup);
@@ -34,7 +31,7 @@ public class DssRestChannelTest {
         final DssRestChannelProperty property = DssRestChannelProperty
                 .builder()
                 .host("127.0.0.1")
-                .port(8181)
+                .port(8080)
                 .build();
 
         final DssRestChannelInitializer channelInitializer = new DssRestChannelInitializer(Collections.emptyList());
@@ -43,12 +40,15 @@ public class DssRestChannelTest {
             final DssRestChannel dssRestChannel = new DssRestChannel();
             final Channel channel = dssRestChannel.bind(bootstrap, property, channelInitializer);
 
-            final Socket socket = new Socket();
-            socket.connect(new InetSocketAddress("127.0.0.1", 8181));
+            Thread.sleep(1000);
 
-            assertTrue(socket.isConnected());
+//            final Socket socket = new Socket();
+//            socket.connect(new InetSocketAddress("127.0.0.1", 8080));
+//
+//            assertTrue(socket.isConnected());
 
-            channel.close().sync();
+//            channel.close().sync();
+            channel.closeFuture().sync();
         } finally {
             assertNotNull(workerGroup);
             workerGroup.shutdownGracefully();
