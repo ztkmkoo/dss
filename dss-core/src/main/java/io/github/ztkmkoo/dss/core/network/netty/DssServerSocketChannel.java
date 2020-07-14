@@ -23,8 +23,10 @@ public class DssServerSocketChannel extends AbstractChannel implements ServerSoc
 
     private final SelectableChannel ch;
     private final ServerSocketChannelConfig config;
+    protected final int readInterestOp = SelectionKey.OP_READ;
 
     volatile SelectionKey selectionKey;
+    boolean readPending;
 
     public DssServerSocketChannel() {
         super(null);
@@ -92,7 +94,19 @@ public class DssServerSocketChannel extends AbstractChannel implements ServerSoc
 
     @Override
     protected void doBeginRead() throws Exception {
+        // Channel.read() or ChannelHandlerContext.read() was called
+        final SelectionKey selectionKey = this.selectionKey;
+        if (!selectionKey.isValid()) {
+            return;
+        }
 
+        readPending = true;
+
+        final int interestOps = selectionKey.interestOps();
+        if ((interestOps & readInterestOp) == 0) {
+//            selectionKey.interestOps(interestOps | readInterestOp);
+            selectionKey.interestOps(SelectionKey.OP_ACCEPT);
+        }
     }
 
     @Override
