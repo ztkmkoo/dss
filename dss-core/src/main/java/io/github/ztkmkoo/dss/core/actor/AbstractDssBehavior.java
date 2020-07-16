@@ -12,9 +12,12 @@ import java.io.Serializable;
  * @create 2020-07-16 04:44
  */
 public abstract class AbstractDssBehavior<T extends Serializable> extends AbstractBehavior<T> {
+    private final String name;
+
     protected AbstractDssBehavior(ActorContext<T> context) {
         super(context);
-        getLog().debug("{}[{}] Initialized.", getClass().getSimpleName(), getSelf().path());
+        this.name = String.format("%s[%s]", getClass().getSimpleName(), getSelf().path().name());
+        getLog().debug("{} Initialized.", name);
     }
 
     protected Logger getLog() {
@@ -23,5 +26,9 @@ public abstract class AbstractDssBehavior<T extends Serializable> extends Abstra
 
     protected ActorRef<T> getSelf() {
         return getContext().getSelf();
+    }
+
+    protected void logMessage(Serializable msg) {
+        getLog().debug("{} receive: {}", name, msg);
     }
 }

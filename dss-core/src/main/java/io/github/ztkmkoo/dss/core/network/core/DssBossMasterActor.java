@@ -33,11 +33,12 @@ public class DssBossMasterActor extends AbstractDssBehavior<InternalNettyCommand
     public Receive<InternalNettyCommand> createReceive() {
         return newReceiveBuilder()
                 .onMessage(InternalNettyCommand.InitBossMaster.class, this::handlingInitBossMaster)
+                .onMessage(InternalNettyCommand.BossRun.class, this::handlingBossRun)
                 .build();
     }
 
     private Behavior<InternalNettyCommand> handlingInitBossMaster(InternalNettyCommand.InitBossMaster msg) {
-        getLog().debug("Receive: {}", msg);
+        logMessage(msg);
 
         final int bossThreadCount = NetworkCoreUtils.getThreadsCount(msg.getBossGroupThread());
 
@@ -60,6 +61,14 @@ public class DssBossMasterActor extends AbstractDssBehavior<InternalNettyCommand
                 .build()
         );
 
+        return Behaviors.same();
+    }
+
+    private Behavior<InternalNettyCommand> handlingBossRun(InternalNettyCommand.BossRun msg) {
+        logMessage(msg);
+        for (ActorRef<InternalNettyCommand> boss : bossMap.values()) {
+            boss.tell(msg);
+        }
         return Behaviors.same();
     }
 

@@ -7,7 +7,11 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import io.github.ztkmkoo.dss.core.actor.AbstractDssBehavior;
+import io.github.ztkmkoo.dss.core.network.core.entity.DssServerBootstrapProperty;
+import io.github.ztkmkoo.dss.core.util.StringUtils;
+import io.netty.util.internal.SocketUtils;
 
+import java.net.InetSocketAddress;
 import java.util.Objects;
 
 /**
@@ -20,8 +24,19 @@ public class DssServerBootstrapActor extends AbstractDssBehavior<InternalNettyCo
         return Behaviors.setup(DssServerBootstrapActor::new);
     }
 
+    public static Behavior<InternalNettyCommand> create(DssServerBootstrapProperty property) {
+        return Behaviors.setup(context -> new DssServerBootstrapActor(context, property));
+    }
+
+    private final DssServerBootstrapProperty property;
+
     private DssServerBootstrapActor(ActorContext<InternalNettyCommand> context) {
+        this(context, DssServerBootstrapProperty.DEFAULT_PROPERTY);
+    }
+
+    private DssServerBootstrapActor(ActorContext<InternalNettyCommand> context, DssServerBootstrapProperty property) {
         super(context);
+        this.property = property;
     }
 
     @Override
@@ -33,7 +48,7 @@ public class DssServerBootstrapActor extends AbstractDssBehavior<InternalNettyCo
     }
 
     private Behavior<InternalNettyCommand> handlingInitServerBootstrap(InternalNettyCommand.InitServerBootstrap msg) {
-        getLog().debug("Receive: {}", msg);
+        logMessage(msg);
 
         final int bossThreadCount = getThreadCount(msg.getBossGroupThread());
         final int workerThreadCount = getThreadCount(msg.getWorkerGroupThread());
@@ -56,7 +71,17 @@ public class DssServerBootstrapActor extends AbstractDssBehavior<InternalNettyCo
     }
 
     private Behavior<InternalNettyCommand> handlingBossMasterReady(InternalNettyCommand.BossMasterReady msg) {
-        getLog().debug("Receive: {}", msg);
+        logMessage(msg);
+
+        final InetSocketAddress localAddress = localAddress(property.getHost(), property.getPort());
+
+        msg.getSender().tell(
+                InternalNettyCommand.BossRun
+                        .builder()
+                        .localAddress(localAddress)
+                        .build()
+        );
+
         return Behaviors.same();
     }
 
@@ -83,5 +108,13 @@ public class DssServerBootstrapActor extends AbstractDssBehavior<InternalNettyCo
         }
 
         return 0;
+    }
+
+    private static InetSocketAddress localAddress(String host, int port) {
+        if (StringUtils.isEmpty(host)) {
+            return new InetSocketAddress(port);
+        }
+
+        return SocketUtils.socketAddress(host, port);
     }
 }
