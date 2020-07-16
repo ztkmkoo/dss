@@ -17,10 +17,9 @@ public class DssServerBootstrapActorTest {
     public void test() throws ExecutionException, InterruptedException {
         final ActorSystem<InternalNettyCommand> system = ActorSystem.create(DssServerBootstrapActor.create(), "TEST");
         assertNotNull(system);
-        system.tell(InternalNettyCommand
-                .InitServerBootstrap
+        system.tell(InternalNettyCommand.InitServerBootstrap
                 .builder()
-                .bossGroupThread(1)
+                .bossGroupThread(2)
                 .workerGroupThread(16)
                 .build()
         );

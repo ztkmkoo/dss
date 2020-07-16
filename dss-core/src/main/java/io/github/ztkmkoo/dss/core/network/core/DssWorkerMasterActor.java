@@ -10,7 +10,7 @@ import io.github.ztkmkoo.dss.core.actor.AbstractDssBehavior;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-07-16 04:30
  */
-public class DssWorkerMasterActor extends AbstractDssBehavior<InternalNettyCommand> {
+public class DssWorkerMasterActor extends AbstractDssBehavior<InternalNettyCommand> implements DssMultiThreadEventLoopGroup {
 
     public static Behavior<InternalNettyCommand> create(int workerThreadCount) {
         return Behaviors.setup(context -> new DssWorkerMasterActor(context, workerThreadCount));
@@ -25,6 +25,7 @@ public class DssWorkerMasterActor extends AbstractDssBehavior<InternalNettyComma
 
     @Override
     public Receive<InternalNettyCommand> createReceive() {
-        return null;
+        return newReceiveBuilder()
+                .build();
     }
 }

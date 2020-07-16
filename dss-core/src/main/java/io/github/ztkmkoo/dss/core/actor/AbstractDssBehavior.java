@@ -1,5 +1,6 @@
 package io.github.ztkmkoo.dss.core.actor;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import org.slf4j.Logger;
@@ -13,10 +14,14 @@ import java.io.Serializable;
 public abstract class AbstractDssBehavior<T extends Serializable> extends AbstractBehavior<T> {
     protected AbstractDssBehavior(ActorContext<T> context) {
         super(context);
-        getLog().debug("{} Initialized.", getClass().getSimpleName());
+        getLog().debug("{}[{}] Initialized.", getClass().getSimpleName(), getSelf().path());
     }
 
     protected Logger getLog() {
         return getContext().getLog();
+    }
+
+    protected ActorRef<T> getSelf() {
+        return getContext().getSelf();
     }
 }
