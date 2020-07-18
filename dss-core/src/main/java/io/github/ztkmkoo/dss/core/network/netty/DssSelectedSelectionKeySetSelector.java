@@ -10,7 +10,7 @@ public class DssSelectedSelectionKeySetSelector extends Selector {
     private final DssSelectedSelectionKeySet selectionKeys;
     private final Selector delegate;
 
-    DssSelectedSelectionKeySetSelector(Selector delegate, DssSelectedSelectionKeySet selectionKeys) {
+    public DssSelectedSelectionKeySetSelector(Selector delegate, DssSelectedSelectionKeySet selectionKeys) {
         this.delegate = delegate;
         this.selectionKeys = selectionKeys;
     }

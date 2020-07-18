@@ -8,8 +8,8 @@ import java.util.NoSuchElementException;
 
 public class DssSelectedSelectionKeySet extends AbstractSet<SelectionKey> {
 
-    SelectionKey[] keys;
-    int size;
+    public SelectionKey[] keys;
+    public int size;
 
     public DssSelectedSelectionKeySet() {
         keys = new SelectionKey[1024];
@@ -73,7 +73,7 @@ public class DssSelectedSelectionKeySet extends AbstractSet<SelectionKey> {
         reset(0);
     }
 
-    void reset(int start) {
+    public void reset(int start) {
         Arrays.fill(keys, start, size, null);
         size = 0;
     }
