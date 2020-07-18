@@ -18,13 +18,3 @@ https://github.com/ztkmkoo/dss/blob/develop/CODE_CONVENTION.md
 ## CODE OF CONDUCT
 
 https://github.com/ztkmkoo/dss/blob/develop/CODE_OF_CONDUCT.md
-
-## Last Milestone
-
-- til 20.2.29
-    - complete first README.md
-    - add code convention and contribute guide
-    - decide module architecture
-- til 20.3.31
-    - make core system
-    - support http rest api
