@@ -1,8 +1,10 @@
 package io.github.ztkmkoo.dss.core.exception;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Project: dss
@@ -11,18 +13,24 @@ import java.io.IOException;
  */
 public class DssRestInvalidContentTypeMappingExceptionTest {
 
-    @Test(expected = DssRestInvalidContentTypeMappingException.class)
+    @Test
     public void testException() {
-        throw new DssRestInvalidContentTypeMappingException("test");
+        assertThrows(DssRestInvalidContentTypeMappingException.class, () -> {
+            throw new DssRestInvalidContentTypeMappingException("test");
+        });
     }
 
-    @Test(expected = DssRestInvalidContentTypeMappingException.class)
+    @Test
     public void testException2() {
-        throw new DssRestInvalidContentTypeMappingException("test", new NullPointerException("why not null?"));
+        assertThrows(DssRestInvalidContentTypeMappingException.class, () -> {
+            throw new DssRestInvalidContentTypeMappingException("test", new NullPointerException("why not null?"));
+        });
     }
 
-    @Test(expected = DssRestInvalidContentTypeMappingException.class)
+    @Test
     public void testException3() {
-        throw new DssRestInvalidContentTypeMappingException(new IOException());
+        assertThrows(DssRestInvalidContentTypeMappingException.class, () -> {
+            throw new DssRestInvalidContentTypeMappingException(new IOException());
+        });
     }
 }

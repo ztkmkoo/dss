@@ -1,13 +1,14 @@
 package io.github.ztkmkoo.dss.core.actor.rest.service;
 
-import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
-import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
-import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
+import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 
 /**
  * Project: dss

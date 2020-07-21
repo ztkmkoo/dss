@@ -1,12 +1,12 @@
 package io.github.ztkmkoo.dss.core.message.rest;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
 import akka.actor.testkit.typed.javadsl.ActorTestKit;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 /**
  * Project: dss
@@ -45,8 +45,12 @@ public class DssRestMasterActorCommandRequestTest {
         assertEquals("hi", request.getChannelId());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void getSender() {
-        DssRestMasterActorCommandRequest.builder().sender(null).build();
+        assertThrows(NullPointerException.class,
+            () -> DssRestMasterActorCommandRequest
+                .builder()
+                .sender(null)
+                .build());
     }
 }

@@ -1,10 +1,11 @@
 package io.github.ztkmkoo.dss.core.network.rest.enumeration;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
 import io.github.ztkmkoo.dss.core.network.rest.exception.NotSupportedRestMethodException;
 import io.netty.handler.codec.http.HttpMethod;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Project: dss
@@ -19,9 +20,10 @@ public class DssRestMethodTypeTest {
         assertEquals(DssRestMethodType.GET, methodType);
     }
 
-    @Test(expected = NotSupportedRestMethodException.class)
+    @Test
     public void fromNettyHttpMethodNotSupported() {
-        DssRestMethodType.fromNettyHttpMethod(HttpMethod.HEAD);
+        assertThrows(NotSupportedRestMethodException.class,
+            () -> DssRestMethodType.fromNettyHttpMethod(HttpMethod.HEAD));
     }
 
     @Test

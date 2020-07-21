@@ -1,8 +1,10 @@
 package io.github.ztkmkoo.dss.core.exception;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Project: dss
@@ -11,18 +13,24 @@ import java.io.IOException;
  */
 public class DssRestServiceMappingExceptionTest {
 
-    @Test(expected = DssRestServiceMappingException.class)
+    @Test
     public void testException() {
-        throw new DssRestServiceMappingException("test");
+        assertThrows(DssRestServiceMappingException.class, () -> {
+            throw new DssRestServiceMappingException("test");
+        });
     }
 
-    @Test(expected = DssRestServiceMappingException.class)
+    @Test
     public void testException2() {
-        throw new DssRestServiceMappingException("test", new NullPointerException("why not null?"));
+        assertThrows(DssRestServiceMappingException.class, () -> {
+            throw new DssRestServiceMappingException("test", new NullPointerException("why not null?"));
+        });
     }
 
-    @Test(expected = DssRestServiceMappingException.class)
+    @Test
     public void testException3() {
-        throw new DssRestServiceMappingException(new IOException());
+        assertThrows(DssRestServiceMappingException.class, () -> {
+            throw new DssRestServiceMappingException(new IOException());
+        });
     }
 }
