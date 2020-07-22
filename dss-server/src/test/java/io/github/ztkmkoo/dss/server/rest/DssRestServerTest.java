@@ -3,11 +3,8 @@ package io.github.ztkmkoo.dss.server.rest;
 import static org.awaitility.Awaitility.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
+import java.net.URLDecoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -170,8 +167,8 @@ public class DssRestServerTest {
         return (X509Certificate)factory.generateCertificate(bais);
     }
 
-    private static File loadFromTestResources(String path) {
+    private static File loadFromTestResources(String path) throws UnsupportedEncodingException {
         final ClassLoader classLoader = DssRestServerTest.class.getClassLoader();
-        return new File(classLoader.getResource(path).getFile());
+        return new File(URLDecoder.decode(classLoader.getResource(path).getFile(),"UTF-8"));
     }
 }
