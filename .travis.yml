@@ -2,9 +2,13 @@ language: java
 jdk:
   - openjdk8
 install: true
+addons:
+  sonarcloud:
+    organization: "ztkmkoo"
+    token:
+      secure: "iQH6HTRNVZjvsd+VwkyoKRgjgcF/odNQNLNRH/zVdHvbXrUaRJbS6MXGTq0IjZqOe9/lTgylkh5P3/9YEC6hUPxurOqsAL5++WDjIwBS9pugCkEyB6RoUGxUpW5tquHnr8SH85Hpkl8CZgE29I8uCVTxfhw1ctDag9HIZHbZ7jr41Her7E8hVt+7x4ywKf+ncCjxz3v99GdgXYn1rwN8Eg81u87Ambc1YVMBf+MwEB0lV1ZZj+lHZjCg1Wuk6XtX85NBM1MXOewz0TfB27wN2c8LMrseW0/ypN9kx7YiUF6rgaKAt1SJ6paqil6HhzONVr7wVEC58OntLcYdH2K/+xUWpMnLCriMbIuP8h3NrbibDB52D0gFnczK8+J5TNmPijafv6gZx8MM9OKuDpZLAMMeeyJhDAR6AgHRbWxW31DGf6Y4TTIzsrUyEI31kIJzRU4vZ9pARVyCSdrwNrNRgVQqnfHIC/xU8QC5+fcVw17piMPggVp2gOvojAiJLEMXmIiervKhuo3OifOVTxpokAazK33Nq3zfKyvA8eCg8vptiFPBihAPLDJlxJhbgfFkMbnCZZEELOIKXGz0njFw1uF0x38xd4HOQf57FTmEgahfoY8a8IJC6gTMVyCTKw+3QhfgJuQ6JMfF8Qn2hjWdbpfwIaZjs2DiQ+zw+MAkjZo="
 script:
-  - mvn install -DskipTests=true -Dgpg.skip -Dmaven.javadoc.skip=true -B -V
-  - mvn test -B
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=ztkmkoo_dss
 cache:
   directories:
     - '$HOME/.m2'
