@@ -1,8 +1,8 @@
 package io.github.ztkmkoo.dss.core.actor.exception;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 /**
  * Project: dss
