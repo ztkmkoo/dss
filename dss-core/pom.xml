@@ -49,6 +49,13 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.11</version>
+        </dependency>
+
+
         <!--Test logback-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
