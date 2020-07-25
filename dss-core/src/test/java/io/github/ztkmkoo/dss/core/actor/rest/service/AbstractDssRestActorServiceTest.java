@@ -1,14 +1,15 @@
 package io.github.ztkmkoo.dss.core.actor.rest.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.Serializable;
+
+import org.junit.jupiter.api.Test;
+
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
-import org.junit.Test;
-
-import java.io.Serializable;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Project: dss

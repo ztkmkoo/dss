@@ -1,20 +1,10 @@
 package io.github.ztkmkoo.dss.server.rest;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
-import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
-import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorFormDataService;
-import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
-import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import lombok.Getter;
-import lombok.Setter;
-import org.junit.Test;
+import static org.awaitility.Awaitility.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import javax.net.ssl.SSLException;
 import java.io.*;
-import java.nio.file.NoSuchFileException;
+import java.net.URLDecoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -27,8 +17,18 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import static org.awaitility.Awaitility.*;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
+import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorFormDataService;
+import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Project: dss
@@ -167,8 +167,8 @@ public class DssRestServerTest {
         return (X509Certificate)factory.generateCertificate(bais);
     }
 
-    private static File loadFromTestResources(String path) {
+    private static File loadFromTestResources(String path) throws UnsupportedEncodingException {
         final ClassLoader classLoader = DssRestServerTest.class.getClassLoader();
-        return new File(classLoader.getResource(path).getFile());
+        return new File(URLDecoder.decode(classLoader.getResource(path).getFile(),"UTF-8"));
     }
 }

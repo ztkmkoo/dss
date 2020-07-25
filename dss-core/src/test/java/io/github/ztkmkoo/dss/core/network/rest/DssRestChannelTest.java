@@ -1,19 +1,19 @@
 package io.github.ztkmkoo.dss.core.network.rest;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.Collections;
+
+import org.junit.jupiter.api.Test;
+
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
 import io.github.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import org.junit.Test;
-
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.Collections;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Project: dss
