@@ -7,12 +7,16 @@
     <groupId>io.github.ztkmkoo</groupId>
     <artifactId>dss</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.1</version>
+    <version>0.4.1</version>
     <modules>
         <module>dss-common</module>
         <module>dss-core</module>
         <module>dss-server</module>
     </modules>
+
+    <name>DSS PARENT</name>
+    <description>Distributed server system</description>
+    <url>https://github.com/ztkmkoo/dss</url>
 
     <properties>
         <!-- Generic properties -->
