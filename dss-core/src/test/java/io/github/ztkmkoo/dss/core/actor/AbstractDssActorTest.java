@@ -1,10 +1,11 @@
 package io.github.ztkmkoo.dss.core.actor;
 
-import akka.actor.testkit.typed.javadsl.ActorTestKit;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import akka.actor.testkit.typed.javadsl.ActorTestKit;
 
 /**
  * Project: dss
@@ -19,12 +20,12 @@ public abstract class AbstractDssActorTest {
 
     protected AbstractDssActorTest() {}
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass() {
         testKit = ActorTestKit.create();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
         logger.info("AbstractDssActorTest cleanup.");
         testKit.shutdownTestKit();

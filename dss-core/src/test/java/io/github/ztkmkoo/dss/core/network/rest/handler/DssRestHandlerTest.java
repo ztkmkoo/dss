@@ -1,26 +1,36 @@
 package io.github.ztkmkoo.dss.core.network.rest.handler;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.lang.reflect.Field;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.actor.AbstractDssActorTest;
-import io.github.ztkmkoo.dss.core.message.rest.*;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
-import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.DefaultFullHttpRequest;
+import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.handler.codec.http.HttpContent;
+import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.HttpRequest;
+import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.CharsetUtil;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
-import java.lang.reflect.Field;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * Project: dss
@@ -38,7 +48,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     @Mock
     private Channel channel;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
