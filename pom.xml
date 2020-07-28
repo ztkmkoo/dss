@@ -7,7 +7,7 @@
     <groupId>io.github.ztkmkoo</groupId>
     <artifactId>dss</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
     <modules>
         <module>dss-common</module>
         <module>dss-core</module>
