@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
 import io.github.ztkmkoo.dss.core.message.rest.*;
+import io.github.ztkmkoo.dss.core.network.DssHandler;
 import io.github.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
@@ -35,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Date: 20. 3. 3. 오후 9:23
  */
 @ChannelHandler.Sharable
-class DssRestHandler extends SimpleChannelInboundHandler<Object> {
+class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssHandler<DssRestChannelHandlerCommand> {
 
     private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
@@ -187,6 +188,7 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> {
         );
     }
 
+    @Override
     public Behavior<DssRestChannelHandlerCommand> create() {
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
