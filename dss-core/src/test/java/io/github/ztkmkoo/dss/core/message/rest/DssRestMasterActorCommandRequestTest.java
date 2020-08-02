@@ -1,22 +1,21 @@
 package io.github.ztkmkoo.dss.core.message.rest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.Test;
-
 import akka.actor.testkit.typed.javadsl.ActorTestKit;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 12:45
  */
-public class DssRestMasterActorCommandRequestTest {
+class DssRestMasterActorCommandRequestTest {
 
     @Test
-    public void testToString() {
+    void testToString() {
         final ActorTestKit testKit = ActorTestKit.create();
         final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
 
@@ -31,7 +30,7 @@ public class DssRestMasterActorCommandRequestTest {
     }
 
     @Test
-    public void getChannelId() {
+    void getChannelId() {
         final ActorTestKit testKit = ActorTestKit.create();
         final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
 
@@ -46,11 +45,11 @@ public class DssRestMasterActorCommandRequestTest {
     }
 
     @Test
-    public void getSender() {
-        assertThrows(NullPointerException.class,
-            () -> DssRestMasterActorCommandRequest
-                .builder()
-                .sender(null)
-                .build());
+    void getSender() {
+        final DssRestMasterActorCommandRequest.DssRestMasterActorCommandRequestBuilder builder =
+                DssRestMasterActorCommandRequest
+                        .builder()
+                        .sender(null);
+        assertThrows(NullPointerException.class, builder::build);
     }
 }
