@@ -5,12 +5,12 @@
     <parent>
         <artifactId>dss</artifactId>
         <groupId>io.github.ztkmkoo</groupId>
-        <version>0.0.1</version>
+        <version>0.4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dss-server</artifactId>
-    <version>0.3.1.0</version>
+    <version>0.4.3</version>
 
     <name>DSS</name>
     <description>Distributed server system</description>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>dss-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.4.3</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
