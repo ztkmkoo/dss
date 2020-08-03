@@ -33,7 +33,10 @@
             <timezone>GMT+0900</timezone>
         </developer>
     </developers>
-
+	<properties>
+        <!-- Dependencies version -->
+        <akka.version>2.6.3</akka.version>
+    </properties>
     <dependencies>
         <!--dss core model-->
         <dependency>
