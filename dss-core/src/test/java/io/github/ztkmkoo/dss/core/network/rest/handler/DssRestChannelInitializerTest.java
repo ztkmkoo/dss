@@ -1,17 +1,5 @@
 package io.github.ztkmkoo.dss.core.network.rest.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import java.util.Collections;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
 import akka.actor.testkit.typed.javadsl.ActorTestKit;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
@@ -20,13 +8,24 @@ import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpRequestDecoder;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.any;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 2. 오전 1:07
  */
-public class DssRestChannelInitializerTest {
+class DssRestChannelInitializerTest {
 
     private static final ActorTestKit testKit = ActorTestKit.create();
 
@@ -47,7 +46,7 @@ public class DssRestChannelInitializerTest {
     }
 
     @Test
-    public void create() {
+    void create() {
 
         final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer(Collections.emptyList());
         final Behavior<DssRestChannelInitializerCommand> behavior = dssRestChannelInitializer.create();
@@ -59,16 +58,15 @@ public class DssRestChannelInitializerTest {
     }
 
     @Test
-    public void createTwiceForOneObject() {
-        assertThrows(DssUserActorDuplicateBehaviorCreateException.class, () -> {
-            final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer(Collections.emptyList());
-            dssRestChannelInitializer.create();
-            dssRestChannelInitializer.create();
-        });
+    void createTwiceForOneObject() {
+        final DssRestChannelInitializer dssRestChannelInitializer = new DssRestChannelInitializer(Collections.emptyList());
+        dssRestChannelInitializer.create();
+
+        assertThrows(DssUserActorDuplicateBehaviorCreateException.class, dssRestChannelInitializer::create);
     }
 
     @Test
-    public void initChannel() throws Exception {
+    void initChannel() throws Exception {
 
         Mockito
                 .when(socketChannel.pipeline())
