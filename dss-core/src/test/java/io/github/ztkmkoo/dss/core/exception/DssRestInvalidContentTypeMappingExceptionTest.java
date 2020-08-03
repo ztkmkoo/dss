@@ -1,36 +1,36 @@
 package io.github.ztkmkoo.dss.core.exception;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 4. 6. 오전 1:35
  */
-public class DssRestInvalidContentTypeMappingExceptionTest {
+class DssRestInvalidContentTypeMappingExceptionTest {
 
     @Test
-    public void testException() {
+    void testException() {
+        assertThrows(DssRestInvalidContentTypeMappingException.class, () -> {throw new DssRestInvalidContentTypeMappingException("test");});
+    }
+
+    @Test
+    void testException2() {
+        final NullPointerException e = new NullPointerException("why not null?");
         assertThrows(DssRestInvalidContentTypeMappingException.class, () -> {
-            throw new DssRestInvalidContentTypeMappingException("test");
+            throw new DssRestInvalidContentTypeMappingException("test", e);
         });
     }
 
     @Test
-    public void testException2() {
+    void testException3() {
+        final IOException e = new IOException();
         assertThrows(DssRestInvalidContentTypeMappingException.class, () -> {
-            throw new DssRestInvalidContentTypeMappingException("test", new NullPointerException("why not null?"));
-        });
-    }
-
-    @Test
-    public void testException3() {
-        assertThrows(DssRestInvalidContentTypeMappingException.class, () -> {
-            throw new DssRestInvalidContentTypeMappingException(new IOException());
+            throw new DssRestInvalidContentTypeMappingException(e);
         });
     }
 }
