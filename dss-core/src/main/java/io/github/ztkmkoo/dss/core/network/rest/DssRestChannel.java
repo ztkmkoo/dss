@@ -1,5 +1,6 @@
 package io.github.ztkmkoo.dss.core.network.rest;
 
+import io.github.ztkmkoo.dss.core.network.DssChannel;
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
 import io.github.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
 import io.netty.bootstrap.ServerBootstrap;
@@ -15,8 +16,9 @@ import java.util.Objects;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 2. 오전 12:43
  */
-public class DssRestChannel {
+public class DssRestChannel implements DssChannel<DssRestChannelProperty, DssRestChannelInitializer> {
 
+    @Override
     public Channel bind(ServerBootstrap serverBootstrap, DssRestChannelProperty dssRestChannelProperty, DssRestChannelInitializer dssRestChannelInitializer) throws InterruptedException {
 
         Objects.requireNonNull(serverBootstrap);

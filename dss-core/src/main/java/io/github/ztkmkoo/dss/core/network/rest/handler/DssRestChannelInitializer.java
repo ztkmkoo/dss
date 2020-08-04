@@ -10,6 +10,7 @@ import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommandHandlerUnregistered;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
+import io.github.ztkmkoo.dss.core.network.DssChannelInitializer;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -29,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 2. 오전 12:46
  */
-public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel> implements DssChannelInitializer<DssRestChannelInitializerCommand> {
 
     private static final AtomicInteger handlerIndex = new AtomicInteger(0);
     private static final String HANDLER_NAME_PREFIX = "rest-handler-";
@@ -107,6 +108,7 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
         return handler;
     }
 
+    @Override
     public Behavior<DssRestChannelInitializerCommand> create() {
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
