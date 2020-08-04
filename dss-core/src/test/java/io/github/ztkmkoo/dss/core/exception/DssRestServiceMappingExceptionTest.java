@@ -1,36 +1,38 @@
 package io.github.ztkmkoo.dss.core.exception;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 4. 6. 오전 1:33
  */
-public class DssRestServiceMappingExceptionTest {
+class DssRestServiceMappingExceptionTest {
 
     @Test
-    public void testException() {
+    void testException() {
         assertThrows(DssRestServiceMappingException.class, () -> {
             throw new DssRestServiceMappingException("test");
         });
     }
 
     @Test
-    public void testException2() {
+    void testException2() {
+        final NullPointerException e = new NullPointerException("why not null?");
         assertThrows(DssRestServiceMappingException.class, () -> {
-            throw new DssRestServiceMappingException("test", new NullPointerException("why not null?"));
+            throw new DssRestServiceMappingException("test", e);
         });
     }
 
     @Test
-    public void testException3() {
+    void testException3() {
+        final IOException e = new IOException();
         assertThrows(DssRestServiceMappingException.class, () -> {
-            throw new DssRestServiceMappingException(new IOException());
+            throw new DssRestServiceMappingException(e);
         });
     }
 }

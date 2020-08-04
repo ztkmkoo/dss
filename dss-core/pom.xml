@@ -5,20 +5,33 @@
     <parent>
         <groupId>io.github.ztkmkoo</groupId>
         <artifactId>dss</artifactId>
-        <version>0.0.1</version>
+        <version>0.4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dss-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.4.3</version>
     <packaging>jar</packaging>
 
+    <name>DSS CORE</name>
+    <description>Distributed server system</description>
+    <url>https://github.com/ztkmkoo/dss</url>
+    
+    <properties>
+        <!-- Dependencies version -->
+        <akka.version>2.6.3</akka.version>
+        <jackson.version>2.10.2</jackson.version>
+        <netty.version>4.1.45.Final</netty.version>
+        <logback.version>1.2.3</logback.version>
+        <mockito.version>1.10.19</mockito.version>
+    </properties>
+    
     <dependencies>
         <!--dss common sub model-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>dss-common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.4.3</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
@@ -34,7 +47,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>4.1.45.Final</version>
+            <version>${netty.version}</version>
         </dependency>
 
         <!--Jackson-->
@@ -53,14 +66,14 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logback.version}</version>
         </dependency>
 
         <!--Mockito test-->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
