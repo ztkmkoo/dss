@@ -27,3 +27,8 @@ out/
 hs_err_pid*
 /.idea/
 /.gradle/
+
+# Eclipse #
+*.classpath
+*.project
+*.settings/
