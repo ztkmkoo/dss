@@ -7,6 +7,7 @@ import io.github.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestSslChannelInitializer;
 import io.github.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
+import io.github.ztkmkoo.dss.server.DssServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 1:47
  */
-public class DssRestServer {
+public class DssRestServer implements DssServer<DssRestActorService> {
 
     private final Logger logger = LoggerFactory.getLogger(DssRestServer.class);
     private final String host;
@@ -50,13 +51,16 @@ public class DssRestServer {
         this.sslContext = sslContext;
     }
 
-
+    /**
+     * @deprecated use addDssService
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
     public DssRestServer addDssRestService(DssRestActorService service) {
-        Objects.requireNonNull(service);
-        this.serviceList.add(service);
-        return this;
+        return (DssRestServer)addDssService(service);
     }
 
+    @Override
     public void start() throws InterruptedException {
         final DssRestChannelInitializer channelInitializer = dssRestChannelInitializer();
         system = createActorSystem(channelInitializer);
@@ -90,6 +94,7 @@ public class DssRestServer {
         return newSystem;
     }
 
+    @Override
     public void stop() throws InterruptedException {
         if (Objects.nonNull(channel)) {
             logger.info("Channel try to close. [Active: {}][Open: {}]", channel.isActive(), channel.isOpen());
@@ -128,11 +133,20 @@ public class DssRestServer {
         return ssl ? new DssRestSslChannelInitializer(serviceList, sslContext) : new DssRestChannelInitializer(serviceList);
     }
 
+    @Override
     public boolean isActivated() {
         return active.get();
     }
 
+    @Override
     public boolean isShutdown() {
         return shutdown.get();
+    }
+
+    @Override
+    public DssServer<DssRestActorService> addDssService(DssRestActorService service) {
+        Objects.requireNonNull(service);
+        this.serviceList.add(service);
+        return this;
     }
 }
