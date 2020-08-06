@@ -52,6 +52,12 @@
             <artifactId>akka-actor-typed_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
