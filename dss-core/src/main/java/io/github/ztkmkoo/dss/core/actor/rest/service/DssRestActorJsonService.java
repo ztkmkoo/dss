@@ -3,6 +3,7 @@ package io.github.ztkmkoo.dss.core.actor.rest.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
@@ -75,7 +76,7 @@ public abstract class DssRestActorJsonService<S extends Serializable> extends Ab
             final ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(content, typeReference);
         } catch (JsonProcessingException e) {
-            return null;
+            throw new DssRestRequestMappingException(e);
         }
     }
 
