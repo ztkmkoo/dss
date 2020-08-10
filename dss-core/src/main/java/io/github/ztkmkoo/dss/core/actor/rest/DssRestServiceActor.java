@@ -3,6 +3,7 @@ package io.github.ztkmkoo.dss.core.actor.rest;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
+import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
@@ -53,6 +54,9 @@ public class DssRestServiceActor {
                         dssRestActorService.getConsume().getContentType(), request.getContentType());
                 replyRequest(request, HttpResponseStatus.BAD_REQUEST);
             }
+        } catch (DssRestRequestMappingException e) {
+            context.getLog().error("Json request mapping error: ", e);
+            replyRequest(request, HttpResponseStatus.BAD_REQUEST);
         } catch (Exception e) {
             context.getLog().error("Handling rest request error: ", e);
             replyRequest(request, HttpResponseStatus.INTERNAL_SERVER_ERROR);

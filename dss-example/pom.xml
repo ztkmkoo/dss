@@ -5,13 +5,13 @@
     <parent>
         <artifactId>dss</artifactId>
         <groupId>io.github.ztkmkoo</groupId>
-        <version>0.4.3</version>
+        <version>0.4.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dss-example</artifactId>
     <packaging>jar</packaging>
-    <version>0.4.3</version>
+    <version>0.4.4</version>
 
     <name>DSS EXAMPLE</name>
     <description>Distributed server system</description>
