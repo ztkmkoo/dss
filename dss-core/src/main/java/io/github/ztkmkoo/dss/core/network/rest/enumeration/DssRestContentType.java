@@ -34,7 +34,7 @@ public enum DssRestContentType {
     }
 
     public static DssRestContentType fromText(String text) {
-        return textMap.get(text);
+    	return textMap.get(text.split(";")[0]);
     }
 
     private static Map<String, DssRestContentType> initTextMap() {
