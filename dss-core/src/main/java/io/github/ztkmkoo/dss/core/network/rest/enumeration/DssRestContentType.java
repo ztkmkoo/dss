@@ -33,12 +33,12 @@ public enum DssRestContentType {
         this.text = text;
     }
 
-    public static DssRestContentType fromText(String text) {    	
-    	try{
+    public static DssRestContentType fromText(String text) {  
+    	if(Objects.nonNull(text)){
     		return textMap.get(text.split(";")[0]);
-    	}catch(NullPointerException e) {
-    		return textMap.get(text);
     	}
+    	
+    	return null;
     }
 
     private static Map<String, DssRestContentType> initTextMap() {
