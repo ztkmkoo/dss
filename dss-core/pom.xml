@@ -5,12 +5,12 @@
     <parent>
         <groupId>io.github.ztkmkoo</groupId>
         <artifactId>dss</artifactId>
-        <version>0.4.3</version>
+        <version>0.4.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dss-core</artifactId>
-    <version>0.4.3</version>
+    <version>0.4.4</version>
     <packaging>jar</packaging>
 
     <name>DSS CORE</name>
@@ -31,7 +31,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>dss-common</artifactId>
-            <version>0.4.3</version>
+            <version>0.4.4</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
