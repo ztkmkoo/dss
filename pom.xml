@@ -149,6 +149,28 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
             </plugin>
+
+            <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <inherited>false</inherited>
+            <executions>
+                <execution>
+                    <id>github-deploy</id>
+                    <phase>clean</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                    <configuration>
+                        <executable>mvn</executable>
+                        <commandlineArgs>
+                        	deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/ztkmkoo/dss
+                        </commandlineArgs>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>  
         </plugins>
     </build>
 </project>
