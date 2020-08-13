@@ -5,48 +5,35 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import io.github.ztkmkoo.dss.core.message.blocking.DssBlockingRestCommand;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 /**
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-13 01:56
  */
-public class DssHttpClientServiceActor<S extends Serializable> {
+public class DssHttpClientServiceActor<R extends DssBlockingRestCommand.HttpRequest> {
 
-    public static <S extends Serializable> Behavior<DssBlockingRestCommand> create(DssHttpClientService<S> service) {
-        return Behaviors.setup(context -> new DssHttpClientServiceActor<>(context, service).httpClientServiceActor());
+    public static <R extends DssBlockingRestCommand.HttpRequest> Behavior<DssBlockingRestCommand> create(DssHttpClientService<R> service, Class<R> requestClass) {
+        return Behaviors.setup(context -> new DssHttpClientServiceActor<>(context, service, requestClass).httpClientServiceActor());
     }
 
     private final ActorContext<DssBlockingRestCommand> context;
-    private final DssHttpClientService<S> service;
+    private final DssHttpClientService<R> service;
+    private final Class<R> requestClass;
 
-    private DssHttpClientServiceActor(ActorContext<DssBlockingRestCommand> context, DssHttpClientService<S> service) {
+    private DssHttpClientServiceActor(ActorContext<DssBlockingRestCommand> context, DssHttpClientService<R> service, Class<R> requestClass) {
         this.context = context;
         this.service = service;
+        this.requestClass = requestClass;
     }
 
     private Behavior<DssBlockingRestCommand> httpClientServiceActor() {
         return Behaviors
                 .receive(DssBlockingRestCommand.class)
-                .onMessage(DssBlockingRestCommand.HttpGetRequest.class, this::handlingHttpGetRequest)
+                .onMessage(requestClass, this::handlingHttpRequest)
                 .build();
     }
 
-    private Behavior<DssBlockingRestCommand> handlingHttpGetRequest(DssBlockingRestCommand.HttpGetRequest msg) {
-        final DssBlockingRestCommand.DssHttpResponseCommand<S> response = service.getRequest(msg);
-        Objects.requireNonNull(response);
-
-        if (Objects.nonNull(msg.getSender())) {
-            msg.getSender().tell(DssBlockingRestCommand.HttpResponse
-                    .builder(msg.getSeq(), context.getSelf(), response.getCode())
-                    .message(response.getMessage())
-                    .body(response.getBody())
-                    .build());
-        } else {
-            context.getLog().error("Http Request sender is empty: {}", msg);
-        }
-
+    private Behavior<DssBlockingRestCommand> handlingHttpRequest(R msg) {
+        service.httpRequest(msg, context.getSelf());
         return Behaviors.same();
     }
 }

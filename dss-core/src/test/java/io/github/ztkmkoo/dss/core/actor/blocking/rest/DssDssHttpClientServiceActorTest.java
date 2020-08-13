@@ -7,8 +7,8 @@ import io.github.ztkmkoo.dss.core.message.blocking.DssBlockingRestCommand;
 import lombok.Builder;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -16,26 +16,16 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-13 02:23
+ * @Override public void httpRequest(DssBlockingRestCommand.HttpGetRequest request, ActorRef<DssBlockingRestCommand> restActor) {
+ * <p>
+ * }
  */
 class DssDssHttpClientServiceActorTest extends AbstractDssActorTest {
 
     @SuppressWarnings("unchecked")
     @Test
     void testHandlingHttpGetRequest() {
-        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(new DssHttpClientService<String>() {
-            private final Logger logger = LoggerFactory.getLogger(DssDssHttpClientServiceActorTest.TestService.class);
-
-            @Override
-            public DssBlockingRestCommand.DssHttpResponseCommand<String> getRequest(DssBlockingRestCommand.HttpGetRequest request) {
-                logger.info("HttpGetRequest: {}", request);
-                return TestResponse
-                        .builder()
-                        .code(200)
-                        .message("OK")
-                        .body("Hi")
-                        .build();
-            }
-        }));
+        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(new TestService(), DssBlockingRestCommand.HttpGetRequest.class));
         final TestProbe<DssBlockingRestCommand> probe = testKit.createTestProbe();
 
         final long seq = 33;
@@ -54,19 +44,15 @@ class DssDssHttpClientServiceActorTest extends AbstractDssActorTest {
         }
     }
 
-    private static class TestService implements DssHttpClientService<String> {
-
-        private final Logger logger = LoggerFactory.getLogger(TestService.class);
-
+    private static class TestService implements DssHttpClientService<DssBlockingRestCommand.HttpGetRequest> {
         @Override
-        public DssBlockingRestCommand.DssHttpResponseCommand<String> getRequest(DssBlockingRestCommand.HttpGetRequest request) {
-            logger.info("HttpGetRequest: {}", request);
-            return TestResponse
-                    .builder()
-                    .code(200)
+        public void httpRequest(DssBlockingRestCommand.HttpGetRequest request, ActorRef<DssBlockingRestCommand> restActor) {
+            final DssBlockingRestCommand.HttpResponse<Serializable> res = DssBlockingRestCommand.HttpResponse
+                    .builder(request.getSeq(), restActor, 200)
                     .message("OK")
                     .body("Hi")
                     .build();
+            request.getSender().tell(res);
         }
     }
 

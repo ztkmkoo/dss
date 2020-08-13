@@ -62,6 +62,13 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!--Http client-->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.8.1</version>
+        </dependency>
+
         <!--Test logback-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
