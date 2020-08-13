@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-13 02:23
  */
-class HttpClientServiceActorTest extends AbstractDssActorTest {
+class DssDssHttpClientServiceActorTest extends AbstractDssActorTest {
 
     @SuppressWarnings("unchecked")
     @Test
     void testHandlingHttpGetRequest() {
-        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(HttpClientServiceActor.create(new HttpClientService<String>() {
-            private final Logger logger = LoggerFactory.getLogger(HttpClientServiceActorTest.TestService.class);
+        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(new DssHttpClientService<String>() {
+            private final Logger logger = LoggerFactory.getLogger(DssDssHttpClientServiceActorTest.TestService.class);
 
             @Override
             public DssBlockingRestCommand.DssHttpResponseCommand<String> getRequest(DssBlockingRestCommand.HttpGetRequest request) {
@@ -54,7 +54,7 @@ class HttpClientServiceActorTest extends AbstractDssActorTest {
         }
     }
 
-    private static class TestService implements HttpClientService<String> {
+    private static class TestService implements DssHttpClientService<String> {
 
         private final Logger logger = LoggerFactory.getLogger(TestService.class);
 

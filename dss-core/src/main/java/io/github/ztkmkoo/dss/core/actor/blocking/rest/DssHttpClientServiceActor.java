@@ -12,16 +12,16 @@ import java.util.Objects;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-13 01:56
  */
-public class HttpClientServiceActor<S extends Serializable> {
+public class DssHttpClientServiceActor<S extends Serializable> {
 
-    public static <S extends Serializable> Behavior<DssBlockingRestCommand> create(HttpClientService<S> service) {
-        return Behaviors.setup(context -> new HttpClientServiceActor<>(context, service).httpClientServiceActor());
+    public static <S extends Serializable> Behavior<DssBlockingRestCommand> create(DssHttpClientService<S> service) {
+        return Behaviors.setup(context -> new DssHttpClientServiceActor<>(context, service).httpClientServiceActor());
     }
 
     private final ActorContext<DssBlockingRestCommand> context;
-    private final HttpClientService<S> service;
+    private final DssHttpClientService<S> service;
 
-    private HttpClientServiceActor(ActorContext<DssBlockingRestCommand> context, HttpClientService<S> service) {
+    private DssHttpClientServiceActor(ActorContext<DssBlockingRestCommand> context, DssHttpClientService<S> service) {
         this.context = context;
         this.service = service;
     }

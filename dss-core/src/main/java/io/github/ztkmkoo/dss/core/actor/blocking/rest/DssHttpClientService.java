@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-13 01:53
  */
-public interface HttpClientService<S extends Serializable> extends DssBlockingService {
+public interface DssHttpClientService<S extends Serializable> extends DssBlockingService {
 
     DssBlockingRestCommand.DssHttpResponseCommand<S> getRequest(DssBlockingRestCommand.HttpGetRequest request);
 }
