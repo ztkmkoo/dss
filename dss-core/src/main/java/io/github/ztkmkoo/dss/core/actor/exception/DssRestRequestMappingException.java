@@ -1,6 +1,7 @@
 package io.github.ztkmkoo.dss.core.actor.exception;
 
 public class DssRestRequestMappingException extends RuntimeException{
+
     private static final long serialVersionUID = 6545592855014233698L;
 
     public DssRestRequestMappingException(String message) {

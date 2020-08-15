@@ -20,16 +20,16 @@ import java.util.Objects;
  */
 public class DssRestServiceActor {
 
-    public static Behavior<DssRestServiceActorCommand> create(DssRestActorService dssRestActorService) {
-        return Behaviors.setup(context -> new DssRestServiceActor(context, dssRestActorService).dssRestServiceActor());
-    }
-
     private final ActorContext<DssRestServiceActorCommand> context;
     private final DssRestActorService dssRestActorService;
 
     private DssRestServiceActor(ActorContext<DssRestServiceActorCommand> context, DssRestActorService dssRestActorService) {
         this.context = context;
         this.dssRestActorService = dssRestActorService;
+    }
+
+    public static Behavior<DssRestServiceActorCommand> create(DssRestActorService dssRestActorService) {
+        return Behaviors.setup(context -> new DssRestServiceActor(context, dssRestActorService).dssRestServiceActor());
     }
 
     private Behavior<DssRestServiceActorCommand> dssRestServiceActor() {

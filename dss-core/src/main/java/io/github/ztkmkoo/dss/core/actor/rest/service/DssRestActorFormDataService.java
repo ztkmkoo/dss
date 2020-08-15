@@ -17,19 +17,20 @@ import java.util.HashMap;
 @Slf4j
 public abstract class DssRestActorFormDataService extends AbstractDssRestActorService<HashMap<String, Object>> {
 
+    public DssRestActorFormDataService(String name, String path, DssRestMethodType methodType) {
+        super(name, path, methodType, formDataContentInfo, DssRestContentInfo.APPLICATION_JSON_UTF8);
+    }
+
     private static final DssRestContentInfo formDataContentInfo = DssRestContentInfo
             .builder()
             .contentType(DssRestContentType.APPLICATION_WWW_FORM_URL_ENCODED)
             .charset(CharsetUtil.UTF_8)
             .build();
 
-    public DssRestActorFormDataService(String name, String path, DssRestMethodType methodType) {
-        super(name, path, methodType, formDataContentInfo, DssRestContentInfo.APPLICATION_JSON_UTF8);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected final HashMap<String, Object> getBody(String content) {
+
         if (StringUtils.isEmpty(content)) {
             return new HashMap<>();
         }

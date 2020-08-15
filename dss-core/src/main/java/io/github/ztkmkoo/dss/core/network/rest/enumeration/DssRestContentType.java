@@ -22,7 +22,6 @@ public enum DssRestContentType {
     // multipart
     MULTIPART_FORM_DATA("multipart/form-data"),
     // text
-
     ;
 
     private static final Map<String, DssRestContentType> textMap = initTextMap();
@@ -37,7 +36,6 @@ public enum DssRestContentType {
     	if(Objects.nonNull(text)){
     		return textMap.get(text.split(";")[0]);
     	}
-    	
     	return null;
     }
 

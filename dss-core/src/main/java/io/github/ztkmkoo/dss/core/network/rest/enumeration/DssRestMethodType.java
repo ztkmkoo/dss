@@ -44,7 +44,6 @@ public enum DssRestMethodType {
         if (methods.length == 0) {
             return Collections.unmodifiableMap(Collections.emptyMap());
         }
-
         return Collections
                 .unmodifiableMap(
                         Stream

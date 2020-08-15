@@ -116,12 +116,11 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         if (msg instanceof HttpContent) {
 
             final HttpContent httpContent = (HttpContent) msg;
-
             final ByteBuf content = httpContent.content();
+
             if (content.isReadable()) {
                 buffer.append(content.toString(CharsetUtil.UTF_8));
             }
-
             if (msg instanceof LastHttpContent) {
                 final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
                 handlingDssRestRequest(dssRestRequest, ctx);
@@ -193,8 +192,8 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
         }
-
         initializeBehavior.set(true);
+
         return Behaviors.setup(this::dssRestHandler);
     }
 

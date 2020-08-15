@@ -18,16 +18,16 @@ import java.util.Optional;
  */
 public class DssRestMasterActor {
 
-    public static Behavior<DssRestMasterActorCommand> create(List<DssRestActorService> serviceList) {
-        return Behaviors.setup(context -> new DssRestMasterActor(context, serviceList).dssRestMasterActor());
-    }
-
     private final ActorContext<DssRestMasterActorCommand> context;
     private final DssRestPathResolver dssRestPathResolver;
 
     private DssRestMasterActor(ActorContext<DssRestMasterActorCommand> context, List<DssRestActorService> serviceList) {
         this.context = context;
         this.dssRestPathResolver = dssRestPathResolver(serviceList);
+    }
+
+    public static Behavior<DssRestMasterActorCommand> create(List<DssRestActorService> serviceList) {
+        return Behaviors.setup(context -> new DssRestMasterActor(context, serviceList).dssRestMasterActor());
     }
 
     private DssRestPathResolver dssRestPathResolver(List<DssRestActorService> serviceList) {

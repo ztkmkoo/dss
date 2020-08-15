@@ -24,12 +24,10 @@ import java.util.Objects;
 public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
 
     private final Logger logger = LoggerFactory.getLogger(DssRestSslChannelInitializer.class);
-
     private final SslContext sslCtx;
 
     public DssRestSslChannelInitializer(List<DssRestActorService> serviceList) throws InterruptedException {
         this(serviceList, selfSignedSslContext());
-
     }
 
     public DssRestSslChannelInitializer(List<DssRestActorService> serviceList, SslContext sslContext) throws InterruptedException {
@@ -40,11 +38,9 @@ public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         logger.info("Try to initChannel");
-
         final ChannelPipeline p = ch.pipeline();
 
         p.addLast(sslCtx.newHandler(ch.alloc()));
-
         p.addLast(new HttpRequestDecoder());
         p.addLast(new HttpResponseEncoder());
 

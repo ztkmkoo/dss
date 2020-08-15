@@ -46,7 +46,6 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
     private ActorContext<DssRestChannelInitializerCommand> context;
     private ActorRef<DssRestMasterActorCommand> restMasterActorRef;
 
-
     public DssRestChannelInitializer(List<DssRestActorService> serviceList) {
         this.serviceList = new ArrayList<>(serviceList);
     }
@@ -105,6 +104,7 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
         if (Objects.nonNull(handler)) {
             activeRestHandlerMap.putIfAbsent(handler.getName(), handler);
         }
+
         return handler;
     }
 
@@ -113,8 +113,8 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
         }
-
         initializeBehavior.set(true);
+
         return Behaviors.setup(this::dssRestChannelInitializer);
     }
 
