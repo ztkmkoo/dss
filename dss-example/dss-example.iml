@@ -9,8 +9,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: io.github.ztkmkoo:dss-server:0.4.4" level="project" />
-    <orderEntry type="library" name="Maven: io.github.ztkmkoo:dss-core:0.4.4" level="project" />
+    <orderEntry type="module" module-name="dss-server" />
+    <orderEntry type="module" module-name="dss-core" />
     <orderEntry type="module" module-name="dss-common" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.45.Final" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.10.2" level="project" />
