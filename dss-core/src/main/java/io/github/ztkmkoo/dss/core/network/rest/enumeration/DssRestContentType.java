@@ -34,6 +34,11 @@ public enum DssRestContentType {
     }
 
     public static DssRestContentType fromText(String text) {
+        if (text.contains("multipart/form-data;")) {
+            String[] token = text.split(";");
+            text = token[0];
+        }
+
         return textMap.get(text);
     }
 

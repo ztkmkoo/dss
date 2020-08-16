@@ -19,7 +19,7 @@ public abstract class DssRestActorFormDataService extends AbstractDssRestActorSe
 
     private static final DssRestContentInfo formDataContentInfo = DssRestContentInfo
             .builder()
-            .contentType(DssRestContentType.APPLICATION_WWW_FORM_URL_ENCODED)
+            .contentType(DssRestContentType.MULTIPART_FORM_DATA)
             .charset(CharsetUtil.UTF_8)
             .build();
 
