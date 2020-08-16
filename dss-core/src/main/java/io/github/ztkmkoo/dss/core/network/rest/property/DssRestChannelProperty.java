@@ -1,5 +1,5 @@
 package io.github.ztkmkoo.dss.core.network.rest.property;
-
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
 import io.github.ztkmkoo.dss.core.network.DssChannelProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class DssRestChannelProperty implements Serializable, DssChannelProperty 
     private static final long serialVersionUID = -6904414304979344025L;
     private final String host;
     private final int port;
-
+    private final DssLogLevel dssLogLevel = DssLogLevel.DEBUG;
     @Builder
     private DssRestChannelProperty(String host, int port) {
         this.host = host;

@@ -1,19 +1,21 @@
 package io.github.ztkmkoo.dss.core.network.rest.enumeration;
+import io.netty.handler.logging.LogLevel;
+import lombok.Getter;
 
 public enum DssLogLevel {
 
-    ERROR(200), WARN(300), INFO(400), DEBUG(500), TRACE(600);
+    ERROR(LogLevel.ERROR), WARN(LogLevel.WARN), INFO( LogLevel.INFO), DEBUG( LogLevel.DEBUG), TRACE( LogLevel.TRACE);
 
-    private Integer  value;
+    private LogLevel level;
 
-    DssLogLevel(Integer value) {
-        this.value = value;
+    DssLogLevel( LogLevel level) {
+        this.level = level;
     }
 
-    public static DssLogLevel levelOf(Integer value) {
-        for (DssLogLevel level : DssLogLevel.values()) {
-            if (level.value.equals(value)) {
-                return level;
+    public static DssLogLevel levelOf(LogLevel level) {
+        for (DssLogLevel loglevel : DssLogLevel.values()) {
+            if (loglevel.level.equals(level)) {
+                return loglevel;
             }
         }
         return null;

@@ -1,5 +1,6 @@
 package io.github.ztkmkoo.dss.core.network.rest;
 
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
 import io.github.ztkmkoo.dss.core.network.DssChannel;
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
 import io.github.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
@@ -18,6 +19,7 @@ import java.util.Objects;
  */
 public class DssRestChannel implements DssChannel<DssRestChannelProperty, DssRestChannelInitializer> {
 
+
     @Override
     public Channel bind(ServerBootstrap serverBootstrap, DssRestChannelProperty dssRestChannelProperty, DssRestChannelInitializer dssRestChannelInitializer) throws InterruptedException {
 
@@ -25,9 +27,13 @@ public class DssRestChannel implements DssChannel<DssRestChannelProperty, DssRes
         Objects.requireNonNull(dssRestChannelProperty);
         Objects.requireNonNull(dssRestChannelInitializer);
 
+        LogLevel level = LogLevel.DEBUG; //User can change LogLevel
+        String logLevel = level.name();
+        DssLogLevel dssLogLevel = DssLogLevel.valueOf(logLevel);
+
         return serverBootstrap
                 .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.DEBUG))
+                .handler(new LoggingHandler(dssLogLevel.name()))
                 .childHandler(dssRestChannelInitializer)
                 .bind(dssRestChannelProperty.getHost(), dssRestChannelProperty.getPort())
                 .sync()
