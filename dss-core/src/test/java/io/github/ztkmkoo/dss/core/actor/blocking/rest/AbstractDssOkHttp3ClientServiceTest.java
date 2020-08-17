@@ -39,10 +39,36 @@ class AbstractDssOkHttp3ClientServiceTest extends AbstractDssActorTest {
         log.info("HttpResponse body: {}", body);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    void testHttpFailure() {
+        final TestHttpClientService service = new TestHttpClientService();
+        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(service, DssBlockingRestCommand.HttpGetRequest.class));
+        final TestProbe<DssBlockingRestCommand> probe = testKit.createTestProbe();
+
+        ref.tell(DssBlockingRestCommand.HttpGetRequest.builder(39, probe.getRef(), "https://localhost:8989").build());
+        final DssBlockingRestCommand resCommand = probe.receiveMessage();
+        assertTrue(resCommand instanceof DssBlockingRestCommand.HttpResponse);
+
+        final DssBlockingRestCommand.HttpResponse<String> response =  (DssBlockingRestCommand.HttpResponse<String>) resCommand;
+        assertNotNull(response);
+
+        final String body = response.getBody();
+        assertFalse(body.isEmpty());
+        assertEquals(500, response.getCode());
+
+        log.info("HttpResponse body: {}", body);
+    }
+
     private static class TestHttpClientService extends AbstractDssOkHttp3ClientService<DssBlockingRestCommand.HttpGetRequest> {
 
         public TestHttpClientService() {
             super(1000, 1000);
+        }
+
+        @Override
+        public String getName() {
+            return "httpTestService";
         }
 
         @Override

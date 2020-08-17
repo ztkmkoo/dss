@@ -10,5 +10,17 @@ import io.github.ztkmkoo.dss.core.message.blocking.DssBlockingRestCommand;
  */
 public interface DssHttpClientService<R extends DssBlockingRestCommand.HttpRequest> extends DssBlockingService {
 
+    /**
+     * Set the name of this service.
+     * You could find this service actor ref from this value
+     * @return service actor name
+     */
+    String getName();
+
+    /**
+     * Handling http request
+     * @param request
+     * @param restActor
+     */
     void httpRequest(R request, ActorRef<DssBlockingRestCommand> restActor);
 }
