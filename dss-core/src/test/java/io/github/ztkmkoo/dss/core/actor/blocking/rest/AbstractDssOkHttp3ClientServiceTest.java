@@ -9,6 +9,7 @@ import okhttp3.Request;
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,7 +55,7 @@ class AbstractDssOkHttp3ClientServiceTest extends AbstractDssActorTest {
         assertNotNull(response);
 
         final String body = response.getBody();
-        assertFalse(body.isEmpty());
+        assertTrue(Objects.isNull(body));
         assertEquals(500, response.getCode());
 
         log.info("HttpResponse body: {}", body);
