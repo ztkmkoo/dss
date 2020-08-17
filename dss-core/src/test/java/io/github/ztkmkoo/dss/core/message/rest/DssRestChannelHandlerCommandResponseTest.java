@@ -9,16 +9,16 @@ import org.junit.jupiter.api.Test;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 12:42
  */
-public class DssRestChannelHandlerCommandResponseTest {
+class DssRestChannelHandlerCommandResponseTest {
 
     @Test
-    public void testToString() {
+    void testToString() {
         final DssRestChannelHandlerCommandResponse response = DssRestChannelHandlerCommandResponse.builder().channelId("Hello").build();
         assertFalse(response.toString().isEmpty());
     }
 
     @Test
-    public void getChannelId() {
+    void getChannelId() {
         final DssRestChannelHandlerCommandResponse response = DssRestChannelHandlerCommandResponse.builder().channelId("Hello").build();
         assertEquals("Hello", response.getChannelId());
     }
