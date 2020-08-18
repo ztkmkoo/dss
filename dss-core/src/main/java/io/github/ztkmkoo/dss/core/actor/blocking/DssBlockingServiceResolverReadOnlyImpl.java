@@ -9,7 +9,7 @@ import io.github.ztkmkoo.dss.core.message.blocking.DssBlockingRestCommand;
  */
 public class DssBlockingServiceResolverReadOnlyImpl extends DssBlockingServiceResolverImpl {
 
-    public DssBlockingServiceResolverReadOnlyImpl(DssBlockingServiceResolverImpl resolver) {
+    public DssBlockingServiceResolverReadOnlyImpl(DssBlockingServiceResolver resolver) {
         super(resolver);
     }
 

@@ -4,9 +4,11 @@ import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.message.blocking.DssBlockingCommand;
 import io.github.ztkmkoo.dss.core.message.blocking.DssBlockingRestCommand;
 import io.github.ztkmkoo.dss.core.util.StringUtils;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,14 +28,15 @@ public class DssBlockingServiceResolverImpl implements DssBlockingServiceResolve
     }
 
     private final Logger logger = LoggerFactory.getLogger(DssBlockingServiceResolverImpl.class);
+    @Getter
     private final Map<String, ActorRef<DssBlockingRestCommand>> blockingHttpClientServiceMap;
 
     public DssBlockingServiceResolverImpl() {
         this.blockingHttpClientServiceMap = new HashMap<>();
     }
 
-    public DssBlockingServiceResolverImpl(DssBlockingServiceResolverImpl resolver) {
-        this.blockingHttpClientServiceMap = resolver.blockingHttpClientServiceMap;
+    public DssBlockingServiceResolverImpl(DssBlockingServiceResolver resolver) {
+        this.blockingHttpClientServiceMap = Collections.unmodifiableMap(resolver.getBlockingHttpClientServiceMap());
     }
 
     @Override
