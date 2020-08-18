@@ -1,43 +1,37 @@
 package io.github.ztkmkoo.dss.core.network.rest.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.lang.reflect.Field;
-import java.util.Map;
-
+import akka.actor.testkit.typed.javadsl.TestProbe;
+import akka.actor.typed.ActorRef;
+import io.github.ztkmkoo.dss.core.actor.AbstractDssActorTest;
+import io.github.ztkmkoo.dss.core.message.rest.*;
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
+import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import akka.actor.testkit.typed.javadsl.TestProbe;
-import akka.actor.typed.ActorRef;
-import io.github.ztkmkoo.dss.core.actor.AbstractDssActorTest;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
-import io.netty.handler.codec.http.DefaultFullHttpRequest;
-import io.netty.handler.codec.http.DefaultHttpContent;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.util.CharsetUtil;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 11:16
  */
-public class DssRestHandlerTest extends AbstractDssActorTest {
+class DssRestHandlerTest extends AbstractDssActorTest {
 
     private final HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/hi/hello");
     private final HttpContent content = new DefaultHttpContent(Unpooled.copiedBuffer("Hello", CharsetUtil.UTF_8));
@@ -54,7 +48,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void channelRead0() throws Exception {
+    void channelRead0() throws Exception {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
@@ -74,7 +68,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void channelReadComplete() throws Exception {
+    void channelReadComplete() throws Exception {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
@@ -90,7 +84,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void exceptionCaught() throws NoSuchFieldException, IllegalAccessException {
+    void exceptionCaught() throws NoSuchFieldException, IllegalAccessException {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
@@ -105,7 +99,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void exceptionCaughtSkippedWhenContextRemoved() {
+    void exceptionCaughtSkippedWhenContextRemoved() {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
@@ -117,7 +111,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void create() throws NoSuchFieldException, IllegalAccessException {
+    void create() throws NoSuchFieldException, IllegalAccessException {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
@@ -133,6 +127,36 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
         assertNotNull(handlerActorRef);
 
         handlerActorRef.tell(DssRestChannelHandlerCommandResponse.builder().channelId("abcedf").build());
+    }
+
+    @Test
+    void sendRequestToService() throws Exception {
+        mockChannelHandlerContextChannelId(ctx, "abcedf");
+
+        final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
+        final DssRestHandler handler = newDssRestHandlerForTest(testProbe);
+        testKit.spawn(handler.create());
+
+        final Method method = DssRestHandler.class.getDeclaredMethod("sendRequestToService", ChannelHandlerContext.class, HttpRequest.class, ByteBuf.class);
+        method.setAccessible(true);
+
+        final HttpRequest r = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/test");
+        r.headers().add("content-Type", "application/json; charset=utf-8");
+        final ByteBuf b = Unpooled.copiedBuffer("Hello".getBytes("UTF-8"));
+        method.invoke(handler, ctx, r, b);
+
+        final DssRestMasterActorCommand command = testProbe.receiveMessage();
+        if (command instanceof DssRestRequestCommand) {
+            final DssRestRequestCommand cmd = (DssRestRequestCommand) command;
+
+            assertEquals(DssRestMethodType.GET, cmd.getMethodType());
+            assertEquals(DssRestContentType.APPLICATION_JSON, cmd.getContentType());
+            assertEquals("UTF-8", cmd.getCharset());
+            assertEquals("/test", cmd.getPath());
+            assertArrayEquals("Hello".getBytes("UTF-8"), cmd.getContent());
+        } else {
+            fail("Unexpected message type");
+        }
     }
 
     private static DssRestHandler newDssRestHandlerForTest(TestProbe<DssRestMasterActorCommand> testProbe) {

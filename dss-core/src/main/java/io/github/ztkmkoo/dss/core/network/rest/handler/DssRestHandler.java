@@ -12,6 +12,7 @@ import io.github.ztkmkoo.dss.core.network.DssHandler;
 import io.github.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import io.github.ztkmkoo.dss.core.util.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -24,6 +25,8 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
@@ -37,6 +40,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @ChannelHandler.Sharable
 class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssHandler<DssRestChannelHandlerCommand> {
+
+    private static final String REGEX_CONTENT_CHARSET = " charset\\=.*";
 
     private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
@@ -59,24 +64,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         this.restMasterActorRef = restMasterActorRef;
         this.name = name;
         this.restMasterActorName = restMasterActorRef.path().name();
-    }
-
-    private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
-
-        Objects.requireNonNull(request);
-        Objects.requireNonNull(content);
-
-        final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
-        final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
-        final String uri = request.uri();
-
-        return DssRestRequest
-                .builder()
-                .methodType(methodType)
-                .contentType(contentType)
-                .uri(uri)
-                .content(content)
-                .build();
     }
 
     private static void sendResponse(
@@ -123,10 +110,55 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
             }
 
             if (msg instanceof LastHttpContent) {
-                final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
-                handlingDssRestRequest(dssRestRequest, ctx);
+                sendRequestToService(ctx, request, content);
             }
         }
+    }
+
+    private void sendRequestToService(ChannelHandlerContext ctx, HttpRequest request, ByteBuf content) {
+        Objects.requireNonNull(ctx);
+        final String channelId = ctx.channel().id().asLongText();
+        channelHandlerContextMap.put(channelId, ctx);
+
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(restMasterActorRef);
+        Objects.requireNonNull(request);
+        Objects.requireNonNull(content);
+
+        context.getLog().info("sendRequestToService: {} -> {}", name, restMasterActorName);
+
+        final DssRestRequestCommand.Builder builder = DssRestRequestCommand.builder(channelId, context.getSelf());
+
+        final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
+        final String uri = request.uri();
+        final byte[] contents = content.array();
+
+        builder
+                .methodType(methodType)
+                .path(uri)
+                .content(contents);
+
+        final String fullContentTypeString = request.headers().get("content-Type");
+        if (!StringUtils.isEmpty(fullContentTypeString)) {
+            final String[] contentTypeSplits = fullContentTypeString.split(";");
+            final DssRestContentType contentType = DssRestContentType.fromText(contentTypeSplits[0]);
+            builder.contentType(contentType);
+
+            if (contentTypeSplits.length > 1) {
+                final String contentExtra = contentTypeSplits[1];
+                if (contentExtra.matches(REGEX_CONTENT_CHARSET)) {
+                    final String charset = contentExtra.substring(contentExtra.indexOf("=") + 1);
+                    try {
+                        final Charset c = Charset.forName(charset);
+                        builder.charset(c.name());
+                    } catch (UnsupportedCharsetException e) {
+                        logger.warn("UnsupportedCharsetException", e);
+                    }
+                }
+            }
+        }
+
+        restMasterActorRef.tell(builder.build());
     }
 
     @Override
@@ -134,6 +166,10 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         ctx.flush();
     }
 
+    /**
+     * @deprecated use sendRequestToService instead
+     */
+    @Deprecated
     private void handlingDssRestRequest(DssRestRequest dssRestRequest, ChannelHandlerContext ctx) {
         Objects.requireNonNull(ctx);
         final String channelId = ctx.channel().id().asLongText();
