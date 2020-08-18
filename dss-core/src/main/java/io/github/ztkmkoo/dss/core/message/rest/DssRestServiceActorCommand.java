@@ -1,5 +1,6 @@
 package io.github.ztkmkoo.dss.core.message.rest;
 
+import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.message.DssCommand;
 
 /**
@@ -8,4 +9,6 @@ import io.github.ztkmkoo.dss.core.message.DssCommand;
  * Date: 20. 3. 14. 오후 9:40
  */
 public interface DssRestServiceActorCommand extends DssCommand {
+
+    ActorRef<DssRestChannelHandlerCommand> getSender();
 }
