@@ -18,11 +18,10 @@ import java.util.Objects;
 @Getter
 public class DssRestActorProperty implements DssActorProperty {
 
-    @SuppressWarnings("squid:S3740")
     private final List<DssRestActorService> serviceList;
     private final List<DssHttpClientService<DssBlockingRestCommand.HttpRequest>> httpClientServiceList;
 
-    @Builder @SuppressWarnings("squid:S3740")
+    @Builder
     public DssRestActorProperty(List<DssRestActorService> serviceList, List<DssHttpClientService<DssBlockingRestCommand.HttpRequest>> httpClientServiceList) {
         this.serviceList = getUnModifiableList(serviceList);
         this.httpClientServiceList = getUnModifiableList(httpClientServiceList);
