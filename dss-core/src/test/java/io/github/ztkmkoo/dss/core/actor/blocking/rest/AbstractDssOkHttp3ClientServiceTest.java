@@ -24,7 +24,7 @@ class AbstractDssOkHttp3ClientServiceTest extends AbstractDssActorTest {
     @Test
     void testGetGooglePage() {
         final TestHttpClientService service = new TestHttpClientService();
-        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(service, DssBlockingRestCommand.HttpGetRequest.class));
+        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(service));
         final TestProbe<DssBlockingRestCommand> probe = testKit.createTestProbe();
 
         ref.tell(DssBlockingRestCommand.HttpGetRequest.builder(33, probe.getRef(), "https://www.google.com").build());
@@ -44,7 +44,7 @@ class AbstractDssOkHttp3ClientServiceTest extends AbstractDssActorTest {
     @Test
     void testHttpFailure() {
         final TestHttpClientService service = new TestHttpClientService();
-        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(service, DssBlockingRestCommand.HttpGetRequest.class));
+        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(service));
         final TestProbe<DssBlockingRestCommand> probe = testKit.createTestProbe();
 
         ref.tell(DssBlockingRestCommand.HttpGetRequest.builder(39, probe.getRef(), "https://localhost:8989").build());
@@ -70,6 +70,11 @@ class AbstractDssOkHttp3ClientServiceTest extends AbstractDssActorTest {
         @Override
         public String getName() {
             return "httpTestService";
+        }
+
+        @Override
+        public Class<DssBlockingRestCommand.HttpGetRequest> getCommandClassType() {
+            return DssBlockingRestCommand.HttpGetRequest.class;
         }
 
         @Override

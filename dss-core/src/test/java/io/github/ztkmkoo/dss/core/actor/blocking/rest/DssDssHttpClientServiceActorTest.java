@@ -23,7 +23,7 @@ class DssDssHttpClientServiceActorTest extends AbstractDssActorTest {
     @SuppressWarnings("unchecked")
     @Test
     void testHandlingHttpGetRequest() {
-        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(new TestService(), DssBlockingRestCommand.HttpGetRequest.class));
+        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(new TestService()));
         final TestProbe<DssBlockingRestCommand> probe = testKit.createTestProbe();
 
         final long seq = 33;
@@ -45,7 +45,7 @@ class DssDssHttpClientServiceActorTest extends AbstractDssActorTest {
     @SuppressWarnings("unchecked")
     @Test
     void testHandlingHttpGetRequestOnFailure() {
-        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(new TestFailureService(), DssBlockingRestCommand.HttpGetRequest.class));
+        final ActorRef<DssBlockingRestCommand> ref = testKit.spawn(DssHttpClientServiceActor.create(new TestFailureService()));
         final TestProbe<DssBlockingRestCommand> probe = testKit.createTestProbe();
 
         final long seq = 37;
@@ -71,6 +71,11 @@ class DssDssHttpClientServiceActorTest extends AbstractDssActorTest {
         }
 
         @Override
+        public Class<DssBlockingRestCommand.HttpGetRequest> getCommandClassType() {
+            return DssBlockingRestCommand.HttpGetRequest.class;
+        }
+
+        @Override
         public void httpRequest(DssBlockingRestCommand.HttpGetRequest request, ActorRef<DssBlockingRestCommand> restActor) {
             final DssBlockingRestCommand.HttpResponse<Serializable> res = DssBlockingRestCommand.HttpResponse
                     .builder(request.getSeq(), restActor, 200)
@@ -85,6 +90,11 @@ class DssDssHttpClientServiceActorTest extends AbstractDssActorTest {
         @Override
         public String getName() {
             return TestFailureService.class.getSimpleName();
+        }
+
+        @Override
+        public Class<DssBlockingRestCommand.HttpGetRequest> getCommandClassType() {
+            return DssBlockingRestCommand.HttpGetRequest.class;
         }
 
         @Override

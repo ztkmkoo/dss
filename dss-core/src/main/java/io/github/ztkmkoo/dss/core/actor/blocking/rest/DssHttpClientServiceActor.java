@@ -11,24 +11,22 @@ import io.github.ztkmkoo.dss.core.message.blocking.DssBlockingRestCommand;
  */
 public class DssHttpClientServiceActor<R extends DssBlockingRestCommand.HttpRequest> {
 
-    public static <R extends DssBlockingRestCommand.HttpRequest> Behavior<DssBlockingRestCommand> create(DssHttpClientService<R> service, Class<R> requestClass) {
-        return Behaviors.setup(context -> new DssHttpClientServiceActor<>(context, service, requestClass).httpClientServiceActor());
+    public static <R extends DssBlockingRestCommand.HttpRequest> Behavior<DssBlockingRestCommand> create(DssHttpClientService<R> service) {
+        return Behaviors.setup(context -> new DssHttpClientServiceActor<>(context, service).httpClientServiceActor());
     }
 
     private final ActorContext<DssBlockingRestCommand> context;
     private final DssHttpClientService<R> service;
-    private final Class<R> requestClass;
 
-    private DssHttpClientServiceActor(ActorContext<DssBlockingRestCommand> context, DssHttpClientService<R> service, Class<R> requestClass) {
+    private DssHttpClientServiceActor(ActorContext<DssBlockingRestCommand> context, DssHttpClientService<R> service) {
         this.context = context;
         this.service = service;
-        this.requestClass = requestClass;
     }
 
     private Behavior<DssBlockingRestCommand> httpClientServiceActor() {
         return Behaviors
                 .receive(DssBlockingRestCommand.class)
-                .onMessage(requestClass, this::handlingHttpRequest)
+                .onMessage(service.getCommandClassType(), this::handlingHttpRequest)
                 .build();
     }
 
