@@ -1,9 +1,11 @@
 package io.github.ztkmkoo.dss.core.actor.rest.service;
 
+import io.github.ztkmkoo.dss.core.actor.AbstractDssActorService;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequestDefaultImpl;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommand;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import lombok.Getter;
@@ -17,13 +19,17 @@ import java.util.Objects;
  * Date: 20. 4. 5. 오후 9:27
  */
 @Getter
-public abstract class AbstractDssRestActorService<S extends Serializable> implements DssRestActorService {
+public abstract class AbstractDssRestActorService<S extends Serializable>
+        extends AbstractDssActorService<DssRestServiceActorCommand, DssRestServiceActorCommandRequest>
+        implements DssRestActorService {
 
     protected final String name;
     protected final String path;
     protected final DssRestMethodType methodType;
     protected final DssRestContentInfo consume;
     protected final DssRestContentInfo produce;
+
+
 
     public AbstractDssRestActorService(
             String name,
@@ -66,5 +72,16 @@ public abstract class AbstractDssRestActorService<S extends Serializable> implem
                 .builder()
                 .body(body)
                 .build();
+    }
+
+    @Override
+    public final void onReceive(DssRestServiceActorCommandRequest req) {
+        final DssRestServiceRequest<S> r = makeRequest(req);
+        onReceive(r);
+    }
+
+    protected void onReceive(DssRestServiceRequest<S> request) {
+        // do nothing
+        // override this if need
     }
 }
