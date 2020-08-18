@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Project: dss
@@ -22,6 +23,6 @@ public class DssRestChannelProperty implements Serializable, DssChannelProperty 
     private DssRestChannelProperty(String host, int port, DssLogLevel dssLogLevel) {
         this.host = host;
         this.port = port;
-        this.dssLogLevel = dssLogLevel;
+        this.dssLogLevel = Objects.nonNull(dssLogLevel) ? dssLogLevel : DssLogLevel.DEBUG;;
     }
 }
