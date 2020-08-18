@@ -17,10 +17,11 @@ public class DssRestChannelProperty implements Serializable, DssChannelProperty 
     private static final long serialVersionUID = -6904414304979344025L;
     private final String host;
     private final int port;
-    private final DssLogLevel dssLogLevel = DssLogLevel.DEBUG;
+    private final DssLogLevel dssLogLevel;
     @Builder
-    private DssRestChannelProperty(String host, int port) {
+    private DssRestChannelProperty(String host, int port, DssLogLevel dssLogLevel) {
         this.host = host;
         this.port = port;
+        this.dssLogLevel = dssLogLevel;
     }
 }
