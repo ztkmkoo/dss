@@ -30,6 +30,8 @@ public class DssRestServiceActor {
     private DssRestServiceActor(ActorContext<DssRestServiceActorCommand> context, DssRestActorService dssRestActorService) {
         this.context = context;
         this.dssRestActorService = dssRestActorService;
+
+        this.dssRestActorService.initializeFromActor(context);
     }
 
     private Behavior<DssRestServiceActorCommand> dssRestServiceActor() {
