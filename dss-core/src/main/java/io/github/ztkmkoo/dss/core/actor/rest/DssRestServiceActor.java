@@ -30,15 +30,17 @@ public class DssRestServiceActor {
     private DssRestServiceActor(ActorContext<DssRestServiceActorCommand> context, DssRestActorService dssRestActorService) {
         this.context = context;
         this.dssRestActorService = dssRestActorService;
+    }
 
-    private Behavior<DssRestServiceActorCommand> dssRestServiceActor() {
+    private Behavior<DssRestServiceActorCommand> dssRestServiceActor () {
         return Behaviors
                 .receive(DssRestServiceActorCommand.class)
                 .onMessage(DssRestServiceActorCommandRequest.class, this::onHandlingDssRestServiceActorCommandRequest)
                 .build();
     }
 
-    private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(DssRestServiceActorCommandRequest request) {
+    private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest
+            (DssRestServiceActorCommandRequest request){
         context.getLog().info("onHandlingDssRestServiceActorCommandRequest: {}", request);
         if (Objects.isNull(request.getContentType())) {
             context.getLog().warn("Request content-type is null: {}", request);
@@ -64,7 +66,7 @@ public class DssRestServiceActor {
         return Behaviors.same();
     }
 
-    private void replyRequest(DssRestServiceActorCommandRequest request, HttpResponseStatus status, DssRestServiceResponse response) {
+    private void replyRequest (DssRestServiceActorCommandRequest request, HttpResponseStatus status, DssRestServiceResponse response){
         Objects.requireNonNull(request);
         request
                 .getSender()
@@ -78,7 +80,7 @@ public class DssRestServiceActor {
                 );
     }
 
-    private void replyRequest(DssRestServiceActorCommandRequest request, HttpResponseStatus status) {
+    private void replyRequest (DssRestServiceActorCommandRequest request, HttpResponseStatus status){
         replyRequest(request, status, null);
     }
 }
