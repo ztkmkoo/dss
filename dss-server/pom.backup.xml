@@ -57,7 +57,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>dss-core</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.4.4</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
