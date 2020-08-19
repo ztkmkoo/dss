@@ -40,7 +40,7 @@
     <dependencies>
         <!--dss core model-->
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>io.github.ztkmkoo</groupId>
             <artifactId>dss-core</artifactId>
             <version>0.4.4</version>
             <type>jar</type>

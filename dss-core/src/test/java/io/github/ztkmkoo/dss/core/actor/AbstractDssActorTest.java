@@ -18,8 +18,6 @@ public abstract class AbstractDssActorTest {
 
     protected static ActorTestKit testKit;
 
-    protected AbstractDssActorTest() {}
-
     @BeforeAll
     static void setUpBeforeClass() {
         testKit = ActorTestKit.create();
@@ -30,4 +28,6 @@ public abstract class AbstractDssActorTest {
         logger.info("AbstractDssActorTest cleanup.");
         testKit.shutdownTestKit();
     }
+
+    protected AbstractDssActorTest() {}
 }
