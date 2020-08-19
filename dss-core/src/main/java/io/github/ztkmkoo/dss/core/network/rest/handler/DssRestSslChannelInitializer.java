@@ -23,6 +23,15 @@ import java.util.Objects;
  */
 public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
 
+    private static SslContext selfSignedSslContext() throws InterruptedException {
+        try {
+            final SelfSignedCertificate ssc = new SelfSignedCertificate();
+            return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+        } catch (CertificateException | SSLException e) {
+            throw new InterruptedException("Create self signed ssl context failed");
+        }
+    }
+
     private final Logger logger = LoggerFactory.getLogger(DssRestSslChannelInitializer.class);
     private final SslContext sslCtx;
 
@@ -47,12 +56,5 @@ public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
         super.addHandler(p);
     }
 
-    private static SslContext selfSignedSslContext() throws InterruptedException {
-        try {
-            final SelfSignedCertificate ssc = new SelfSignedCertificate();
-            return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-        } catch (CertificateException | SSLException e) {
-            throw new InterruptedException("Create self signed ssl context failed");
-        }
-    }
+
 }

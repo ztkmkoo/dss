@@ -25,12 +25,6 @@ public enum DssRestContentType {
     ;
 
     private static final Map<String, DssRestContentType> textMap = initTextMap();
-    @Getter(value = AccessLevel.PRIVATE)
-    private final String text;
-
-    DssRestContentType(String text) {
-        this.text = text;
-    }
 
     public static DssRestContentType fromText(String text) {  
     	if(Objects.nonNull(text)){
@@ -50,5 +44,12 @@ public enum DssRestContentType {
                         )
                 )
         );
+    }
+
+    @Getter(value = AccessLevel.PRIVATE)
+    private final String text;
+
+    DssRestContentType(String text) {
+        this.text = text;
     }
 }

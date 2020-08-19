@@ -38,29 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ChannelHandler.Sharable
 class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssHandler<DssRestChannelHandlerCommand> {
 
-    private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
-    private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
-    private final StringBuilder buffer = new StringBuilder();
-    private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
-    private final ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor;
-    private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
-    @Getter
-    private final String name;
-    private final String restMasterActorName;
-
-    private ActorContext<DssRestChannelHandlerCommand> context;
-    private HttpRequest request;
-
-    DssRestHandler(
-            ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor,
-            ActorRef<DssRestMasterActorCommand> restMasterActorRef,
-            String name) {
-        this.restChannelInitializerActor = restChannelInitializerActor;
-        this.restMasterActorRef = restMasterActorRef;
-        this.name = name;
-        this.restMasterActorName = restMasterActorRef.path().name();
-    }
-
     private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
 
         Objects.requireNonNull(request);
@@ -103,6 +80,29 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         } else {
             return new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(response.getStatus()));
         }
+    }
+
+    private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
+    private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
+    private final StringBuilder buffer = new StringBuilder();
+    private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
+    private final ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor;
+    private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
+    @Getter
+    private final String name;
+    private final String restMasterActorName;
+
+    private ActorContext<DssRestChannelHandlerCommand> context;
+    private HttpRequest request;
+
+    DssRestHandler(
+            ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor,
+            ActorRef<DssRestMasterActorCommand> restMasterActorRef,
+            String name) {
+        this.restChannelInitializerActor = restChannelInitializerActor;
+        this.restMasterActorRef = restMasterActorRef;
+        this.name = name;
+        this.restMasterActorName = restMasterActorRef.path().name();
     }
 
     @Override
