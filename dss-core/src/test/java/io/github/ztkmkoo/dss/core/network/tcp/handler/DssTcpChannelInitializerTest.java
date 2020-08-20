@@ -40,11 +40,16 @@ class DssTcpChannelInitializerTest {
             .when(channelPipeline.first())
             .thenReturn(new ByteArrayDecoder());
 
+        Mockito
+            .when(channelPipeline.last())
+            .thenReturn(new DssTcpHandler());
+
         final DssTcpChannelInitializer dssTcpChannelInitializer = Mockito.mock(DssTcpChannelInitializer.class);
 
         dssTcpChannelInitializer.initChannel(socketChannel);
 
         final ChannelPipeline p = socketChannel.pipeline();
         assertEquals(ByteArrayDecoder.class, p.first().getClass());
+        assertEquals(DssTcpHandler.class, p.last().getClass());
     }
 }

@@ -1,6 +1,7 @@
 package io.github.ztkmkoo.dss.core.network.tcp.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Matchers.*;
 
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
@@ -29,12 +30,23 @@ class DssTcpHandlerTest {
     private Channel channel;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void channelRead0() throws Exception {
+    void channelActive() {
+        mockChannelHandlerContextChannelId(ctx, "abcedf");
+
+        final DssTcpHandler handler = new DssTcpHandler();
+
+        handler.channelActive(ctx);
+
+        Mockito.verify(ctx).writeAndFlush(any());
+    }
+
+    @Test
+    void channelRead0() throws Exception {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final DssTcpHandler handler = new DssTcpHandler();
@@ -63,5 +75,27 @@ class DssTcpHandlerTest {
         final Field field = DssTcpHandler.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         return tcLass.cast(field.get(handler));
+    }
+
+    @Test
+    void channelReadComplete() {
+        mockChannelHandlerContextChannelId(ctx, "abcedf");
+
+        final DssTcpHandler handler = new DssTcpHandler();
+
+        handler.channelReadComplete(ctx);
+
+        Mockito.verify(ctx).flush();
+    }
+
+    @Test
+    void exceptionCaught() {
+        mockChannelHandlerContextChannelId(ctx, "abcedf");
+
+        final DssTcpHandler handler = new DssTcpHandler();
+
+        handler.exceptionCaught(ctx, new Throwable());
+
+        Mockito.verify(ctx).close();
     }
 }
