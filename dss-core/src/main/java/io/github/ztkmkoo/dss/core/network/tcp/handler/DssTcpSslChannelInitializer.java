@@ -10,10 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.codec.bytes.ByteArrayDecoder;
+import io.netty.handler.codec.bytes.ByteArrayEncoder;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
@@ -35,10 +33,8 @@ public class DssTcpSslChannelInitializer extends DssTcpChannelInitializer {
         final ChannelPipeline p = ch.pipeline();
 
         p.addLast(sslCtx.newHandler(ch.alloc()));
-
-        p.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
-        p.addLast(new StringDecoder());
-        p.addLast(new StringEncoder());
+        p.addLast(new ByteArrayDecoder());
+        p.addLast(new ByteArrayEncoder());
         p.addLast(new DssTcpHandler());
     }
 

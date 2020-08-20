@@ -11,7 +11,6 @@ import org.mockito.MockitoAnnotations;
 
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.ssl.SslContext;
 
 class DssTcpSslChannelInitializerTest {
 
@@ -20,9 +19,6 @@ class DssTcpSslChannelInitializerTest {
 
     @Mock
     private ChannelPipeline channelPipeline;
-
-    @Mock
-    private SslContext sslCtx;
 
     @BeforeEach
     public void setUp() {
