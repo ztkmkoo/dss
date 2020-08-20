@@ -19,6 +19,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -95,7 +96,7 @@ public class DssRestServerTest {
 
         final SslContext sslContext = SslContextBuilder.forServer(privateKey, SSL_PASSWORD, certificate).build();
 
-        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181, true, sslContext);
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181, DssLogLevel.DEBUG, true, sslContext);
         dssRestServer
                 .addDssService(new TestService("test", "/hi", DssRestMethodType.GET));
 

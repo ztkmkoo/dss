@@ -19,10 +19,11 @@ public class DssRestChannelProperty implements Serializable, DssChannelProperty 
     private final String host;
     private final int port;
     private final DssLogLevel dssLogLevel;
+
     @Builder
     private DssRestChannelProperty(String host, int port, DssLogLevel dssLogLevel) {
         this.host = host;
         this.port = port;
-        this.dssLogLevel = Objects.nonNull(dssLogLevel) ? dssLogLevel : DssLogLevel.DEBUG;;
+        this.dssLogLevel = Objects.nonNull(dssLogLevel) ? dssLogLevel : DssLogLevel.DEBUG;
     }
 }
