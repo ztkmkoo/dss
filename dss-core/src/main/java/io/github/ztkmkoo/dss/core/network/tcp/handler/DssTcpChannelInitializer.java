@@ -6,11 +6,8 @@ import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.handler.codec.Delimiters;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.bytes.ByteArrayDecoder;
+import io.netty.handler.codec.bytes.ByteArrayEncoder;
 
 public class DssTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
@@ -22,9 +19,8 @@ public class DssTcpChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         final ChannelPipeline p = ch.pipeline();
 
-        p.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
-        p.addLast(new StringDecoder(CharsetUtil.UTF_8));
-        p.addLast(new StringEncoder(CharsetUtil.UTF_8));
+        p.addLast(new ByteArrayDecoder());
+        p.addLast(new ByteArrayEncoder());
         p.addLast(new DssTcpHandler());
     }
 }
