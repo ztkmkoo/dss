@@ -16,7 +16,7 @@ public class DssTcpHandler extends SimpleChannelInboundHandler<String> {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, String message) throws Exception {
         logger.info("Channel Reading Start");
 
-        ChannelFuture future = channelHandlerContext.write(message + "\n");
+        ChannelFuture future = channelHandlerContext.write("Received Message : " + message + "\n");
 
         future.addListener(ChannelFutureListener.CLOSE);
     }

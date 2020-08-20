@@ -10,6 +10,7 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.CharsetUtil;
 
 public class DssTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
@@ -22,8 +23,8 @@ public class DssTcpChannelInitializer extends ChannelInitializer<SocketChannel> 
         final ChannelPipeline p = ch.pipeline();
 
         p.addLast(new DelimiterBasedFrameDecoder(8192, Delimiters.lineDelimiter()));
-        p.addLast(new StringDecoder());
-        p.addLast(new StringEncoder());
+        p.addLast(new StringDecoder(CharsetUtil.UTF_8));
+        p.addLast(new StringEncoder(CharsetUtil.UTF_8));
         p.addLast(new DssTcpHandler());
     }
 }
