@@ -1,5 +1,8 @@
 package io.github.ztkmkoo.dss.server.tcp;
 
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +23,10 @@ public class DssTcpServer {
     private final int port;
     private final boolean ssl;
     private final SslContext sslContext;
+    private final AtomicBoolean active = new AtomicBoolean(false);
+    private final AtomicBoolean shutdown = new AtomicBoolean(true);
+
+    private Channel channel;
 
     public DssTcpServer(String host, int port) {
         this(host, port, false, null);
@@ -44,13 +51,32 @@ public class DssTcpServer {
 
         try {
             final DssTcpChannel dssTcpChannel = new DssTcpChannel();
-            Channel channel = dssTcpChannel.bind(bootstrap, property, channelInitializer);
+            channel = dssTcpChannel.bind(bootstrap, property, channelInitializer);
+            active.set(true);
+            shutdown.set(false);
             channel.closeFuture().sync();
         } finally {
             logger.info("Shut down worker and boss group gracefully");
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
+            shutdown.set(true);
         }
+    }
+
+    public void stop() {
+        if (Objects.nonNull(channel)) {
+            logger.info("Channel try to close. [Active: {}][Open: {}]", channel.isActive(), channel.isOpen());
+            channel.close();
+            active.set(false);
+        }
+    }
+
+    public boolean isActivated() {
+        return active.get();
+    }
+
+    public boolean isShutdown() {
+        return shutdown.get();
     }
 
     private DssTcpChannelProperty newDssTcpChannelProperty() {
