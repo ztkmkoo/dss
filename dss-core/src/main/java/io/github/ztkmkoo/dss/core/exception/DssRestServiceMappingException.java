@@ -6,7 +6,6 @@ package io.github.ztkmkoo.dss.core.exception;
  * Date: 20. 4. 6. 오전 1:05
  */
 public class DssRestServiceMappingException extends RuntimeException {
-
     private static final long serialVersionUID = 5955150119271782542L;
 
     public DssRestServiceMappingException(String message) {
