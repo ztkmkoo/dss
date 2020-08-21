@@ -15,10 +15,10 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 4. 6. 오전 1:16
  */
-public class DssRestActorFormDataServiceTest {
+class DssRestActorFormDataServiceTest {
 
     @Test
-    public void getBody() {
+    void getBody() {
 
         final DssRestActorFormDataService service = new DssRestActorFormDataService("test", "/test", DssRestMethodType.GET) {
             @Override
