@@ -45,8 +45,8 @@ public class DssRestPathResolver {
         public DssRestPathResolver build() {
             if (!staticServiceActorMap.isEmpty()) {
                 staticServiceActorMap.forEach((methodType, map) -> map.forEach((path, actorRef) ->
-                        logger.info("Add mapping {} {} to {}",
-                                methodType.name(), path, actorRef.path().name())
+                    logger.info("Add mapping {} {} to {}",
+                            methodType.name(), path, actorRef.path().name())
                 ));
             }
 
