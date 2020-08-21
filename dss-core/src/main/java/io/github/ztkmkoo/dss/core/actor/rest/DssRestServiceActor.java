@@ -32,7 +32,7 @@ public class DssRestServiceActor {
         this.dssRestActorService = dssRestActorService;
     }
 
-    private Behavior<DssRestServiceActorCommand> dssRestServiceActor () {
+    private Behavior<DssRestServiceActorCommand> dssRestServiceActor() {
         return Behaviors
                 .receive(DssRestServiceActorCommand.class)
                 .onMessage(DssRestServiceActorCommandRequest.class, this::onHandlingDssRestServiceActorCommandRequest)
