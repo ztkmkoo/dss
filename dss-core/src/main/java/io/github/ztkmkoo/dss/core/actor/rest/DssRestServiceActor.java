@@ -66,7 +66,7 @@ public class DssRestServiceActor {
         return Behaviors.same();
     }
 
-    private void replyRequest (DssRestServiceActorCommandRequest request, HttpResponseStatus status, DssRestServiceResponse response){
+    private void replyRequest(DssRestServiceActorCommandRequest request, HttpResponseStatus status, DssRestServiceResponse response) {
         Objects.requireNonNull(request);
         request
                 .getSender()
