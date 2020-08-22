@@ -37,7 +37,7 @@ import io.netty.util.CharsetUtil;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 11:16
  */
-public class DssRestHandlerTest extends AbstractDssActorTest {
+class DssRestHandlerTest extends AbstractDssActorTest {
 
     private final HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/hi/hello");
     private final HttpContent content = new DefaultHttpContent(Unpooled.copiedBuffer("Hello", CharsetUtil.UTF_8));
@@ -49,12 +49,12 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     private Channel channel;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void channelRead0() throws Exception {
+    void channelRead0() throws Exception {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
@@ -74,7 +74,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void channelReadComplete() throws Exception {
+    void channelReadComplete() throws Exception {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
         final TestProbe<DssRestMasterActorCommand> testProbe = testKit.createTestProbe();
@@ -90,7 +90,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void exceptionCaught() throws NoSuchFieldException, IllegalAccessException {
+    void exceptionCaught() throws NoSuchFieldException, IllegalAccessException {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
@@ -105,7 +105,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void exceptionCaughtSkippedWhenContextRemoved() {
+    void exceptionCaughtSkippedWhenContextRemoved() {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
@@ -117,7 +117,7 @@ public class DssRestHandlerTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void create() throws NoSuchFieldException, IllegalAccessException {
+    void create() throws NoSuchFieldException, IllegalAccessException {
 
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
