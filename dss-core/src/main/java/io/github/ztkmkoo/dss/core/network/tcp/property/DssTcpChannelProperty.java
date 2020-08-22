@@ -1,10 +1,9 @@
 package io.github.ztkmkoo.dss.core.network.tcp.property;
 
-import java.io.Serializable;
+import java.io.*;
 
-import io.github.ztkmkoo.dss.core.network.DssChannelProperty;
-import lombok.Builder;
-import lombok.Getter;
+import io.github.ztkmkoo.dss.core.network.*;
+import lombok.*;
 
 @Getter
 public class DssTcpChannelProperty implements Serializable, DssChannelProperty {

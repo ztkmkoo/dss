@@ -3,25 +3,19 @@ package io.github.ztkmkoo.dss.core.network.tcp.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Matchers.*;
 
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
+import java.lang.reflect.*;
+import java.nio.charset.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
-import io.netty.util.CharsetUtil;
+import io.netty.buffer.*;
+import io.netty.channel.*;
+import io.netty.util.*;
 
 class DssTcpHandlerTest {
 
-    private  static final ByteBuf SEND_MESSAGE = Unpooled.copiedBuffer("Send Message", CharsetUtil.UTF_8);
+    private static final ByteBuf SEND_MESSAGE = Unpooled.copiedBuffer("Send Message", CharsetUtil.UTF_8);
 
     @Mock
     private ChannelHandlerContext ctx;
@@ -70,7 +64,8 @@ class DssTcpHandlerTest {
         Mockito.when(channelId.asLongText()).thenReturn(longId);
     }
 
-    private static <T> T getDssTcpHandlerFieldWithReflection(DssTcpHandler handler, String fieldName, Class<T> tcLass) throws NoSuchFieldException, IllegalAccessException {
+    private static <T> T getDssTcpHandlerFieldWithReflection(DssTcpHandler handler, String fieldName,
+        Class<T> tcLass) throws NoSuchFieldException, IllegalAccessException {
 
         final Field field = DssTcpHandler.class.getDeclaredField(fieldName);
         field.setAccessible(true);

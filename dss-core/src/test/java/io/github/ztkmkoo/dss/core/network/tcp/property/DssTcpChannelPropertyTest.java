@@ -2,9 +2,9 @@ package io.github.ztkmkoo.dss.core.network.tcp.property;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import io.github.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
+import io.github.ztkmkoo.dss.core.network.rest.property.*;
 
 class DssTcpChannelPropertyTest {
     @Test
