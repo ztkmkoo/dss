@@ -2,15 +2,17 @@ package io.github.ztkmkoo.dss.core.network.tcp;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.net.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
-import io.github.ztkmkoo.dss.core.network.tcp.handler.*;
-import io.github.ztkmkoo.dss.core.network.tcp.property.*;
-import io.netty.bootstrap.*;
-import io.netty.channel.*;
-import io.netty.channel.nio.*;
+import io.github.ztkmkoo.dss.core.network.tcp.handler.DssTcpChannelInitializer;
+import io.github.ztkmkoo.dss.core.network.tcp.property.DssTcpChannelProperty;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 
 class DssTcpChannelTest {
 

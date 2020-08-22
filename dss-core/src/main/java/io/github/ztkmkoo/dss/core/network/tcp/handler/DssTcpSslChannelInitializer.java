@@ -1,17 +1,20 @@
 package io.github.ztkmkoo.dss.core.network.tcp.handler;
 
-import java.security.cert.*;
-import java.util.*;
+import java.security.cert.CertificateException;
+import java.util.Objects;
 
-import javax.net.ssl.*;
+import javax.net.ssl.SSLException;
 
-import org.slf4j.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import io.netty.channel.*;
-import io.netty.channel.socket.*;
-import io.netty.handler.codec.bytes.*;
-import io.netty.handler.ssl.*;
-import io.netty.handler.ssl.util.*;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.bytes.ByteArrayDecoder;
+import io.netty.handler.codec.bytes.ByteArrayEncoder;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 
 public class DssTcpSslChannelInitializer extends DssTcpChannelInitializer {
 
