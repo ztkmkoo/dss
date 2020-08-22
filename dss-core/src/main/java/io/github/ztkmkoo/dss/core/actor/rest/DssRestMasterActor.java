@@ -5,6 +5,7 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
+import io.github.ztkmkoo.dss.core.exception.handler.DssRestExceptionHandler;
 import io.github.ztkmkoo.dss.core.message.rest.*;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
@@ -24,9 +25,11 @@ public class DssRestMasterActor {
 
     private final ActorContext<DssRestMasterActorCommand> context;
     private final DssRestPathResolver dssRestPathResolver;
+    private final ActorRef<DssRestExceptionHandlerCommand> exceptionHandler;
 
     private DssRestMasterActor(ActorContext<DssRestMasterActorCommand> context, List<DssRestActorService> serviceList) {
         this.context = context;
+        this.exceptionHandler = context.spawn(DssRestExceptionHandlerActor.create(DssRestExceptionHandler.getInstance().getExceptionHandlerMap()), "exception-handler");
         this.dssRestPathResolver = dssRestPathResolver(serviceList);
     }
 
@@ -37,7 +40,7 @@ public class DssRestMasterActor {
 
         final DssRestPathResolver.Builder builder = DssRestPathResolver.builder();
         serviceList.forEach(service -> {
-            final ActorRef<DssRestServiceActorCommand> serviceActor = context.spawn(DssRestServiceActor.create(service), service.getName());
+            final ActorRef<DssRestServiceActorCommand> serviceActor = context.spawn(DssRestServiceActor.create(service, exceptionHandler), service.getName());
             builder.addServiceActor(service.getMethodType(), service.getPath(), serviceActor);
         });
         return builder.build();
