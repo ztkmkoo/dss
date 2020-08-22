@@ -21,12 +21,12 @@ public abstract class AbstractDssActorTest {
     protected AbstractDssActorTest() {}
 
     @BeforeAll
-    public static void setUpBeforeClass() {
+    static void setUpBeforeClass() {
         testKit = ActorTestKit.create();
     }
 
     @AfterAll
-    public static void cleanup() {
+    static void cleanup() {
         logger.info("AbstractDssActorTest cleanup.");
         testKit.shutdownTestKit();
     }

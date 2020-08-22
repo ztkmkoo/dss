@@ -36,12 +36,12 @@ class DssRestChannelInitializerTest {
     private ChannelPipeline channelPipeline;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
     @AfterAll
-    public static void cleanUp() {
+    static void cleanUp() {
         testKit.shutdownTestKit();
     }
 
