@@ -26,13 +26,13 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 10:57
  */
-public class DssRestMasterActorTest extends AbstractDssActorTest {
+class DssRestMasterActorTest extends AbstractDssActorTest {
 
     private static final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
     private static final ActorRef<DssRestMasterActorCommand> restMasterActorRef = testKit.spawn(DssRestMasterActor.create(testServiceList()), "rest-master");
 
     @Test
-    public void handlingDssRestMasterActorCommandRequest() {
+    void handlingDssRestMasterActorCommandRequest() {
         restMasterActorRef.tell(DssRestMasterActorCommandRequest
                 .builder()
                 .channelId("abcdefg")
@@ -46,7 +46,7 @@ public class DssRestMasterActorTest extends AbstractDssActorTest {
     }
 
     @Test
-    public void handlingDssRestMasterActorCommandRequestErrorMethodType() {
+    void handlingDssRestMasterActorCommandRequestErrorMethodType() {
         restMasterActorRef.tell(DssRestMasterActorCommandRequest
                 .builder()
                 .channelId("abcdefg")
