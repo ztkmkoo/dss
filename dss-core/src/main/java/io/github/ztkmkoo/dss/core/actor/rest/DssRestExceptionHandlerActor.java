@@ -4,7 +4,9 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
+import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
+import io.github.ztkmkoo.dss.core.actor.rest.service.AbstractDssRestActorService;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestExceptionHandlerCommand;
@@ -50,14 +52,14 @@ public class DssRestExceptionHandlerActor {
             httpResponseStatus = HttpResponseStatus.INTERNAL_SERVER_ERROR;
         }
 
-        dssRestServiceResponse = customExceptionHandleMethod(commandRequest);
+        dssRestServiceResponse = findExceptionHandleMethod(commandRequest);
 
         replyRequest(commandRequest.getRequest(), httpResponseStatus, dssRestServiceResponse);
 
         return Behaviors.same();
     }
 
-    private DssRestServiceResponse customExceptionHandleMethod(DssRestExceptionHandlerCommandRequest commandRequest) {
+    private DssRestServiceResponse findExceptionHandleMethod(DssRestExceptionHandlerCommandRequest commandRequest) {
         Map<Class<? extends Exception>, Method> serviceExceptionHandlerMap = exceptionHandlerMap.get(commandRequest.getService().getClass());
 
         if (containMethod(serviceExceptionHandlerMap, commandRequest)){
@@ -79,8 +81,19 @@ public class DssRestExceptionHandlerActor {
             Constructor<?> declaredConstructor = method.getDeclaringClass().getDeclaredConstructor();
             declaredConstructor.setAccessible(true);
 
-            Object customExceptionHandler = declaredConstructor.newInstance();
-            Object response = method.invoke(customExceptionHandler, null);
+            Object exceptionHandler = declaredConstructor.newInstance();
+            Object response;
+
+            if (method.getParameterCount() == 1){
+                Method makeRequest = AbstractDssRestActorService.class.getDeclaredMethod("makeRequest", DssRestServiceActorCommandRequest.class);
+                makeRequest.setAccessible(true);
+
+                DssRestServiceRequest request = (DssRestServiceRequest) makeRequest.invoke(commandRequest.getService(), commandRequest.getRequest());
+                response = method.invoke(exceptionHandler, request.getBody());
+            } else {
+                response = method.invoke(exceptionHandler, null);
+            }
+
             if (response instanceof DssRestServiceResponse) {
                 return (DssRestServiceResponse) response;
             }
