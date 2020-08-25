@@ -1,10 +1,11 @@
 package io.github.ztkmkoo.dss.core.network.rest;
 
 import io.github.ztkmkoo.dss.core.network.DssChannel;
-import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
 import io.github.ztkmkoo.dss.core.network.rest.property.DssRestChannelProperty;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -16,10 +17,10 @@ import java.util.Objects;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 2. 오전 12:43
  */
-public class DssRestChannel implements DssChannel<DssRestChannelProperty, DssRestChannelInitializer> {
+public class DssRestChannel implements DssChannel<DssRestChannelProperty, ChannelInitializer<SocketChannel>> {
 
     @Override
-    public Channel bind(ServerBootstrap serverBootstrap, DssRestChannelProperty dssRestChannelProperty, DssRestChannelInitializer dssRestChannelInitializer) throws InterruptedException {
+    public Channel bind(ServerBootstrap serverBootstrap, DssRestChannelProperty dssRestChannelProperty, ChannelInitializer<SocketChannel> dssRestChannelInitializer) throws InterruptedException {
 
         Objects.requireNonNull(serverBootstrap);
         Objects.requireNonNull(dssRestChannelProperty);
