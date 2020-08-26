@@ -134,6 +134,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>io.github.ztkmkoo.dss.example/**/*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -149,6 +154,28 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
             </plugin>
+
+            <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <inherited>false</inherited>
+            <executions>
+                <execution>
+                    <id>github-deploy</id>
+                    <phase>deploy</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                    <configuration>
+                        <executable>mvn</executable>
+                        <commandlineArgs>
+                        	deploy -DaltDeploymentRepository=github::default::https://maven.pkg.github.com/ztkmkoo/dss
+                        </commandlineArgs>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>  
         </plugins>
     </build>
 </project>

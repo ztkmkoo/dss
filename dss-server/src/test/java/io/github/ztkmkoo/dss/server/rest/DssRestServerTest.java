@@ -19,6 +19,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -46,12 +47,12 @@ import org.junit.jupiter.api.Timeout;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 8. 오후 4:59
  */
-public class DssRestServerTest {
+class DssRestServerTest {
 
     private static final String SSL_PASSWORD = "dss123";
 
     @Test
-    public void start() throws Exception {
+    void start() throws Exception {
 
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
         dssRestServer
@@ -76,7 +77,7 @@ public class DssRestServerTest {
     }
 
     @Test
-    public void test() throws InterruptedException {
+    void test() throws InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
         dssRestServer
                 .addDssService(new TestService("test", "/hi", DssRestMethodType.GET));
@@ -89,13 +90,13 @@ public class DssRestServerTest {
     }
 
     @Test
-    public void testSsl() throws Exception {
+    void testSsl() throws Exception {
         final PrivateKey privateKey = loadPrivateKeyFromFile(loadFromTestResources("ssl/private.der"));
         final X509Certificate certificate = loadX509CertificateFromFile(loadFromTestResources("ssl/private.crt"));
 
         final SslContext sslContext = SslContextBuilder.forServer(privateKey, SSL_PASSWORD, certificate).build();
 
-        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181, true, sslContext);
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181, DssLogLevel.DEBUG, true, sslContext);
         dssRestServer
                 .addDssService(new TestService("test", "/hi", DssRestMethodType.GET));
 
@@ -108,7 +109,7 @@ public class DssRestServerTest {
 
     @Test
     @Timeout(value = 15)
-    public void testJsonPostRequest() throws IOException, InterruptedException {
+    void testJsonPostRequest() throws IOException, InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
         dssRestServer
                 .addDssService(new TestJsonService("test_json", "/test/json", DssRestMethodType.POST));
