@@ -98,7 +98,7 @@ public class DssRestExceptionHandlerActor {
                 return (DssRestServiceResponse) response;
             }
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            e.printStackTrace();
+            this.context.getLog().error("Exception handler execution error: ", e);
         }
 
         return null;
