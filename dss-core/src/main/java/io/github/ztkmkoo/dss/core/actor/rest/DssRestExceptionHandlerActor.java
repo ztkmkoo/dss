@@ -8,27 +8,25 @@ import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.actor.rest.service.AbstractDssRestActorService;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
+import io.github.ztkmkoo.dss.core.exception.handler.ExceptionHandleMethod;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestExceptionHandlerCommand;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestExceptionHandlerCommandRequest;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
 public class DssRestExceptionHandlerActor {
-    public static Behavior<DssRestExceptionHandlerCommand> create(Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, Method>> exceptionHandlerMap) {
+    public static Behavior<DssRestExceptionHandlerCommand> create(Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> exceptionHandlerMap) {
         return Behaviors.setup(context -> new DssRestExceptionHandlerActor(context, exceptionHandlerMap).dssRestExceptionHandlerActor());
     }
 
     private final ActorContext<DssRestExceptionHandlerCommand> context;
-    private final Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, Method>> exceptionHandlerMap;
+    private final Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> exceptionHandlerMap;
 
-    public DssRestExceptionHandlerActor(ActorContext<DssRestExceptionHandlerCommand> context, Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, Method>> exceptionHandlerMap) {
+    public DssRestExceptionHandlerActor(ActorContext<DssRestExceptionHandlerCommand> context, Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> exceptionHandlerMap) {
         this.context = context;
         this.exceptionHandlerMap = exceptionHandlerMap;
     }
@@ -60,48 +58,26 @@ public class DssRestExceptionHandlerActor {
     }
 
     private DssRestServiceResponse findExceptionHandleMethod(DssRestExceptionHandlerCommandRequest commandRequest) {
-        Map<Class<? extends Exception>, Method> serviceExceptionHandlerMap = exceptionHandlerMap.get(commandRequest.getService().getClass());
+        Map<Class<? extends Exception>, ExceptionHandleMethod> serviceExceptionHandlerMap = exceptionHandlerMap.get(commandRequest.getService().getClass());
 
-        if (containMethod(serviceExceptionHandlerMap, commandRequest)){
-            Method method = serviceExceptionHandlerMap.get(commandRequest.getException().getClass());
-            return invokeMethod(method, commandRequest);
+        DssRestServiceRequest request = makeRequest(commandRequest);
+        if (containMethod(serviceExceptionHandlerMap, commandRequest)) {
+            ExceptionHandleMethod exceptionHandleMethod = serviceExceptionHandlerMap.get(commandRequest.getException().getClass());
+            return exceptionHandleMethod.handlingException(request);
         }
 
-        Map<Class<? extends Exception>, Method> globalExceptionHandler = exceptionHandlerMap.get(DssRestActorService.class);
-        if (containMethod(globalExceptionHandler, commandRequest)){
-            Method method = globalExceptionHandler.get(commandRequest.getException().getClass());
-            return invokeMethod(method, commandRequest);
+        Map<Class<? extends Exception>, ExceptionHandleMethod> globalExceptionHandler = exceptionHandlerMap.get(DssRestActorService.class);
+        if (containMethod(globalExceptionHandler, commandRequest)) {
+            ExceptionHandleMethod exceptionHandleMethod = globalExceptionHandler.get(commandRequest.getException().getClass());
+            return exceptionHandleMethod.handlingException(request);
         }
 
         return null;
     }
 
-    private DssRestServiceResponse invokeMethod(Method method, DssRestExceptionHandlerCommandRequest commandRequest) {
-        try {
-            Constructor<?> declaredConstructor = method.getDeclaringClass().getDeclaredConstructor();
-            declaredConstructor.setAccessible(true);
-
-            Object exceptionHandler = declaredConstructor.newInstance();
-            Object response;
-
-            if (method.getParameterCount() == 1){
-                Method makeRequest = AbstractDssRestActorService.class.getDeclaredMethod("makeRequest", DssRestServiceActorCommandRequest.class);
-                makeRequest.setAccessible(true);
-
-                DssRestServiceRequest request = (DssRestServiceRequest) makeRequest.invoke(commandRequest.getService(), commandRequest.getRequest());
-                response = method.invoke(exceptionHandler, request.getBody());
-            } else {
-                response = method.invoke(exceptionHandler, null);
-            }
-
-            if (response instanceof DssRestServiceResponse) {
-                return (DssRestServiceResponse) response;
-            }
-        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            this.context.getLog().error("Exception handler execution error: ", e);
-        }
-
-        return null;
+    private DssRestServiceRequest makeRequest(DssRestExceptionHandlerCommandRequest commandRequest) {
+        AbstractDssRestActorService service = (AbstractDssRestActorService) commandRequest.getService();
+        return service.makeRequest(commandRequest.getRequest());
     }
 
     private void replyRequest(DssRestServiceActorCommandRequest request, HttpResponseStatus status, DssRestServiceResponse response) {
@@ -118,7 +94,7 @@ public class DssRestExceptionHandlerActor {
                 );
     }
 
-    private boolean containMethod(Map<Class<? extends Exception>, Method> exceptionHandler, DssRestExceptionHandlerCommandRequest commandRequest){
+    private boolean containMethod(Map<Class<? extends Exception>, ExceptionHandleMethod> exceptionHandler, DssRestExceptionHandlerCommandRequest commandRequest) {
         return Objects.nonNull(exceptionHandler) && exceptionHandler.containsKey(commandRequest.getException().getClass());
     }
 }

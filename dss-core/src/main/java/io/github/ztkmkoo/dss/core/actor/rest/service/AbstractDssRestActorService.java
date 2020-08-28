@@ -59,7 +59,7 @@ public abstract class AbstractDssRestActorService<S extends Serializable> implem
     }
 
     @SuppressWarnings("unchecked")
-    private DssRestServiceRequest<S> makeRequest(DssRestServiceActorCommandRequest commandRequest) {
+    public DssRestServiceRequest<S> makeRequest(DssRestServiceActorCommandRequest commandRequest) {
         Objects.requireNonNull(commandRequest);
         final S body = getBody(commandRequest.getContent());
         return (DssRestServiceRequest<S>) DssRestServiceRequestDefaultImpl
