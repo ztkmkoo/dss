@@ -8,7 +8,7 @@ import lombok.Getter;
 public class DssRestExceptionHandlerCommandRequest implements DssRestExceptionHandlerCommand {
     private static final long serialVersionUID = 5752260184738368572L;
 
-    private final DssRestActorService service;
+    private final transient DssRestActorService service;
     private final DssRestServiceActorCommandRequest request;
     private final Exception exception;
 
