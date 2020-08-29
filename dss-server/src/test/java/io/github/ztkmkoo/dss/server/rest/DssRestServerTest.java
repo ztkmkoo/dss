@@ -1,8 +1,5 @@
 package io.github.ztkmkoo.dss.server.rest;
 
-import static org.awaitility.Awaitility.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +23,6 @@ import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
@@ -133,7 +129,6 @@ class DssRestServerTest {
 
     @Test
     void start() throws Exception {
-
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
         dssRestServer
                 .addDssService(new DssRestActorJsonService("test", "/hi", DssRestMethodType.GET) {
@@ -371,6 +366,7 @@ class DssRestServerTest {
     }
 
     private static class MyService extends DssRestActorJsonService<TestRequest> {
+
         public MyService() {
             super(new TypeReference<TestRequest>() {}, "myService", "/my/service", DssRestMethodType.POST);
         }
@@ -381,6 +377,7 @@ class DssRestServerTest {
     }
 
     private static class YourService extends DssRestActorJsonService<TestRequest> {
+
         public YourService() {
             super(new TypeReference<TestRequest>() {}, "yourService", "/your/service", DssRestMethodType.POST);
         }

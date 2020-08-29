@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
+import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.exception.annotation.ExceptionHandler;
 import io.github.ztkmkoo.dss.core.exception.annotation.ServiceExceptionHandler;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
@@ -34,6 +35,7 @@ class DssRestExceptionHandlerResolverTest {
         });
 
         assertTrue(dssRestExceptionHandlerResolver.getExceptionHandlerMap().containsKey(TestService.class));
+        assertTrue(dssRestExceptionHandlerResolver.getExceptionHandlerMap().containsKey(DssRestActorService.class));
     }
 
     static class TestService extends DssRestActorJsonService<TestRequest> {
