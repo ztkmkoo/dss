@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DssRestExceptionHandlerResolverTest {
 
@@ -33,7 +33,7 @@ class DssRestExceptionHandlerResolverTest {
             }
         });
 
-        assertFalse(dssRestExceptionHandlerResolver.getExceptionHandlerMap().isEmpty());
+        assertTrue(dssRestExceptionHandlerResolver.getExceptionHandlerMap().containsKey(TestService.class));
     }
 
     static class TestService extends DssRestActorJsonService<TestRequest> {

@@ -3,17 +3,18 @@ package io.github.ztkmkoo.dss.core.actor.rest;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.actor.AbstractDssActorTest;
+import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
-import io.github.ztkmkoo.dss.core.exception.DssRestServiceMappingException;
 import io.github.ztkmkoo.dss.core.exception.handler.DssRestExceptionHandlerResolver;
 import io.github.ztkmkoo.dss.core.message.rest.*;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DssRestExceptionHandlerActorTest extends AbstractDssActorTest {
 
@@ -36,8 +37,10 @@ class DssRestExceptionHandlerActorTest extends AbstractDssActorTest {
                 .exception(new Exception())
                 .build());
 
-        probe.expectMessageClass(DssRestChannelHandlerCommandResponse.class);
-        assertTrue(true);
+        DssRestChannelHandlerCommandResponse response = probe.expectMessageClass(DssRestChannelHandlerCommandResponse.class);
+
+        assertEquals(HttpResponseStatus.INTERNAL_SERVER_ERROR.code(), response.getStatus().intValue());
+        assertEquals("test", response.getChannelId());
     }
 
     @Test
@@ -46,14 +49,16 @@ class DssRestExceptionHandlerActorTest extends AbstractDssActorTest {
                 .builder()
                 .service(testService())
                 .request(commandRequest)
-                .exception(new DssRestServiceMappingException("test"))
+                .exception(new DssRestRequestMappingException("test"))
                 .build());
 
-        probe.expectMessageClass(DssRestChannelHandlerCommandResponse.class);
-        assertTrue(true);
+        DssRestChannelHandlerCommandResponse response = probe.expectMessageClass(DssRestChannelHandlerCommandResponse.class);
+
+        assertEquals(HttpResponseStatus.BAD_REQUEST.code(), response.getStatus().intValue());
+        assertEquals("test", response.getChannelId());
     }
 
-    private DssRestActorService testService(){
+    private DssRestActorService testService() {
         return new DssRestActorJsonService("hi", "/test", DssRestMethodType.GET) {
 
             @Override
