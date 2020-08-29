@@ -4,7 +4,7 @@ import akka.actor.typed.ActorSystem;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
-import io.github.ztkmkoo.dss.core.exception.handler.DssRestExceptionHandler;
+import io.github.ztkmkoo.dss.core.exception.handler.DssRestExceptionHandlerResolver;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import io.github.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
@@ -148,7 +148,7 @@ public class DssRestServer implements DssServer<DssRestActorService> {
 
     private void setExceptionHandler() {
         if (Objects.nonNull(this.exceptionHandler)){
-            DssRestExceptionHandler.getInstance().setExceptionHandlerMap(this.exceptionHandler);
+            DssRestExceptionHandlerResolver.getInstance().setExceptionHandlerMap(this.exceptionHandler);
         }
     }
 

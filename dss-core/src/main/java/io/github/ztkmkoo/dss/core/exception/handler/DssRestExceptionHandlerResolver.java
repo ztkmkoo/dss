@@ -13,18 +13,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class DssRestExceptionHandler {
+public class DssRestExceptionHandlerResolver {
 
-    private final Logger logger = LoggerFactory.getLogger(DssRestExceptionHandler.class);
-    private static DssRestExceptionHandler dssRestExceptionHandler = new DssRestExceptionHandler();
+    private final Logger logger = LoggerFactory.getLogger(DssRestExceptionHandlerResolver.class);
+    private static DssRestExceptionHandlerResolver dssRestExceptionHandlerResolver = new DssRestExceptionHandlerResolver();
 
-    public static DssRestExceptionHandler getInstance(){
-        return dssRestExceptionHandler;
+    public static DssRestExceptionHandlerResolver getInstance(){
+        return dssRestExceptionHandlerResolver;
     }
 
     private final Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> exceptionHandlerMap;
 
-    private DssRestExceptionHandler(){
+    private DssRestExceptionHandlerResolver(){
         this.exceptionHandlerMap = new HashMap<>();
     }
 
