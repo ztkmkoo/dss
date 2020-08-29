@@ -15,27 +15,27 @@ import java.util.Objects;
 
 public class DssRestExceptionHandlerResolver {
 
-    private final Logger logger = LoggerFactory.getLogger(DssRestExceptionHandlerResolver.class);
     private static DssRestExceptionHandlerResolver dssRestExceptionHandlerResolver = new DssRestExceptionHandlerResolver();
 
-    public static DssRestExceptionHandlerResolver getInstance(){
+    public static DssRestExceptionHandlerResolver getInstance() {
         return dssRestExceptionHandlerResolver;
     }
 
+    private final Logger logger = LoggerFactory.getLogger(DssRestExceptionHandlerResolver.class);
     private final Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> exceptionHandlerMap;
 
-    private DssRestExceptionHandlerResolver(){
+    private DssRestExceptionHandlerResolver() {
         this.exceptionHandlerMap = new HashMap<>();
     }
 
-    public void setExceptionHandlerMap(DssExceptionHandler dssExceptionHandler){
+    public void setExceptionHandlerMap(DssExceptionHandler dssExceptionHandler) {
         Objects.requireNonNull(dssExceptionHandler);
 
         Method[] methods = dssExceptionHandler.getClass().getMethods();
         HashMap<Class<? extends Exception>, ExceptionHandleMethod> globalExceptionHandlerMap = new HashMap<>();
 
-        for(Method method: methods){
-            if (method.isAnnotationPresent(ExceptionHandler.class)){
+        for (Method method : methods) {
+            if (method.isAnnotationPresent(ExceptionHandler.class)) {
                 ExceptionHandler annotation = method.getAnnotation(ExceptionHandler.class);
 
                 for (Class<? extends Exception> exception : annotation.exception()) {
@@ -54,7 +54,7 @@ public class DssRestExceptionHandlerResolver {
         exceptionHandlerMap.put(DssRestActorService.class, globalExceptionHandlerMap);
     }
 
-    private ExceptionHandleMethod setExceptionHandleMethod(DssExceptionHandler dssExceptionHandler, Method method){
+    private ExceptionHandleMethod setExceptionHandleMethod(DssExceptionHandler dssExceptionHandler, Method method) {
         return request -> {
             try {
                 return (DssRestServiceResponse) method.invoke(dssExceptionHandler, request);
@@ -67,7 +67,7 @@ public class DssRestExceptionHandlerResolver {
         };
     }
 
-    public Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> getExceptionHandlerMap(){
+    public Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> getExceptionHandlerMap() {
         return this.exceptionHandlerMap;
     }
 }

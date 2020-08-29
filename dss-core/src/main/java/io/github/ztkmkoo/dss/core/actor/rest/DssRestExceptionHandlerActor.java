@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class DssRestExceptionHandlerActor {
+
     public static Behavior<DssRestExceptionHandlerCommand> create(Map<Class<? extends DssRestActorService>, Map<Class<? extends Exception>, ExceptionHandleMethod>> exceptionHandlerMap) {
         return Behaviors.setup(context -> new DssRestExceptionHandlerActor(context, exceptionHandlerMap).dssRestExceptionHandlerActor());
     }

@@ -147,7 +147,7 @@ public class DssRestServer implements DssServer<DssRestActorService> {
     }
 
     private void setExceptionHandler() {
-        if (Objects.nonNull(this.exceptionHandler)){
+        if (Objects.nonNull(this.exceptionHandler)) {
             DssRestExceptionHandlerResolver.getInstance().setExceptionHandlerMap(this.exceptionHandler);
         }
     }
