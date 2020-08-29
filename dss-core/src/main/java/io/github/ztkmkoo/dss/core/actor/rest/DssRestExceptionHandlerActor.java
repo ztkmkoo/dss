@@ -4,9 +4,7 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
-import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
-import io.github.ztkmkoo.dss.core.actor.rest.service.AbstractDssRestActorService;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.exception.handler.ExceptionHandleMethod;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
@@ -60,24 +58,19 @@ public class DssRestExceptionHandlerActor {
     private DssRestServiceResponse findExceptionHandleMethod(DssRestExceptionHandlerCommandRequest commandRequest) {
         Map<Class<? extends Exception>, ExceptionHandleMethod> serviceExceptionHandlerMap = exceptionHandlerMap.get(commandRequest.getService().getClass());
 
-        DssRestServiceRequest request = makeRequest(commandRequest);
         if (containMethod(serviceExceptionHandlerMap, commandRequest)) {
             ExceptionHandleMethod exceptionHandleMethod = serviceExceptionHandlerMap.get(commandRequest.getException().getClass());
-            return exceptionHandleMethod.handlingException(request);
+            return exceptionHandleMethod.handlingException(commandRequest.getRequest());
         }
 
         Map<Class<? extends Exception>, ExceptionHandleMethod> globalExceptionHandler = exceptionHandlerMap.get(DssRestActorService.class);
+
         if (containMethod(globalExceptionHandler, commandRequest)) {
             ExceptionHandleMethod exceptionHandleMethod = globalExceptionHandler.get(commandRequest.getException().getClass());
-            return exceptionHandleMethod.handlingException(request);
+            return exceptionHandleMethod.handlingException(commandRequest.getRequest());
         }
 
         return null;
-    }
-
-    private DssRestServiceRequest makeRequest(DssRestExceptionHandlerCommandRequest commandRequest) {
-        AbstractDssRestActorService service = (AbstractDssRestActorService) commandRequest.getService();
-        return service.makeRequest(commandRequest.getRequest());
     }
 
     private void replyRequest(DssRestServiceActorCommandRequest request, HttpResponseStatus status, DssRestServiceResponse response) {

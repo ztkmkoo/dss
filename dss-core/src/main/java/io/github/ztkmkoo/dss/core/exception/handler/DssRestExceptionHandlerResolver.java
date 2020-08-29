@@ -57,7 +57,7 @@ public class DssRestExceptionHandlerResolver {
     private ExceptionHandleMethod setExceptionHandleMethod(DssExceptionHandler dssExceptionHandler, Method method){
         return request -> {
             try {
-                return (DssRestServiceResponse) method.invoke(dssExceptionHandler, request.getBody());
+                return (DssRestServiceResponse) method.invoke(dssExceptionHandler, request);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 logger.error("exception handling method invoke error: ", e);
             } catch (Exception e) {
