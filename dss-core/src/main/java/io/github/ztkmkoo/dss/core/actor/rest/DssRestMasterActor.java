@@ -25,11 +25,11 @@ public class DssRestMasterActor {
 
     private final ActorContext<DssRestMasterActorCommand> context;
     private final DssRestPathResolver dssRestPathResolver;
-    private final ActorRef<DssRestExceptionHandlerCommand> exceptionHandler;
+    private final ActorRef<DssRestExceptionHandlerCommand> exceptionHandlerActor;
 
     private DssRestMasterActor(ActorContext<DssRestMasterActorCommand> context, List<DssRestActorService> serviceList) {
         this.context = context;
-        this.exceptionHandler = context.spawn(DssRestExceptionHandlerActor.create(DssRestExceptionHandlerResolver.getInstance().getExceptionHandlerMap()), "exception-handler");
+        this.exceptionHandlerActor = context.spawn(DssRestExceptionHandlerActor.create(DssRestExceptionHandlerResolver.getInstance().getExceptionHandlerMap()), "exception-handler");
         this.dssRestPathResolver = dssRestPathResolver(serviceList);
     }
 
@@ -40,7 +40,7 @@ public class DssRestMasterActor {
 
         final DssRestPathResolver.Builder builder = DssRestPathResolver.builder();
         serviceList.forEach(service -> {
-            final ActorRef<DssRestServiceActorCommand> serviceActor = context.spawn(DssRestServiceActor.create(service, exceptionHandler), service.getName());
+            final ActorRef<DssRestServiceActorCommand> serviceActor = context.spawn(DssRestServiceActor.create(service, exceptionHandlerActor), service.getName());
             builder.addServiceActor(service.getMethodType(), service.getPath(), serviceActor);
         });
         return builder.build();
