@@ -7,6 +7,7 @@ import io.github.ztkmkoo.dss.core.exception.annotation.ServiceExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +58,8 @@ public class DssRestExceptionHandler {
         return request -> {
             try {
                 return (DssRestServiceResponse) method.invoke(dssExceptionHandler, request.getBody());
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                logger.error("exception handling method invoke error: ", e);
             } catch (Exception e) {
                 logger.error("exception handling error: ", e);
             }
