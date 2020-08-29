@@ -14,8 +14,8 @@ import java.util.Objects;
  */
 @Getter
 public class DssRestChannelHandlerCommandResponse implements DssRestChannelHandlerCommand {
-
     private static final long serialVersionUID = -8946124853931183362L;
+
     private final String channelId;
     private final Integer status;
     private final DssRestServiceResponse response;

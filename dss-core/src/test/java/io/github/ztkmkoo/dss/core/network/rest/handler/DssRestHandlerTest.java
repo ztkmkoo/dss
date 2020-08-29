@@ -39,6 +39,34 @@ import io.netty.util.CharsetUtil;
  */
 class DssRestHandlerTest extends AbstractDssActorTest {
 
+    private static DssRestHandler newDssRestHandlerForTest(TestProbe<DssRestMasterActorCommand> testProbe) {
+        final TestProbe<DssRestChannelInitializerCommand> testProbe1 = testKit.createTestProbe();
+        return new DssRestHandler(testProbe1.ref(), testProbe.ref(),"test-handler");
+    }
+
+    private static void addChannelHandlerContextToDssRestHandlerMap(DssRestHandler handler, ChannelHandlerContext ctx) throws NoSuchFieldException, IllegalAccessException {
+
+        final Map<String, ChannelHandlerContext> channelHandlerContextMap = getDssRestHandlerFieldWithReflection(handler, "channelHandlerContextMap", Map.class);
+        channelHandlerContextMap.put(ctx.channel().id().asLongText(), ctx);
+    }
+
+    private static <T> T getDssRestHandlerFieldWithReflection(DssRestHandler handler, String fieldName, Class<T> tcLass) throws NoSuchFieldException, IllegalAccessException {
+
+        final Field field = DssRestHandler.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return tcLass.cast(field.get(handler));
+    }
+
+    private static void mockChannelHandlerContextChannelId(ChannelHandlerContext ctx, String longId) {
+
+        final Channel mockChannel = Mockito.mock(Channel.class);
+        final ChannelId channelId = Mockito.mock(ChannelId.class);
+
+        Mockito.when(ctx.channel()).thenReturn(mockChannel);
+        Mockito.when(mockChannel.id()).thenReturn(channelId);
+        Mockito.when(channelId.asLongText()).thenReturn(longId);
+    }
+
     private final HttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, "/hi/hello");
     private final HttpContent content = new DefaultHttpContent(Unpooled.copiedBuffer("Hello", CharsetUtil.UTF_8));
 
@@ -133,33 +161,5 @@ class DssRestHandlerTest extends AbstractDssActorTest {
         assertNotNull(handlerActorRef);
 
         handlerActorRef.tell(DssRestChannelHandlerCommandResponse.builder().channelId("abcedf").build());
-    }
-
-    private static DssRestHandler newDssRestHandlerForTest(TestProbe<DssRestMasterActorCommand> testProbe) {
-        final TestProbe<DssRestChannelInitializerCommand> testProbe1 = testKit.createTestProbe();
-        return new DssRestHandler(testProbe1.ref(), testProbe.ref(),"test-handler");
-    }
-
-    private static void addChannelHandlerContextToDssRestHandlerMap(DssRestHandler handler, ChannelHandlerContext ctx) throws NoSuchFieldException, IllegalAccessException {
-
-        final Map<String, ChannelHandlerContext> channelHandlerContextMap = getDssRestHandlerFieldWithReflection(handler, "channelHandlerContextMap", Map.class);
-        channelHandlerContextMap.put(ctx.channel().id().asLongText(), ctx);
-    }
-
-    private static <T> T getDssRestHandlerFieldWithReflection(DssRestHandler handler, String fieldName, Class<T> tcLass) throws NoSuchFieldException, IllegalAccessException {
-
-        final Field field = DssRestHandler.class.getDeclaredField(fieldName);
-        field.setAccessible(true);
-        return tcLass.cast(field.get(handler));
-    }
-
-    private static void mockChannelHandlerContextChannelId(ChannelHandlerContext ctx, String longId) {
-
-        final Channel mockChannel = Mockito.mock(Channel.class);
-        final ChannelId channelId = Mockito.mock(ChannelId.class);
-
-        Mockito.when(ctx.channel()).thenReturn(mockChannel);
-        Mockito.when(mockChannel.id()).thenReturn(channelId);
-        Mockito.when(channelId.asLongText()).thenReturn(longId);
     }
 }

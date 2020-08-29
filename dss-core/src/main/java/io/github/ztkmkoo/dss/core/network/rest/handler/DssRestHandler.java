@@ -38,29 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @ChannelHandler.Sharable
 class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssHandler<DssRestChannelHandlerCommand> {
 
-    private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
-    private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
-    private final StringBuilder buffer = new StringBuilder();
-    private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
-    private final ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor;
-    private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
-    @Getter
-    private final String name;
-    private final String restMasterActorName;
-
-    private ActorContext<DssRestChannelHandlerCommand> context;
-    private HttpRequest request;
-
-    DssRestHandler(
-            ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor,
-            ActorRef<DssRestMasterActorCommand> restMasterActorRef,
-            String name) {
-        this.restChannelInitializerActor = restChannelInitializerActor;
-        this.restMasterActorRef = restMasterActorRef;
-        this.name = name;
-        this.restMasterActorName = restMasterActorRef.path().name();
-    }
-
     private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
 
         Objects.requireNonNull(request);
@@ -105,6 +82,29 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         }
     }
 
+    private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
+    private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
+    private final StringBuilder buffer = new StringBuilder();
+    private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
+    private final ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor;
+    private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
+    @Getter
+    private final String name;
+    private final String restMasterActorName;
+
+    private ActorContext<DssRestChannelHandlerCommand> context;
+    private HttpRequest request;
+
+    DssRestHandler(
+            ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor,
+            ActorRef<DssRestMasterActorCommand> restMasterActorRef,
+            String name) {
+        this.restChannelInitializerActor = restChannelInitializerActor;
+        this.restMasterActorRef = restMasterActorRef;
+        this.name = name;
+        this.restMasterActorName = restMasterActorRef.path().name();
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
@@ -116,12 +116,11 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         if (msg instanceof HttpContent) {
 
             final HttpContent httpContent = (HttpContent) msg;
-
             final ByteBuf content = httpContent.content();
+
             if (content.isReadable()) {
                 buffer.append(content.toString(CharsetUtil.UTF_8));
             }
-
             if (msg instanceof LastHttpContent) {
                 final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
                 handlingDssRestRequest(dssRestRequest, ctx);
@@ -193,8 +192,8 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
         }
-
         initializeBehavior.set(true);
+
         return Behaviors.setup(this::dssRestHandler);
     }
 

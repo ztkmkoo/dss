@@ -8,6 +8,7 @@ import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorJsonService;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 
 public class MyService extends DssRestActorJsonService<MyServiceRequest> {
+
     public MyService() {
         super(new TypeReference<MyServiceRequest>() {}, "myService", "/my/service", DssRestMethodType.GET);
     }

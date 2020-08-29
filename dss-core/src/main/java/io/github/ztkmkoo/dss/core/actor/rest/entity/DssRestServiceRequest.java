@@ -8,6 +8,5 @@ import java.io.Serializable;
  * Date: 20. 3. 15. 오전 1:13
  */
 public interface DssRestServiceRequest<S extends Serializable> extends Serializable {
-
     S getBody();
 }

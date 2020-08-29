@@ -39,7 +39,8 @@ public class DssRestServiceActor {
                 .build();
     }
 
-    private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(DssRestServiceActorCommandRequest request) {
+    private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(
+            DssRestServiceActorCommandRequest request) {
         context.getLog().info("onHandlingDssRestServiceActorCommandRequest: {}", request);
         if (Objects.isNull(request.getContentType())) {
             context.getLog().warn("Request content-type is null: {}", request);

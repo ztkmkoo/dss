@@ -31,6 +31,19 @@ class DssRestMasterActorTest extends AbstractDssActorTest {
     private static final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
     private static final ActorRef<DssRestMasterActorCommand> restMasterActorRef = testKit.spawn(DssRestMasterActor.create(testServiceList()), "rest-master");
 
+    private static List<DssRestActorService> testServiceList() {
+        final List<DssRestActorService> serviceList = new ArrayList<>();
+        serviceList.add(new DssRestActorJsonService("hi", "/test", DssRestMethodType.GET) {
+
+            @Override
+            protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
+                return null;
+            }
+        });
+
+        return serviceList;
+    }
+
     @Test
     void handlingDssRestMasterActorCommandRequest() {
         restMasterActorRef.tell(DssRestMasterActorCommandRequest
@@ -62,18 +75,5 @@ class DssRestMasterActorTest extends AbstractDssActorTest {
         assertNotNull(response);
         assertEquals("abcdefg", response.getChannelId());
         assertEquals(400, response.getStatus().intValue());
-    }
-
-    private static List<DssRestActorService> testServiceList() {
-        final List<DssRestActorService> serviceList = new ArrayList<>();
-        serviceList.add(new DssRestActorJsonService("hi", "/test", DssRestMethodType.GET) {
-
-            @Override
-            protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
-                return null;
-            }
-        });
-
-        return serviceList;
     }
 }
