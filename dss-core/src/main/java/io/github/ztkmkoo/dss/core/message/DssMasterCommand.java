@@ -23,10 +23,10 @@ public interface DssMasterCommand extends DssCommand {
     class StatusRequest implements DssMasterCommand {
         private static final long serialVersionUID = 8724292690016254956L;
 
-        private final ActorRef<DssMasterCommand> sender;
+        private final ActorRef<DssCommand> sender;
 
         @Builder
-        public StatusRequest(ActorRef<DssMasterCommand> sender) {
+        public StatusRequest(ActorRef<DssCommand> sender) {
             this.sender = sender;
         }
     }

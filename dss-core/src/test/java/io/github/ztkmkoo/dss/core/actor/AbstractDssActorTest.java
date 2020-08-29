@@ -83,6 +83,11 @@ public class AbstractDssActorTest {
                     })
                     .build();
         }
+
+        @Override
+        public Logger getLog() {
+            return getContext().getLog();
+        }
     }
 
     private static class TestCommand implements DssCommand {

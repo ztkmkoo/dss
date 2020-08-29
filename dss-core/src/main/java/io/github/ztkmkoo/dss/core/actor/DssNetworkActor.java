@@ -21,18 +21,39 @@ import java.util.Objects;
  */
 public interface DssNetworkActor<P extends DssChannelProperty, C extends DssChannel<P, ChannelInitializer<S>>, S extends SocketChannel> {
 
+    /**
+     * Get actor ref of master actor(parent)
+     */
     ActorRef<DssMasterCommand> getMasterActor();
 
+    /**
+     * Get actor ref of resolver actor
+     */
     ActorRef<DssResolverCommand> getResolverActor();
 
-    C channel();
+    /**
+     * Get DssChannel for binding
+     */
+    C getChannel();
 
-    ChannelInitializer<S> channelInitializer();
+    /**
+     * Get ChannelInitializer for binding netty channel
+     */
+    ChannelInitializer<S> getChannelInitializer();
 
+    /**
+     * Get boss event loop group to make netty server bootstrap
+     */
     EventLoopGroup getBossGroup();
 
+    /**
+     * Get worker event loop group to make netty server bootstrap
+     */
     EventLoopGroup getWorkerGroup();
 
+    /**
+     * Future of when netty channel is closed
+     */
     ChannelFutureListener closeFuture();
 
     static void shutdownEventLoopGroup(Logger logger, EventLoopGroup group, String name) {
@@ -53,7 +74,7 @@ public interface DssNetworkActor<P extends DssChannelProperty, C extends DssChan
     }
 
     default Channel bind(P property) throws InterruptedException {
-        final Channel nettyChannel =  channel().bind(serverBootstrap(), property, channelInitializer());
+        final Channel nettyChannel =  getChannel().bind(serverBootstrap(), property, getChannelInitializer());
         nettyChannel.closeFuture().addListener(closeFuture());
 
         return nettyChannel;
