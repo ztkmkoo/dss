@@ -15,7 +15,6 @@ import akka.actor.testkit.typed.javadsl.ActorTestKit;
 public abstract class AbstractDssActorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractDssActorTest.class);
-
     protected static ActorTestKit testKit;
 
     @BeforeAll

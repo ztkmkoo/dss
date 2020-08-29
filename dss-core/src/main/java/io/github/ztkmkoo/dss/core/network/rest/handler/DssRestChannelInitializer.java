@@ -144,7 +144,6 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
                 context.getLog().info("add {} to freeHandlerQueue", msg.getName());
                 freeHandlerQueue.add(dssRestHandler);
             }
-
         }
 
         return Behaviors.same();

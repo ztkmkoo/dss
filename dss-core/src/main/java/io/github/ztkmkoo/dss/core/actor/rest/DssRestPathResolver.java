@@ -22,6 +22,21 @@ public class DssRestPathResolver {
         return new Builder();
     }
 
+    private final Map<DssRestMethodType, Map<String, ActorRef<DssRestServiceActorCommand>>> staticServiceActorMap;
+
+    private DssRestPathResolver(Builder builder) {
+        this.staticServiceActorMap = Collections.unmodifiableMap(builder.staticServiceActorMap);
+    }
+
+    public Optional<ActorRef<DssRestServiceActorCommand>> getStaticServiceActor(DssRestMethodType methodType, String path) {
+        return Optional
+                .ofNullable(
+                        staticServiceActorMap
+                                .getOrDefault(methodType, Collections.emptyMap())
+                                .get(path)
+                );
+    }
+
     public static class Builder {
 
         private Map<DssRestMethodType, Map<String, ActorRef<DssRestServiceActorCommand>>> staticServiceActorMap = new EnumMap<>(DssRestMethodType.class);
@@ -45,29 +60,12 @@ public class DssRestPathResolver {
         public DssRestPathResolver build() {
             if (!staticServiceActorMap.isEmpty()) {
                 staticServiceActorMap.forEach((methodType, map) -> map.forEach((path, actorRef) ->
-                    logger.info("Add mapping {} {} to {}",
-                            methodType.name(), path, actorRef.path().name())
+                        logger.info("Add mapping {} {} to {}",
+                                methodType.name(), path, actorRef.path().name())
                 ));
             }
 
             return new DssRestPathResolver(this);
         }
     }
-
-    private final Map<DssRestMethodType, Map<String, ActorRef<DssRestServiceActorCommand>>> staticServiceActorMap;
-
-    private DssRestPathResolver(Builder builder) {
-        this.staticServiceActorMap = Collections.unmodifiableMap(builder.staticServiceActorMap);
-    }
-
-    public Optional<ActorRef<DssRestServiceActorCommand>> getStaticServiceActor(DssRestMethodType methodType, String path) {
-        return Optional
-                .ofNullable(
-                        staticServiceActorMap
-                                .getOrDefault(methodType, Collections.emptyMap())
-                                .get(path)
-                );
-    }
-
-
 }

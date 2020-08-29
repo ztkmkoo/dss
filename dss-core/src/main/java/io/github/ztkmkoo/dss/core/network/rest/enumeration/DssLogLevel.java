@@ -12,7 +12,7 @@ public enum DssLogLevel {
 
     private LogLevel level;
 
-    DssLogLevel( LogLevel level) {
+    DssLogLevel(LogLevel level) {
         this.level = level;
     }
 

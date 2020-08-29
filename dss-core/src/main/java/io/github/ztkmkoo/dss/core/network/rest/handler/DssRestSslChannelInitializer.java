@@ -55,6 +55,4 @@ public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
 
         super.addHandler(p);
     }
-
-
 }

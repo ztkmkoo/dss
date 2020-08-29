@@ -58,8 +58,6 @@ public class DssRestServer implements DssServer<DssRestActorService> {
         this.sslContext = sslContext;
     }
 
-
-
     /**
      * @deprecated use addDssService
      */
