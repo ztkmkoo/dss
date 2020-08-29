@@ -8,5 +8,5 @@ import io.github.ztkmkoo.dss.core.network.DssChannelProperty;
  */
 public interface DssMasterActorProperty {
 
-    DssChannelProperty getProperty();
+    DssChannelProperty getChannelProperty();
 }

@@ -1,8 +1,7 @@
 package io.github.ztkmkoo.dss.core.actor;
 
 import akka.actor.typed.ActorRef;
-import io.github.ztkmkoo.dss.core.actor.rest.DssNetworkActorRestImpl;
-import io.github.ztkmkoo.dss.core.actor.rest.DssResolverActorRestImpl;
+import akka.actor.typed.Behavior;
 import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
 import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;
 import io.github.ztkmkoo.dss.core.message.DssResolverCommand;
@@ -21,13 +20,17 @@ public interface DssMasterActor {
 
     DssMasterActorProperty getProperty();
 
+    Behavior<DssResolverCommand> createResolverActorBehavior();
+
+    Behavior<DssNetworkCommand> createNetworkActorBehavior();
+
     default ActorRef<DssResolverCommand> spawnResolverActor(AbstractDssActor<DssMasterCommand> actor) {
-        final ActorRef<DssResolverCommand> resolverActor = actor.getContext().spawn(DssResolverActorRestImpl.create(actor.getSelf()), "resolver");
+        final ActorRef<DssResolverCommand> resolverActor = actor.getContext().spawn(createResolverActorBehavior(), "resolver");
         return Objects.requireNonNull(resolverActor);
     }
 
     default ActorRef<DssNetworkCommand> spawnNetworkActor(AbstractDssActor<DssMasterCommand> actor, ActorRef<DssResolverCommand> resolverActor) {
-        final ActorRef<DssNetworkCommand> networkActor = actor.getContext().spawn(DssNetworkActorRestImpl.create(actor.getSelf(), resolverActor), "network");
+        final ActorRef<DssNetworkCommand> networkActor = actor.getContext().spawn(createNetworkActorBehavior(), "network");
         return Objects.requireNonNull(networkActor);
     }
 }
