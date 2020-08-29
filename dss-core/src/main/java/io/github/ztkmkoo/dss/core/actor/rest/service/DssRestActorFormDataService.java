@@ -30,6 +30,7 @@ public abstract class DssRestActorFormDataService extends AbstractDssRestActorSe
     @SuppressWarnings("unchecked")
     @Override
     protected final HashMap<String, Object> getBody(String content) {
+
         if (StringUtils.isEmpty(content)) {
             return new HashMap<>();
         }

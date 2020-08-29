@@ -25,6 +25,23 @@ import java.util.Objects;
 public abstract class DssRestActorJsonService<S extends Serializable> extends AbstractDssRestActorService<S> {
 
     private static final TypeReference<HashMap<String, Serializable>> DEFAULT_TYPE_REFERENCE = new TypeReference<HashMap<String, Serializable>>() {};
+
+    private static DssRestContentInfo fromCharset(Charset charset) {
+        if (Objects.isNull(charset)) {
+            return DssRestContentInfo.APPLICATION_JSON_UTF8;
+        }
+
+        if (charset.equals(CharsetUtil.UTF_8)) {
+            return DssRestContentInfo.APPLICATION_JSON_UTF8;
+        } else {
+            return DssRestContentInfo
+                    .builder()
+                    .contentType(DssRestContentType.APPLICATION_JSON)
+                    .charset(charset)
+                    .build();
+        }
+    }
+
     private final TypeReference<S> typeReference;
 
     public DssRestActorJsonService(
@@ -77,22 +94,6 @@ public abstract class DssRestActorJsonService<S extends Serializable> extends Ab
             return mapper.readValue(content, typeReference);
         } catch (JsonProcessingException e) {
             throw new DssRestRequestMappingException(e);
-        }
-    }
-
-    private static DssRestContentInfo fromCharset(Charset charset) {
-        if (Objects.isNull(charset)) {
-            return DssRestContentInfo.APPLICATION_JSON_UTF8;
-        }
-
-        if (charset.equals(CharsetUtil.UTF_8)) {
-            return DssRestContentInfo.APPLICATION_JSON_UTF8;
-        } else {
-            return DssRestContentInfo
-                    .builder()
-                    .contentType(DssRestContentType.APPLICATION_JSON)
-                    .charset(charset)
-                    .build();
         }
     }
 }

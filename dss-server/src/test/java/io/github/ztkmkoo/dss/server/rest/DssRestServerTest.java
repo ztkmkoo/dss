@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -41,6 +40,9 @@ import io.netty.handler.ssl.SslContextBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Timeout;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Project: dss
@@ -50,6 +52,79 @@ import org.junit.jupiter.api.Timeout;
 class DssRestServerTest {
 
     private static final String SSL_PASSWORD = "dss123";
+
+    private static void startOnNewThread(Runnable runnable) {
+        new Thread(runnable).start();
+    }
+
+    private static void stopDssRestServerAfterActivated(DssRestServer dssRestServer, int waitStartupSeconds, int waitShutdownSeconds) {
+        startOnNewThread(() -> {
+            try {
+                await()
+                        .atMost(waitStartupSeconds, TimeUnit.SECONDS)
+                        .until(dssRestServer::isActivated);
+                dssRestServer.stop();
+
+                await()
+                        .atMost(waitShutdownSeconds, TimeUnit.SECONDS)
+                        .until(dssRestServer::isShutdown);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static PrivateKey loadPrivateKeyFromFile(File file) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        final FileInputStream fis = new FileInputStream(file);
+        final byte[] buffer = new byte[fis.available()];
+        fis.read(buffer);
+        fis.close();
+
+        final KeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
+        final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
+    }
+
+    private static X509Certificate loadX509CertificateFromFile(File file) throws IOException, CertificateException {
+        final FileInputStream fis = new FileInputStream(file);
+        final byte[] buffer = new byte[fis.available()];
+        fis.read(buffer);
+        fis.close();
+
+        final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
+
+        final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        return (X509Certificate)factory.generateCertificate(bais);
+    }
+
+    private static File loadFromTestResources(String path) throws UnsupportedEncodingException {
+        final ClassLoader classLoader = DssRestServerTest.class.getClassLoader();
+        return new File(URLDecoder.decode(classLoader.getResource(path).getFile(),"UTF-8"));
+    }
+
+    private static void startOnDssJsonRestServer(DssRestServer dssRestServer) {
+        startOnNewThread(() -> {
+            try {
+                dssRestServer.start();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static HttpResponse sendJsonRequest(String uri, DssRestMethodType dssRestMethodType, String sendJsonBody) throws IOException {
+        final HttpClient httpClient = HttpClientBuilder.create().build();
+        final StringEntity params = new StringEntity(sendJsonBody);
+
+        final HttpUriRequest request = RequestBuilder.create(dssRestMethodType.name())
+                .setUri(uri)
+                .addHeader("content-type", "application/json")
+                .setCharset(StandardCharsets.UTF_8)
+                .setEntity(params)
+                .build();
+
+        return httpClient.execute(request);
+    }
 
     @Test
     void start() throws Exception {
@@ -134,6 +209,7 @@ class DssRestServerTest {
     @Getter
     private static class TestResponse implements DssRestServiceResponse {
         private static final long serialVersionUID = 5967168992972178660L;
+
         private final String message;
 
         public TestResponse(String name) {
@@ -144,6 +220,7 @@ class DssRestServerTest {
     @Getter @Setter
     private static class TestRequest implements Serializable {
         private static final long serialVersionUID = 6373259023479826730L;
+
         private String name;
     }
 
@@ -164,6 +241,7 @@ class DssRestServerTest {
     @Getter
     private static class TestJsonResponse implements DssRestServiceResponse {
         private static final long serialVersionUID = 5199731949724988897L;
+
         private final String name;
         private final int age;
 
@@ -176,6 +254,7 @@ class DssRestServerTest {
     @Getter @Setter
     private static class TestJsonRequest implements Serializable {
         private static final long serialVersionUID = 2415190317023826555L;
+
         private String name;
         private int age;
     }
@@ -192,78 +271,5 @@ class DssRestServerTest {
 
             return new TestJsonResponse(testRequest.name, testRequest.age);
         }
-    }
-
-    private static void startOnNewThread(Runnable runnable) {
-        new Thread(runnable).start();
-    }
-
-    private static void stopDssRestServerAfterActivated(DssRestServer dssRestServer, int waitStartupSeconds, int waitShutdownSeconds) {
-        startOnNewThread(() -> {
-            try {
-                await()
-                        .atMost(waitStartupSeconds, TimeUnit.SECONDS)
-                        .until(dssRestServer::isActivated);
-                dssRestServer.stop();
-
-                await()
-                        .atMost(waitShutdownSeconds, TimeUnit.SECONDS)
-                        .until(dssRestServer::isShutdown);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private static PrivateKey loadPrivateKeyFromFile(File file) throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        final FileInputStream fis = new FileInputStream(file);
-        final byte[] buffer = new byte[fis.available()];
-        fis.read(buffer);
-        fis.close();
-
-        final KeySpec keySpec = new PKCS8EncodedKeySpec(buffer);
-        final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        return keyFactory.generatePrivate(keySpec);
-    }
-
-    private static X509Certificate loadX509CertificateFromFile(File file) throws IOException, CertificateException {
-        final FileInputStream fis = new FileInputStream(file);
-        final byte[] buffer = new byte[fis.available()];
-        fis.read(buffer);
-        fis.close();
-
-        final ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
-
-        final CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        return (X509Certificate)factory.generateCertificate(bais);
-    }
-
-    private static File loadFromTestResources(String path) throws UnsupportedEncodingException {
-        final ClassLoader classLoader = DssRestServerTest.class.getClassLoader();
-        return new File(URLDecoder.decode(classLoader.getResource(path).getFile(),"UTF-8"));
-    }
-
-    private static void startOnDssJsonRestServer(DssRestServer dssRestServer) {
-        startOnNewThread(() -> {
-            try {
-                dssRestServer.start();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private static HttpResponse sendJsonRequest(String uri, DssRestMethodType dssRestMethodType, String sendJsonBody) throws IOException {
-        final HttpClient httpClient = HttpClientBuilder.create().build();
-        final StringEntity params = new StringEntity(sendJsonBody);
-
-        final HttpUriRequest request = RequestBuilder.create(dssRestMethodType.name())
-                .setUri(uri)
-                .addHeader("content-type", "application/json")
-                .setCharset(StandardCharsets.UTF_8)
-                .setEntity(params)
-                .build();
-
-        return httpClient.execute(request);
     }
 }

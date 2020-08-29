@@ -14,8 +14,8 @@ import java.util.Objects;
  */
 @Getter
 public class DssRestChannelProperty implements Serializable, DssChannelProperty {
-
     private static final long serialVersionUID = -6904414304979344025L;
+
     private final String host;
     private final int port;
     private final DssLogLevel dssLogLevel;
