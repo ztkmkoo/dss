@@ -40,5 +40,9 @@ public interface DssServer<S extends DssActorService> {
      */
     DssServer<S> addDssService(S service);
 
+    /**
+     * Add custom exception handler for the expected exception handling.
+     * @return self(for addDssService method chain)
+     */
     DssServer<S> addExceptionHandler(DssExceptionHandler exceptionHandler);
 }
