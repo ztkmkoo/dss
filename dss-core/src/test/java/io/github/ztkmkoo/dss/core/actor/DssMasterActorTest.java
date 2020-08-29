@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DssMasterActorTest extends AbstractDssActorTest {
 
     private static ActorRef<DssMasterCommand> newMasterActorRef() {
-        return testKit.spawn(TestMasterActor.create(), "master");
+        return testKit.spawn(TestMasterActor.create());
     }
 
     private static  <T extends DssCommand, R extends T> R getProbeResponse(TestProbe<T> probe, Class<R> rClass) {
