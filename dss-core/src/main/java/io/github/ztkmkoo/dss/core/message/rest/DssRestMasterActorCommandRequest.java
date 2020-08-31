@@ -23,6 +23,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     private final DssRestContentType contentType;
     private final String path;
     private final String content;
+    private final String charet;
+    private final String boundary;
 
     @Builder
     private DssRestMasterActorCommandRequest(
@@ -31,7 +33,9 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
             DssRestMethodType methodType,
             DssRestContentType contentType,
             String path,
-            String content) {
+            String content,
+            String charset,
+            String boundary) {
         Objects.requireNonNull(channelId);
         Objects.requireNonNull(sender);
         Objects.requireNonNull(methodType);
@@ -43,6 +47,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         this.contentType = contentType;
         this.path = path;
         this.content = content;
+        this.charet = charset;
+        this.boundary = boundary;
     }
 
     protected DssRestMasterActorCommandRequest(DssRestMasterActorCommandRequest request) {
@@ -52,7 +58,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 request.getMethodType(),
                 request.getContentType(),
                 request.getPath(),
-                request.getContent()
+                request.getContent(),
+                request.getBoundary()
         );
     }
 
