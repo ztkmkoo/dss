@@ -27,8 +27,9 @@ class MyService extends DssRestActorFormDataService {
     @Override
     protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Object>> request) {
         String name = (String) request.getBody().get("name");
+        int age = (Integer) request.getBody().get("age");
         MyServiceResponse myResponse = new MyServiceResponse();
-        myResponse.setTest("Hello : " + name);
+        myResponse.setTest("Hello : " + name + " : " + age);
 
         return myResponse;
     }
@@ -79,7 +80,7 @@ class YourService extends DssRestActorJsonService<YourServiceRequest> {
     protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<YourServiceRequest> request) {
         final String myName = request.getBody().getName();
         final YourServiceResponse response = new YourServiceResponse();
-        response.setResult("My service is " + myName + " service");
+        response.setResult("Your service is " + myName + " service");
         return response;
     }
 }

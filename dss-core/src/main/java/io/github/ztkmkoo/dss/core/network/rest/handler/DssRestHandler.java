@@ -57,14 +57,30 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
 
         final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
         final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
-        final String uri = request.uri();
+//        final DssRestBoundary
 
-        return DssRestRequest
+        final String uri = request.uri();
+        String boundary = null;
+        if (contentType == DssRestContentType.MULTIPART_FORM_DATA) {
+          boundary = content.substring(0, content.indexOf("\r\n"));
+          content = content.substring(content.indexOf("\r\n"));
+        }
+
+        return boundary == null ? DssRestRequest
                 .builder()
                 .methodType(methodType)
                 .contentType(contentType)
                 .uri(uri)
                 .content(content)
+                .build()
+                :
+                DssRestRequest
+                .builder()
+                .methodType(methodType)
+                .contentType(contentType)
+                .uri(uri)
+                .content(content)
+                .boundary(boundary)
                 .build();
     }
 
@@ -120,7 +136,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
-
             request = (HttpRequest) msg;
             buffer.setLength(0);
         }

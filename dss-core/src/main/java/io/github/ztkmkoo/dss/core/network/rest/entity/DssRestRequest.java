@@ -21,13 +21,15 @@ public class DssRestRequest implements Serializable {
     private final String charset;
     private final String uri;
     private final String content;
+    private final String boundary;
 
     @Builder
-    protected DssRestRequest(DssRestMethodType methodType, String uri, DssRestContentType contentType, String charset, String content) {
+    protected DssRestRequest(DssRestMethodType methodType, String uri, DssRestContentType contentType, String charset, String content, String boundary) {
         this.methodType = methodType;
         this.contentType = contentType;
         this.charset = charset;
         this.uri = uri;
         this.content = content;
+        this.boundary = boundary;
     }
 }
