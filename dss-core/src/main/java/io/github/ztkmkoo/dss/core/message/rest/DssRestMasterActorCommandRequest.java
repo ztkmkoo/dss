@@ -23,7 +23,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
     private final DssRestContentType contentType;
     private final String path;
     private final String content;
-    private final String charet;
+    private final String charset;
     private final String boundary;
 
     @Builder
@@ -47,7 +47,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         this.contentType = contentType;
         this.path = path;
         this.content = content;
-        this.charet = charset;
+        this.charset = charset;
         this.boundary = boundary;
     }
 
@@ -59,6 +59,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 request.getContentType(),
                 request.getPath(),
                 request.getContent(),
+                request.getCharset(),
                 request.getBoundary()
         );
     }
@@ -72,6 +73,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 "contentType: '" + contentType + "', " +
                 "path: '" + path + "', " +
                 "content: '" + content + "'" +
+                "charset: '" + charset + "'" +
+                "boundary: '" + boundary + "'" +
                 "}";
     }
 }

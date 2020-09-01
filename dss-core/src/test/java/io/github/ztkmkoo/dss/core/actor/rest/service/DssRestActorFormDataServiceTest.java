@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
+import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommand;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import org.junit.jupiter.api.Test;
 
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
@@ -27,10 +31,13 @@ class DssRestActorFormDataServiceTest {
             }
         };
 
-        final HashMap<String, Object> map1 = service.getBody("");
+        DssRestMasterActorCommand commandRequest = DssRestServiceActorCommandRequest.builder().build();
+        final HashMap<String, Object> map1 = service.getBody((DssRestServiceActorCommandRequest) commandRequest);
         assertTrue(map1.isEmpty());
 
-        final HashMap<String, Object> map2 = service.getBody("id=kebron&password=1234567");
+        commandRequest = DssRestServiceActorCommandRequest.builder()
+                .content("id=kebron&password=1234567").build();
+        final HashMap<String, Object> map2 = service.getBody((DssRestServiceActorCommandRequest) commandRequest);
         assertFalse(map2.isEmpty());
         assertEquals("kebron", map2.get("id"));
         assertEquals("1234567", map2.get("password"));
