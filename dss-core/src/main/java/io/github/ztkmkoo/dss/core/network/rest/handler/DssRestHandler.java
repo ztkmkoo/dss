@@ -68,13 +68,12 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
 
         final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(request.method());
         final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
-//        final DssRestBoundary
-
         final String uri = request.uri();
+
         String boundary = null;
         if (contentType == DssRestContentType.MULTIPART_FORM_DATA) {
           boundary = content.substring(0, content.indexOf("\r\n"));
-          content = content.substring(content.indexOf("\r\n"));
+//          content = content.substring(content.indexOf("\r\n"));
         }
 
         return boundary == null ? DssRestRequest
@@ -168,6 +167,8 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
                 .contentType(dssRestRequest.getContentType())
                 .path(dssRestRequest.getUri())
                 .content(dssRestRequest.getContent())
+                .boundary(dssRestRequest.getBoundary())
+                .charset(dssRestRequest.getCharset())
                 .build();
 
         restMasterActorRef.tell(dssRestMasterActorCommandRequest);

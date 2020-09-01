@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import io.github.ztkmkoo.dss.core.util.StringUtils;
@@ -63,7 +64,9 @@ public abstract class DssRestActorJsonService<S extends Serializable> extends Ab
 
     @SuppressWarnings("unchecked")
     @Override
-    protected S getBody(String content) {
+    protected S getBody(DssRestServiceActorCommandRequest commandRequest) {
+        final String content = commandRequest.getContent();
+
         if (StringUtils.isEmpty(content)) {
             if (DEFAULT_TYPE_REFERENCE.getType().equals(typeReference.getType())) {
                 return (S) new HashMap<String, Serializable>();

@@ -26,24 +26,28 @@ class MyService extends DssRestActorFormDataService {
 
     @Override
     protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Object>> request) {
-        String name = (String) request.getBody().get("name");
-        int age = (Integer) request.getBody().get("age");
+        StringBuilder out = new StringBuilder();
+
+        request.getBody().forEach((s, o) -> {
+            out.append(s).append(" : ").append(o).append("\\n");
+        });
+
         MyServiceResponse myResponse = new MyServiceResponse();
-        myResponse.setTest("Hello : " + name + " : " + age);
+        myResponse.setValues(request.getBody());
 
         return myResponse;
     }
 }
 
 class MyServiceResponse implements DssRestServiceResponse {
-    private String test;
+    private HashMap<String, Object> values;
 
-    public void setTest(String test) {
-        this.test = test;
+    public void setValues(HashMap<String, Object> values) {
+        this.values = values;
     }
 
-    public String getTest() {
-        return test;
+    public HashMap<String, Object> getValues() {
+        return values;
     }
 }
 
