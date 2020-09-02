@@ -27,7 +27,7 @@ public class DssRestChannel implements DssChannel<DssRestChannelProperty, DssRes
 
         return serverBootstrap
                 .channel(NioServerSocketChannel.class)
-                .handler(new LoggingHandler(LogLevel.DEBUG))
+                .handler(new LoggingHandler(dssRestChannelProperty.getDssLogLevel().getNettyLogLevel()))
                 .childHandler(dssRestChannelInitializer)
                 .bind(dssRestChannelProperty.getHost(), dssRestChannelProperty.getPort())
                 .sync()

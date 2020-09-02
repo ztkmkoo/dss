@@ -14,8 +14,8 @@ import java.io.Serializable;
  */
 @Getter
 public class DssRestRequest implements Serializable {
-
     private static final long serialVersionUID = 8456589353995730809L;
+
     private final DssRestMethodType methodType;
     private final DssRestContentType contentType;
     private final String charset;

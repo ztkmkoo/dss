@@ -13,8 +13,8 @@ import java.util.Objects;
  */
 @Getter
 public class DssRestChannelInitializerCommandHandlerUnregistered implements DssRestChannelInitializerCommand {
-
     private static final long serialVersionUID = -4010892587871866884L;
+
     private final String name;
     private final ActorRef<DssRestChannelHandlerCommand> handlerActor;
 
