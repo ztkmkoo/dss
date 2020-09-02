@@ -40,7 +40,6 @@ public class DssTcpHandler extends SimpleChannelInboundHandler<Object> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable cause) {
-        cause.printStackTrace();
         channelHandlerContext.close();
     }
 }
