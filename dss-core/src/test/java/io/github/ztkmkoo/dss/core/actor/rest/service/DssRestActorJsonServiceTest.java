@@ -78,7 +78,6 @@ class DssRestActorJsonServiceTest extends AbstractDssActorTest {
         assertEquals(CharsetUtil.UTF_8, testService.getProduce().getCharset());
     }
 
-
     private static class TestService extends DssRestActorJsonService<HashMap<String, Serializable>> {
 
         @Builder

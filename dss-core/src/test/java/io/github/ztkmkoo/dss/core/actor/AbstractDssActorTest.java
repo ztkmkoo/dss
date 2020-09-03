@@ -26,10 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class AbstractDssActorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractDssActorTest.class);
-
     protected static ActorTestKit testKit;
-
-    protected AbstractDssActorTest() {}
 
     @BeforeAll
     static void setUpBeforeClass() {
@@ -41,6 +38,8 @@ public class AbstractDssActorTest {
         logger.info("AbstractDssActorTest cleanup.");
         testKit.shutdownTestKit();
     }
+
+    protected AbstractDssActorTest() {}
 
     @Test
     void initialize() {
