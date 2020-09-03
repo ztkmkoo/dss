@@ -1,6 +1,7 @@
 package io.github.ztkmkoo.dss.server;
 
 import io.github.ztkmkoo.dss.core.actor.DssActorService;
+import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
 
 /**
  * @author Kebron ztkmkoo@gmail.com
@@ -38,4 +39,10 @@ public interface DssServer<S extends DssActorService> {
      * @return self(for method chain)
      */
     DssServer<S> addDssService(S service);
+
+    /**
+     * Add custom exception handler for the expected exception handling.
+     * @return self(for addDssService method chain)
+     */
+    DssServer<S> addExceptionHandler(DssExceptionHandler exceptionHandler);
 }
