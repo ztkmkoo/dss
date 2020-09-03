@@ -65,6 +65,7 @@ public class DssTcpServer {
             logger.info("Channel try to close. [Active: {}][Open: {}]", channel.isActive(), channel.isOpen());
             channel.close();
             active.set(false);
+            shutdown.set(true);
         }
     }
 

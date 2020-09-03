@@ -1,7 +1,6 @@
 package io.github.ztkmkoo.dss.core.network.tcp.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Matchers.*;
 
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
@@ -35,17 +34,6 @@ class DssTcpHandlerTest {
     }
 
     @Test
-    void channelActive() {
-        mockChannelHandlerContextChannelId(ctx, "abcedf");
-
-        final DssTcpHandler handler = new DssTcpHandler();
-
-        handler.channelActive(ctx);
-
-        Mockito.verify(ctx).writeAndFlush(any());
-    }
-
-    @Test
     void channelRead0() throws Exception {
         mockChannelHandlerContextChannelId(ctx, "abcedf");
 
@@ -53,11 +41,8 @@ class DssTcpHandlerTest {
 
         handler.channelRead0(ctx, SEND_MESSAGE);
 
-        final ByteBuf firstMessage = getDssTcpHandlerFieldWithReflection(handler, "firstMessage", ByteBuf.class);
-        assertEquals("Initial Message\n", firstMessage.toString(Charset.defaultCharset()));
-
-        final StringBuilder buffer = getDssTcpHandlerFieldWithReflection(handler, "buffer", StringBuilder.class);
-        assertEquals("Send Message", buffer.toString());
+        final ByteBuf message = getDssTcpHandlerFieldWithReflection(handler, "message", ByteBuf.class);
+        assertEquals("Send Message", message.toString(Charset.defaultCharset()));
     }
 
     private static void mockChannelHandlerContextChannelId(ChannelHandlerContext ctx, String longId) {

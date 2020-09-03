@@ -7,7 +7,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.net.URLDecoder;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -21,6 +24,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -75,6 +79,16 @@ class DssTcpServerTest {
         return new File(URLDecoder.decode(classLoader.getResource(path).getFile(),"UTF-8"));
     }
 
+    private static void startOnDssJsonTcpServer(DssTcpServer dssTcpServer) {
+        startOnNewThread(() -> {
+            try {
+                dssTcpServer.start();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     @Test
     void start() throws InterruptedException {
 
@@ -98,6 +112,29 @@ class DssTcpServerTest {
         stopDssTcpServerAfterActivated(dssTcpServer, 10 ,15);
 
         dssTcpServer.start();
+
+        assertTrue(dssTcpServer.isShutdown());
+    }
+
+    @Test
+    @Timeout(value = 15)
+    void testPostRequest() throws IOException {
+        final DssTcpServer dssTcpServer = new DssTcpServer("127.0.0.1", 8181);
+
+        startOnDssJsonTcpServer(dssTcpServer);
+        await().until(dssTcpServer::isActivated);
+
+        Socket socket = new Socket("127.0.0.1", 8181);
+        OutputStream output = socket.getOutputStream();
+        byte[] data = "Hello".getBytes();
+        output.write(data);
+
+        InputStream input = socket.getInputStream();
+        byte[] readData = input.readAllBytes();
+
+        assertEquals("Hello", new String(readData));
+
+        dssTcpServer.stop();
 
         assertTrue(dssTcpServer.isShutdown());
     }
