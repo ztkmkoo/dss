@@ -23,6 +23,7 @@ import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -130,7 +131,7 @@ class DssTcpServerTest {
         output.write(data);
 
         InputStream input = socket.getInputStream();
-        byte[] readData = input.readAllBytes();
+        byte[] readData = IOUtils.toByteArray(input);
 
         assertEquals("Hello", new String(readData));
 
