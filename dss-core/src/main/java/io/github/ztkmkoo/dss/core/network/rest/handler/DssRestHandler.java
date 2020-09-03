@@ -73,7 +73,6 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         String boundary = null;
         if (contentType == DssRestContentType.MULTIPART_FORM_DATA) {
           boundary = content.substring(0, content.indexOf("\r\n"));
-//          content = content.substring(content.indexOf("\r\n"));
         }
 
         return boundary == null ? DssRestRequest
