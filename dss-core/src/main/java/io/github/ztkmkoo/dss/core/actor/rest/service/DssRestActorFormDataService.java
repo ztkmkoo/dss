@@ -9,6 +9,7 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Project: dss
@@ -31,6 +32,8 @@ public abstract class DssRestActorFormDataService extends AbstractDssRestActorSe
     @SuppressWarnings("unchecked")
     @Override
     protected final HashMap<String, Object> getBody(DssRestServiceActorCommandRequest commandRequest) {
+        Objects.nonNull(commandRequest);
+
         if (StringUtils.isEmpty(commandRequest.getContent())) {
             return new HashMap<>();
         }
