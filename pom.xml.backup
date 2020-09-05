@@ -9,7 +9,6 @@
     <packaging>pom</packaging>
     <version>0.4.1</version>
     <modules>
-<!--        <module>dss-common</module>-->
         <module>dss-core</module>
         <module>dss-server</module>
     </modules>

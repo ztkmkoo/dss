@@ -27,15 +27,6 @@
     </properties>
     
     <dependencies>
-        <!--dss common sub model-->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>dss-common</artifactId>
-            <version>0.4.4</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-
         <!--Akka actor-->
         <dependency>
             <groupId>com.typesafe.akka</groupId>
