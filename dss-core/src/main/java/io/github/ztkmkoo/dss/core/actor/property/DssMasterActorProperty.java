@@ -9,15 +9,15 @@ import java.util.Objects;
  */
 public interface DssMasterActorProperty {
 
-    DssNetworkActorProperty getNetworkActorProperty();
+    DssNetworkActorProperty getDssNetworkActorProperty();
 
-    DssResolverActorProperty getResolverActorProperty();
+    DssResolverActorProperty getDssResolverActorProperty();
 
-    DssServiceActorProperty getServiceActorProperty();
+    DssServiceActorProperty getDssServiceActorProperty();
 
     default void validateProperty() {
-        Objects.requireNonNull(getNetworkActorProperty());
-        Objects.requireNonNull(getResolverActorProperty());
-        Objects.requireNonNull(getServiceActorProperty());
+        Objects.requireNonNull(getDssNetworkActorProperty());
+        Objects.requireNonNull(getDssResolverActorProperty());
+        Objects.requireNonNull(getDssServiceActorProperty());
     }
 }
