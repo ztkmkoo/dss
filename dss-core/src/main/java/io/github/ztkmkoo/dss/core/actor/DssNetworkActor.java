@@ -2,6 +2,7 @@ package io.github.ztkmkoo.dss.core.actor;
 
 import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
+import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;
 import io.github.ztkmkoo.dss.core.message.DssResolverCommand;
 import io.github.ztkmkoo.dss.core.network.DssChannel;
 import io.github.ztkmkoo.dss.core.network.DssChannelProperty;
@@ -19,7 +20,7 @@ import java.util.Objects;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-24 01:46
  */
-public interface DssNetworkActor<P extends DssChannelProperty, C extends DssChannel<P, ChannelInitializer<S>>, S extends SocketChannel> {
+public interface DssNetworkActor<P extends DssChannelProperty, C extends DssChannel<P, ChannelInitializer<S>>, S extends SocketChannel> extends DssActor<DssNetworkCommand> {
 
     /**
      * Get actor ref of master actor(parent)
