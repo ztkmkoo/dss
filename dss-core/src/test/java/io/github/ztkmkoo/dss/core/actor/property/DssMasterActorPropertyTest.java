@@ -1,12 +1,13 @@
 package io.github.ztkmkoo.dss.core.actor.property;
 
+import io.github.ztkmkoo.dss.core.service.DssService;
 import io.github.ztkmkoo.dss.core.service.DssServiceGenerator;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Kebron ztkmkoo@gmail.com
@@ -15,103 +16,41 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DssMasterActorPropertyTest {
 
     @Test
-    void validatePropertyThrowNullPointerException1() {
-        final DssMasterActorProperty property = new TestProperty1();
-        assertThrows(NullPointerException.class, property::validateProperty);
-    }
-
-    @Test
-    void validatePropertyThrowNullPointerException2() {
-        final DssMasterActorProperty property = new TestProperty2();
-        assertThrows(NullPointerException.class, property::validateProperty);
-    }
-
-    @Test
-    void validatePropertyThrowNullPointerException3() {
-        final DssMasterActorProperty property = new TestProperty3();
-        assertThrows(NullPointerException.class, property::validateProperty);
-    }
-
-    @Test
     void validateProperty() {
-        final DssMasterActorProperty property = new TestProperty4();
-        assertDoesNotThrow(property::validateProperty);
+        final DssMasterActorProperty property = new TestProperty();
+        assertEquals(1, property.getBossThreadCount());
+        assertEquals(12, property.getWorkerThreadCount());
+
+        assertNotNull(property.getServiceGeneratorList());
+        assertTrue(property.getServiceGeneratorList().isEmpty());
+
+        property.addDssServiceGenerator(new DssServiceGenerator() {
+            @Override
+            public DssService create() {
+                return null;
+            }
+        });
+
+        assertEquals(1, property.getServiceGeneratorList().size());
     }
 
-    private static class TestProperty1 implements DssMasterActorProperty {
+    private static class TestProperty implements DssMasterActorProperty {
+
+        private final List<DssServiceGenerator> list = new ArrayList<>();
 
         @Override
-        public DssNetworkActorProperty getDssNetworkActorProperty() {
-            return null;
+        public int getBossThreadCount() {
+            return 1;
         }
 
         @Override
-        public DssResolverActorProperty getDssResolverActorProperty() {
-            return null;
+        public int getWorkerThreadCount() {
+            return 12;
         }
 
         @Override
-        public DssServiceActorProperty getDssServiceActorProperty() {
-            return null;
-        }
-    }
-
-    private static class TestProperty2 implements DssMasterActorProperty {
-
-        @Override
-        public DssNetworkActorProperty getDssNetworkActorProperty() {
-            return new DssNetworkActorProperty() {};
-        }
-
-        @Override
-        public DssResolverActorProperty getDssResolverActorProperty() {
-            return null;
-        }
-
-        @Override
-        public DssServiceActorProperty getDssServiceActorProperty() {
-            return null;
-        }
-    }
-
-    private static class TestProperty3 implements DssMasterActorProperty {
-
-        @Override
-        public DssNetworkActorProperty getDssNetworkActorProperty() {
-            return new DssNetworkActorProperty() {};
-        }
-
-        @Override
-        public DssResolverActorProperty getDssResolverActorProperty() {
-            return new DssResolverActorProperty() {};
-        }
-
-        @Override
-        public DssServiceActorProperty getDssServiceActorProperty() {
-            return null;
-        }
-    }
-
-    private static class TestProperty4 implements DssMasterActorProperty {
-
-        @Override
-        public DssNetworkActorProperty getDssNetworkActorProperty() {
-            return new DssNetworkActorProperty() {};
-        }
-
-        @Override
-        public DssResolverActorProperty getDssResolverActorProperty() {
-            return new DssResolverActorProperty() {};
-        }
-
-        @Override
-        public DssServiceActorProperty getDssServiceActorProperty() {
-            return new DssServiceActorProperty() {
-                @Override
-                public List<DssServiceGenerator> getServiceGeneratorList() {
-                    return null;
-                }
-            };
+        public List<DssServiceGenerator> getServiceGeneratorList() {
+            return list;
         }
     }
 }

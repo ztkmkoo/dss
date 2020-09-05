@@ -1,5 +1,8 @@
 package io.github.ztkmkoo.dss.core.actor.property;
 
+import io.github.ztkmkoo.dss.core.service.DssServiceGenerator;
+
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -9,15 +12,28 @@ import java.util.Objects;
  */
 public interface DssMasterActorProperty {
 
-    DssNetworkActorProperty getDssNetworkActorProperty();
+    // network
 
-    DssResolverActorProperty getDssResolverActorProperty();
+    /**
+     * netty boss event loop thread count
+     */
+    int getBossThreadCount();
 
-    DssServiceActorProperty getDssServiceActorProperty();
+    /**
+     * netty worker event loop thread count
+     */
+    int getWorkerThreadCount();
 
-    default void validateProperty() {
-        Objects.requireNonNull(getDssNetworkActorProperty());
-        Objects.requireNonNull(getDssResolverActorProperty());
-        Objects.requireNonNull(getDssServiceActorProperty());
+    // service
+
+    List<DssServiceGenerator> getServiceGeneratorList();
+
+    // default
+
+    default void addDssServiceGenerator(DssServiceGenerator generator) {
+        final List<DssServiceGenerator> list = getServiceGeneratorList();
+        if (Objects.nonNull(list) && Objects.nonNull(generator)) {
+            list.add(generator);
+        }
     }
 }
