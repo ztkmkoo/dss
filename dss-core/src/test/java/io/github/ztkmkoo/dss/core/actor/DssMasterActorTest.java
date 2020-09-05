@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
+import io.github.ztkmkoo.dss.core.actor.property.DssMasterActorProperty;
 import io.github.ztkmkoo.dss.core.message.DssCommand;
 import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
 import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;

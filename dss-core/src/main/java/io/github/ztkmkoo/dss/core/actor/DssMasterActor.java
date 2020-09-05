@@ -3,6 +3,7 @@ package io.github.ztkmkoo.dss.core.actor;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
+import io.github.ztkmkoo.dss.core.actor.property.DssMasterActorProperty;
 import io.github.ztkmkoo.dss.core.message.DssCommand;
 import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
 import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;
