@@ -2,6 +2,9 @@ package io.github.ztkmkoo.dss.core.message;
 
 import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
+import io.github.ztkmkoo.dss.core.common.CommonStaticContents;
+import io.github.ztkmkoo.dss.core.common.logging.DssLogLevel;
+import io.github.ztkmkoo.dss.core.util.ObjectUtils;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,17 +14,47 @@ import lombok.Getter;
  */
 public interface DssMasterCommand extends DssCommand {
 
-    class Bind extends DssNetworkCommand.Bind implements DssMasterCommand{
+    @Getter
+    class Bind implements DssMasterCommand{
         private static final long serialVersionUID = -6291619473907870504L;
 
-        public Bind(DssMasterCommand.Bind.Builder builder) {
-            super(builder);
+        private final String host;
+        private final int port;
+        private final DssLogLevel logLevel;
+
+        public Bind(Builder builder) {
+            this.host = ObjectUtils.defaultValueIfNull(builder.host, CommonStaticContents.getDefaultHost(), CommonStaticContents.getTextHost());
+            this.port = ObjectUtils.defaultValueIfNull(builder.port, CommonStaticContents.getDefaultPort(), CommonStaticContents.getTextPort());
+            this.logLevel = ObjectUtils.defaultValueIfNull(builder.logLevel, CommonStaticContents.getDefaultLogLevel(), CommonStaticContents.getTextLogLevel());
         }
 
-        public static class Builder extends DssNetworkCommand.Bind.Builder {
-            @Override
-            public DssMasterCommand.Bind build() {
-                return new DssMasterCommand.Bind(this);
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+
+            private String host;
+            private Integer port;
+            private DssLogLevel logLevel;
+
+            public Builder host(String host) {
+                this.host = host;
+                return this;
+            }
+
+            public Builder port(Integer port) {
+                this.port = port;
+                return this;
+            }
+
+            public Builder logLevel(DssLogLevel logLevel) {
+                this.logLevel = logLevel;
+                return this;
+            }
+
+            public Bind build() {
+                return new Bind(this);
             }
         }
     }

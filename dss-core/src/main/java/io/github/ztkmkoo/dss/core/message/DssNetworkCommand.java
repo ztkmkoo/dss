@@ -1,8 +1,11 @@
 package io.github.ztkmkoo.dss.core.message;
 
+import io.github.ztkmkoo.dss.core.common.CommonStaticContents;
 import io.github.ztkmkoo.dss.core.common.logging.DssLogLevel;
 import io.github.ztkmkoo.dss.core.util.ObjectUtils;
 import lombok.Getter;
+
+import java.util.Objects;
 
 /**
  * @author Kebron ztkmkoo@gmail.com
@@ -14,18 +17,14 @@ public interface DssNetworkCommand extends DssCommand {
     class Bind implements DssNetworkCommand {
         private static final long serialVersionUID = -4274539067197850682L;
 
-        private static final String DEFAULT_HOST = "0.0.0.0";
-        private static final int DEFAULT_PORT = 8080;
-        private static final DssLogLevel DEFAULT_LOG_LEVEL = DssLogLevel.DEBUG;
-
         private final String host;
         private final int port;
         private final DssLogLevel logLevel;
 
         protected Bind(Builder builder) {
-            this.host = ObjectUtils.defaultValueIfNull(builder.host, DEFAULT_HOST, "host");
-            this.port = ObjectUtils.defaultValueIfNull(builder.port, DEFAULT_PORT, "port");
-            this.logLevel = ObjectUtils.defaultValueIfNull(builder.logLevel, DEFAULT_LOG_LEVEL, "logLevel");
+            this.host = ObjectUtils.defaultValueIfNull(builder.host, CommonStaticContents.getDefaultHost(), CommonStaticContents.getTextHost());
+            this.port = ObjectUtils.defaultValueIfNull(builder.port, CommonStaticContents.getDefaultPort(), CommonStaticContents.getTextPort());
+            this.logLevel = ObjectUtils.defaultValueIfNull(builder.logLevel, CommonStaticContents.getDefaultLogLevel(), CommonStaticContents.getTextLogLevel());
         }
 
         public static Builder builder() {
@@ -49,6 +48,15 @@ public interface DssNetworkCommand extends DssCommand {
 
             public Builder logLevel(DssLogLevel logLevel) {
                 this.logLevel = logLevel;
+                return this;
+            }
+
+            public Builder bind(DssMasterCommand.Bind bind) {
+                if (Objects.nonNull(bind)) {
+                    this.host = bind.getHost();
+                    this.port = bind.getPort();
+                    this.logLevel = bind.getLogLevel();
+                }
                 return this;
             }
 
