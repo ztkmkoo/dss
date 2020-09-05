@@ -1,5 +1,7 @@
 package io.github.ztkmkoo.dss.core.actor.property;
 
+import java.util.Objects;
+
 /**
  * Master property
  * @author Kebron ztkmkoo@gmail.com
@@ -12,4 +14,10 @@ public interface DssMasterActorProperty {
     DssResolverActorProperty getResolverActorProperty();
 
     DssServiceActorProperty getServiceActorProperty();
+
+    default void validateProperty() {
+        Objects.requireNonNull(getNetworkActorProperty());
+        Objects.requireNonNull(getResolverActorProperty());
+        Objects.requireNonNull(getServiceActorProperty());
+    }
 }

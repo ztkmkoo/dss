@@ -1,6 +1,7 @@
 package io.github.ztkmkoo.dss.core.actor;
 
 import akka.actor.typed.Behavior;
+import akka.actor.typed.javadsl.ActorContext;
 import io.github.ztkmkoo.dss.core.message.DssCommand;
 import org.slf4j.Logger;
 
@@ -16,8 +17,9 @@ public interface DssActor<T extends DssCommand> {
      */
     Behavior<T> getBehavior();
 
-    /**
-     * Get logger
-     */
-    Logger getLog();
+    ActorContext<T> getContext();
+
+    default Logger getLog() {
+        return getContext().getLog();
+    }
 }
