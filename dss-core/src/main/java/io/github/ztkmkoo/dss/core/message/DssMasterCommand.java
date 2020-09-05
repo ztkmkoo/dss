@@ -15,7 +15,7 @@ import lombok.Getter;
 public interface DssMasterCommand extends DssCommand {
 
     @Getter
-    class Bind implements DssMasterCommand{
+    class Bind implements DssMasterCommand, DssBindCommand{
         private static final long serialVersionUID = -6291619473907870504L;
 
         private final String host;

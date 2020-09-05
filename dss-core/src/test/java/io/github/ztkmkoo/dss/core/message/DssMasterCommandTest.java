@@ -24,20 +24,14 @@ class DssMasterCommandTest {
                 .port(1234)
                 .logLevel(DssLogLevel.INFO)
                 .build();
-        assertNotNull(command);
-        assertEquals("127.0.0.1", command.getHost());
-        assertEquals(1234, command.getPort());
-        assertEquals(DssLogLevel.INFO, command.getLogLevel());
+
+        DssCommandHelpUtils.assertBindCommand(command, "127.0.0.1", 1234, DssLogLevel.INFO);
     }
 
     @Test
     void bindDefault() {
         final DssMasterCommand.Bind defaultCommand = DssMasterCommand.Bind.builder().build();
-        assertNotNull(defaultCommand);
-
-        assertEquals("0.0.0.0", defaultCommand.getHost());
-        assertEquals(8080, defaultCommand.getPort());
-        assertEquals(DssLogLevel.DEBUG, defaultCommand.getLogLevel());
+        DssCommandHelpUtils.assertDefaultBindCommand(defaultCommand);
     }
 
     @Test

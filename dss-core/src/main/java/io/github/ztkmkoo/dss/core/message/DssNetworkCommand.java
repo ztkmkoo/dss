@@ -14,7 +14,7 @@ import java.util.Objects;
 public interface DssNetworkCommand extends DssCommand {
 
     @Getter
-    class Bind implements DssNetworkCommand {
+    class Bind implements DssNetworkCommand, DssBindCommand {
         private static final long serialVersionUID = -4274539067197850682L;
 
         private final String host;

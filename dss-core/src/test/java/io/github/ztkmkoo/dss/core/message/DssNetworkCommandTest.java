@@ -19,19 +19,13 @@ class DssNetworkCommandTest {
                 .port(433)
                 .logLevel(DssLogLevel.WARN)
                 .build();
-        assertNotNull(command);
-        assertEquals("127.0.0.1", command.getHost());
-        assertEquals(433, command.getPort());
-        assertEquals(DssLogLevel.WARN, command.getLogLevel());
+
+        DssCommandHelpUtils.assertBindCommand(command, "127.0.0.1", 433, DssLogLevel.WARN);
     }
 
     @Test
     void bindDefault() {
         final DssNetworkCommand.Bind defaultCommand = DssNetworkCommand.Bind.builder().build();
-        assertNotNull(defaultCommand);
-
-        assertEquals("0.0.0.0", defaultCommand.getHost());
-        assertEquals(8080, defaultCommand.getPort());
-        assertEquals(DssLogLevel.DEBUG, defaultCommand.getLogLevel());
+        DssCommandHelpUtils.assertDefaultBindCommand(defaultCommand);
     }
 }
