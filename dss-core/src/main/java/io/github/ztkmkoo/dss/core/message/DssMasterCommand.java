@@ -11,8 +11,19 @@ import lombok.Getter;
  */
 public interface DssMasterCommand extends DssCommand {
 
-    class Bind implements DssMasterCommand{
+    class Bind extends DssNetworkCommand.Bind implements DssMasterCommand{
         private static final long serialVersionUID = -6291619473907870504L;
+
+        public Bind(DssMasterCommand.Bind.Builder builder) {
+            super(builder);
+        }
+
+        public static class Builder extends DssNetworkCommand.Bind.Builder {
+            @Override
+            public DssMasterCommand.Bind build() {
+                return new DssMasterCommand.Bind(this);
+            }
+        }
     }
 
     class Shutdown implements DssMasterCommand {
