@@ -23,13 +23,20 @@ import java.util.Objects;
  */
 public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
 
-    private final Logger logger = LoggerFactory.getLogger(DssRestSslChannelInitializer.class);
+    private static SslContext selfSignedSslContext() throws InterruptedException {
+        try {
+            final SelfSignedCertificate ssc = new SelfSignedCertificate();
+            return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
+        } catch (CertificateException | SSLException e) {
+            throw new InterruptedException("Create self signed ssl context failed");
+        }
+    }
 
+    private final Logger logger = LoggerFactory.getLogger(DssRestSslChannelInitializer.class);
     private final SslContext sslCtx;
 
     public DssRestSslChannelInitializer(List<DssRestActorService> serviceList) throws InterruptedException {
         this(serviceList, selfSignedSslContext());
-
     }
 
     public DssRestSslChannelInitializer(List<DssRestActorService> serviceList, SslContext sslContext) throws InterruptedException {
@@ -40,23 +47,12 @@ public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         logger.info("Try to initChannel");
-
         final ChannelPipeline p = ch.pipeline();
 
         p.addLast(sslCtx.newHandler(ch.alloc()));
-
         p.addLast(new HttpRequestDecoder());
         p.addLast(new HttpResponseEncoder());
 
         super.addHandler(p);
-    }
-
-    private static SslContext selfSignedSslContext() throws InterruptedException {
-        try {
-            final SelfSignedCertificate ssc = new SelfSignedCertificate();
-            return SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
-        } catch (CertificateException | SSLException e) {
-            throw new InterruptedException("Create self signed ssl context failed");
-        }
     }
 }

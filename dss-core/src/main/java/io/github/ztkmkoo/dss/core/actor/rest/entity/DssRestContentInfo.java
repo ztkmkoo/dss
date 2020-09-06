@@ -23,7 +23,6 @@ public class DssRestContentInfo {
             .build();
     private static final DssRestContentType DEFAULT_CONTENT_TYPE = DssRestContentType.APPLICATION_JSON;
     private static final Charset DEFAULT_CHARSET = CharsetUtil.UTF_8;
-
     private final DssRestContentType contentType;
     private final Charset charset;
 
