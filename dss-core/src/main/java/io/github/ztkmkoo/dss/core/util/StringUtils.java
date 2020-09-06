@@ -9,7 +9,9 @@ import java.util.Objects;
  */
 public class StringUtils {
 
-    private StringUtils() {}
+    private StringUtils() {
+
+    }
 
     public static boolean isEmpty(String s) {
         return Objects.isNull(s) || s.isEmpty();

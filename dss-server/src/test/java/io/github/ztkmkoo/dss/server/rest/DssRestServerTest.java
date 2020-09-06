@@ -1,11 +1,7 @@
 package io.github.ztkmkoo.dss.server.rest;
 
-import static org.awaitility.Awaitility.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.*;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -19,9 +15,14 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
+import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
+import io.github.ztkmkoo.dss.core.exception.annotation.ExceptionHandler;
+import io.github.ztkmkoo.dss.core.exception.annotation.ServiceExceptionHandler;
+import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
@@ -40,158 +41,18 @@ import io.netty.handler.ssl.SslContextBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Timeout;
+import static org.awaitility.Awaitility.await;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 8. 오후 4:59
  */
-public class DssRestServerTest {
+class DssRestServerTest {
 
     private static final String SSL_PASSWORD = "dss123";
-
-    @Test
-    public void start() throws Exception {
-
-        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
-        dssRestServer
-                .addDssService(new DssRestActorJsonService("test", "/hi", DssRestMethodType.GET) {
-                    @Override
-                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
-                        return null;
-                    }
-                })
-                .addDssService(new DssRestActorFormDataService("test2", "/hello", DssRestMethodType.GET) {
-                    @Override
-                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Object>> request) {
-                        return null;
-                    }
-                });
-
-        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
-
-        dssRestServer.start();
-
-        assertTrue(dssRestServer.isShutdown());
-    }
-
-    @Test
-    public void test() throws InterruptedException {
-        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
-        dssRestServer
-                .addDssService(new TestService("test", "/hi", DssRestMethodType.GET));
-
-        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
-
-        dssRestServer.start();
-
-        assertTrue(dssRestServer.isShutdown());
-    }
-
-    @Test
-    public void testSsl() throws Exception {
-        final PrivateKey privateKey = loadPrivateKeyFromFile(loadFromTestResources("ssl/private.der"));
-        final X509Certificate certificate = loadX509CertificateFromFile(loadFromTestResources("ssl/private.crt"));
-
-        final SslContext sslContext = SslContextBuilder.forServer(privateKey, SSL_PASSWORD, certificate).build();
-
-        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181, true, sslContext);
-        dssRestServer
-                .addDssService(new TestService("test", "/hi", DssRestMethodType.GET));
-
-        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
-
-        dssRestServer.start();
-
-        assertTrue(dssRestServer.isShutdown());
-    }
-
-    @Test
-    @Timeout(value = 15)
-    public void testJsonPostRequest() throws IOException, InterruptedException {
-        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
-        dssRestServer
-                .addDssService(new TestJsonService("test_json", "/test/json", DssRestMethodType.POST));
-
-        startOnDssJsonRestServer(dssRestServer);
-        await().until(dssRestServer::isActivated);
-
-        final String uri = "http://127.0.0.1:8181/test/json";
-        final String sendJsonBody = "{\"name\":\"myname\",\"age\":20}";
-
-        HttpResponse response = sendJsonRequest(uri, DssRestMethodType.POST, sendJsonBody);
-
-        String receiveJsonBody = EntityUtils.toString(response.getEntity(), "UTF-8");
-
-        assertEquals(sendJsonBody, receiveJsonBody);
-
-        dssRestServer.stop();
-
-        assertTrue(dssRestServer.isShutdown());
-    }
-
-    @Getter
-    private static class TestResponse implements DssRestServiceResponse {
-        private static final long serialVersionUID = 5967168992972178660L;
-        private final String message;
-
-        public TestResponse(String name) {
-            this.message = "Hi " + name;
-        }
-    }
-
-    @Getter @Setter
-    private static class TestRequest implements Serializable {
-        private static final long serialVersionUID = 6373259023479826730L;
-        private String name;
-    }
-
-    private static class TestService extends DssRestActorJsonService<TestRequest> {
-
-        public TestService(String name, String path, DssRestMethodType methodType) {
-            super(new TypeReference<TestRequest>() {}, name, path, methodType);
-        }
-
-        @Override
-        protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<TestRequest> request) {
-            final TestRequest testRequest = request.getBody();
-            final String name = testRequest.getName();
-            return new TestResponse(name);
-        }
-    }
-
-    @Getter
-    private static class TestJsonResponse implements DssRestServiceResponse {
-        private static final long serialVersionUID = 5199731949724988897L;
-        private final String name;
-        private final int age;
-
-        public TestJsonResponse(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-    }
-
-    @Getter @Setter
-    private static class TestJsonRequest implements Serializable {
-        private static final long serialVersionUID = 2415190317023826555L;
-        private String name;
-        private int age;
-    }
-
-    private static class TestJsonService extends DssRestActorJsonService<TestJsonRequest> {
-
-        public TestJsonService(String name, String path, DssRestMethodType methodType) {
-            super(new TypeReference<TestJsonRequest>() {}, name, path, methodType);
-        }
-
-        @Override
-        protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<TestJsonRequest> request) {
-            final TestJsonRequest testRequest = request.getBody();
-
-            return new TestJsonResponse(testRequest.name, testRequest.age);
-        }
-    }
 
     private static void startOnNewThread(Runnable runnable) {
         new Thread(runnable).start();
@@ -264,5 +125,293 @@ public class DssRestServerTest {
                 .build();
 
         return httpClient.execute(request);
+    }
+
+    @Test
+    void start() throws Exception {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssService(new DssRestActorJsonService("test", "/hi", DssRestMethodType.GET) {
+                    @Override
+                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
+                        return null;
+                    }
+                })
+                .addDssService(new DssRestActorFormDataService("test2", "/hello", DssRestMethodType.GET) {
+                    @Override
+                    protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Object>> request) {
+                        return null;
+                    }
+                });
+
+        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
+
+        dssRestServer.start();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    void test() throws InterruptedException {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssService(new TestService("test", "/hi", DssRestMethodType.GET));
+
+        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
+
+        dssRestServer.start();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    void testSsl() throws Exception {
+        final PrivateKey privateKey = loadPrivateKeyFromFile(loadFromTestResources("ssl/private.der"));
+        final X509Certificate certificate = loadX509CertificateFromFile(loadFromTestResources("ssl/private.crt"));
+
+        final SslContext sslContext = SslContextBuilder.forServer(privateKey, SSL_PASSWORD, certificate).build();
+
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181, DssLogLevel.DEBUG, true, sslContext);
+        dssRestServer
+                .addDssService(new TestService("test", "/hi", DssRestMethodType.GET));
+
+        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
+
+        dssRestServer.start();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    void testStartExceptionHandler() throws InterruptedException {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssService(new TestService("test", "/hi", DssRestMethodType.GET))
+                .addExceptionHandler(new GlobalExceptionHandler());
+
+        stopDssRestServerAfterActivated(dssRestServer, 10 ,15);
+
+        dssRestServer.start();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    @Timeout(value = 15)
+    void testJsonPostRequest() throws IOException, InterruptedException {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssService(new TestJsonService("test_json", "/test/json", DssRestMethodType.POST));
+
+        startOnDssJsonRestServer(dssRestServer);
+        await().until(dssRestServer::isActivated);
+
+        final String uri = "http://127.0.0.1:8181/test/json";
+        final String sendJsonBody = "{\"name\":\"myname\",\"age\":20}";
+
+        HttpResponse response = sendJsonRequest(uri, DssRestMethodType.POST, sendJsonBody);
+
+        String receiveJsonBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+        assertEquals(sendJsonBody, receiveJsonBody);
+
+        dssRestServer.stop();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    @Timeout(value = 15)
+    void globalExceptionHandleMethodTest() throws IOException, InterruptedException {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssService(new MyService())
+                .addDssService(new YourService())
+                .addExceptionHandler(new GlobalExceptionHandler());
+
+        startOnDssJsonRestServer(dssRestServer);
+        await().until(dssRestServer::isActivated);
+
+        String uri = "http://127.0.0.1:8181/your/service";
+        String sendJsonBody = "{\"name\":\"myname\"}";
+
+        HttpResponse response = sendJsonRequest(uri, DssRestMethodType.POST, sendJsonBody);
+
+        String receiveJsonBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+        assertEquals("{\"result\":\"globalExceptionHandleMethod\"}", receiveJsonBody);
+
+        dssRestServer.stop();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    @Timeout(value = 15)
+    void serviceExceptionHandleMethodTest() throws IOException, InterruptedException {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssService(new MyService())
+                .addDssService(new YourService())
+                .addExceptionHandler(new GlobalExceptionHandler());
+
+        startOnDssJsonRestServer(dssRestServer);
+        await().until(dssRestServer::isActivated);
+
+        final String uri = "http://127.0.0.1:8181/my/service";
+        final String sendJsonBody = "{\"name\":\"myname\"}";
+
+        HttpResponse response = sendJsonRequest(uri, DssRestMethodType.POST, sendJsonBody);
+
+        String receiveJsonBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+        assertEquals("{\"result\":\"serviceExceptionHandleMethod\"}", receiveJsonBody);
+
+        dssRestServer.stop();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Test
+    @Timeout(value = 15)
+    void occurExceptionTestWhileRunningExceptionHandleMethod() throws IOException, InterruptedException {
+        final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
+        dssRestServer
+                .addDssService(new MyService())
+                .addDssService(new YourService())
+                .addExceptionHandler(new GlobalExceptionHandler());
+
+        startOnDssJsonRestServer(dssRestServer);
+        await().until(dssRestServer::isActivated);
+
+        final String sendJsonBody = "{\"name\":\"myname\",\"age\":20}";
+        final String uri = "http://127.0.0.1:8181/my/service";
+
+        HttpResponse response = sendJsonRequest(uri, DssRestMethodType.POST, sendJsonBody);
+
+        String receiveJsonBody = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+        assertEquals("", receiveJsonBody);
+
+        dssRestServer.stop();
+
+        assertTrue(dssRestServer.isShutdown());
+    }
+
+    @Getter
+    private static class TestResponse implements DssRestServiceResponse {
+        private static final long serialVersionUID = 5967168992972178660L;
+
+        private final String message;
+
+        public TestResponse(String name) {
+            this.message = "Hi " + name;
+        }
+    }
+
+    @Getter @Setter
+    private static class TestRequest implements Serializable {
+        private static final long serialVersionUID = 6373259023479826730L;
+
+        private String name;
+    }
+
+    private static class TestService extends DssRestActorJsonService<TestRequest> {
+
+        public TestService(String name, String path, DssRestMethodType methodType) {
+            super(new TypeReference<TestRequest>() {}, name, path, methodType);
+        }
+
+        @Override
+        protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<TestRequest> request) {
+            final TestRequest testRequest = request.getBody();
+            final String name = testRequest.getName();
+            return new TestResponse(name);
+        }
+    }
+
+    @Getter
+    private static class TestJsonResponse implements DssRestServiceResponse {
+        private static final long serialVersionUID = 5199731949724988897L;
+
+        private final String name;
+        private final int age;
+
+        public TestJsonResponse(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+    }
+
+    @Getter @Setter
+    private static class TestJsonRequest implements Serializable {
+        private static final long serialVersionUID = 2415190317023826555L;
+
+        private String name;
+        private int age;
+    }
+
+    private static class TestJsonService extends DssRestActorJsonService<TestJsonRequest> {
+
+        public TestJsonService(String name, String path, DssRestMethodType methodType) {
+            super(new TypeReference<TestJsonRequest>() {}, name, path, methodType);
+        }
+
+        @Override
+        protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<TestJsonRequest> request) {
+            final TestJsonRequest testRequest = request.getBody();
+
+            return new TestJsonResponse(testRequest.name, testRequest.age);
+        }
+    }
+
+    private static class MyService extends DssRestActorJsonService<TestRequest> {
+
+        public MyService() {
+            super(new TypeReference<TestRequest>() {}, "myService", "/my/service", DssRestMethodType.POST);
+        }
+
+        protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<TestRequest> dssRestServiceRequest) {
+            throw new NullPointerException();
+        }
+    }
+
+    private static class YourService extends DssRestActorJsonService<TestRequest> {
+
+        public YourService() {
+            super(new TypeReference<TestRequest>() {}, "yourService", "/your/service", DssRestMethodType.POST);
+        }
+
+        protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<TestRequest> dssRestServiceRequest) {
+            throw new NullPointerException();
+        }
+    }
+
+    private static class GlobalExceptionHandler implements DssExceptionHandler {
+
+        @ExceptionHandler(exception = NullPointerException.class)
+        public DssRestServiceResponse globalExceptionHandleMethod(DssRestServiceActorCommandRequest request) {
+            return new globalResponse("globalExceptionHandleMethod");
+        }
+
+        @ExceptionHandler(exception = DssRestRequestMappingException.class)
+        public DssRestServiceResponse testForExceptionWhileRunningExceptionHandleMethod(DssRestServiceActorCommandRequest request) {
+            throw new RuntimeException("testForExceptionWhileRunningExceptionHandleMethod");
+        }
+
+        @ServiceExceptionHandler(service = MyService.class, exception = NullPointerException.class)
+        public DssRestServiceResponse serviceExceptionHandleMethod(DssRestServiceActorCommandRequest request) {
+            return new globalResponse("serviceExceptionHandleMethod");
+        }
+
+        @Getter @Setter
+        static class globalResponse implements DssRestServiceResponse {
+            private static final long serialVersionUID = -8811453587826373582L;
+            private String result;
+
+            public globalResponse(String result) {
+                this.result = result;
+            }
+        }
     }
 }

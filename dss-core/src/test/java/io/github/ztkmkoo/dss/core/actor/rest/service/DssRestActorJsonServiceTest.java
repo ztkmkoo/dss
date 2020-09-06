@@ -24,7 +24,7 @@ import lombok.Builder;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 30. 오전 2:41
  */
-public class DssRestActorJsonServiceTest extends AbstractDssActorTest {
+class DssRestActorJsonServiceTest extends AbstractDssActorTest {
 
     private static final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
     private static final DssRestServiceActorCommandRequest sampleCommandRequest = new DssRestServiceActorCommandRequest(DssRestMasterActorCommandRequest
@@ -44,40 +44,39 @@ public class DssRestActorJsonServiceTest extends AbstractDssActorTest {
             .build();
 
     @Test
-    public void handling() {
+    void handling() {
         final DssRestServiceResponse response = testService.handling(sampleCommandRequest);
         assertNull(response);
     }
 
     @Test
-    public void getName() {
+    void getName() {
         assertEquals("test", testService.getName());
     }
 
     @Test
-    public void getPath() {
+    void getPath() {
         assertEquals("/test", testService.getPath());
     }
 
     @Test
-    public void getMethodType() {
+    void getMethodType() {
         assertEquals(DssRestMethodType.GET, testService.getMethodType());
     }
 
     @Test
-    public void getConsume() {
+    void getConsume() {
         assertNotNull(testService.getConsume());
         assertEquals(DssRestContentType.APPLICATION_JSON, testService.getConsume().getContentType());
         assertEquals(CharsetUtil.UTF_8, testService.getConsume().getCharset());
     }
 
     @Test
-    public void getProduce() {
+    void getProduce() {
         assertNotNull(testService.getProduce());
         assertEquals(DssRestContentType.APPLICATION_JSON, testService.getProduce().getContentType());
         assertEquals(CharsetUtil.UTF_8, testService.getProduce().getCharset());
     }
-
 
     private static class TestService extends DssRestActorJsonService<HashMap<String, Serializable>> {
 

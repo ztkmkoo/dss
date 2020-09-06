@@ -15,8 +15,8 @@ import java.util.Objects;
  */
 @Getter
 public class DssRestMasterActorCommandRequest implements DssRestMasterActorCommand {
-
     private static final long serialVersionUID = 6046370337632314401L;
+
     private final String channelId;
     private final ActorRef<DssRestChannelHandlerCommand> sender;
     private final DssRestMethodType methodType;

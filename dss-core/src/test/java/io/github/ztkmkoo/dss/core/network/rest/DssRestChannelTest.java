@@ -20,10 +20,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 1:04
  */
-public class DssRestChannelTest {
+class DssRestChannelTest {
 
     @Test
-    public void bind() throws Exception {
+    void bind() throws Exception {
 
         final EventLoopGroup bossGroup = new NioEventLoopGroup();
         final EventLoopGroup workerGroup = new NioEventLoopGroup();

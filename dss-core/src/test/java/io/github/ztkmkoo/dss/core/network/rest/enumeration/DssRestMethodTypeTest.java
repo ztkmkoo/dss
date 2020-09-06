@@ -12,22 +12,22 @@ import io.netty.handler.codec.http.HttpMethod;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 12:57
  */
-public class DssRestMethodTypeTest {
+class DssRestMethodTypeTest {
 
     @Test
-    public void fromNettyHttpMethod() {
+    void fromNettyHttpMethod() {
         final DssRestMethodType methodType = DssRestMethodType.fromNettyHttpMethod(HttpMethod.GET);
         assertEquals(DssRestMethodType.GET, methodType);
     }
 
     @Test
-    public void fromNettyHttpMethodNotSupported() {
+    void fromNettyHttpMethodNotSupported() {
         assertThrows(NotSupportedRestMethodException.class,
             () -> DssRestMethodType.fromNettyHttpMethod(HttpMethod.HEAD));
     }
 
     @Test
-    public void valueOf() {
+    void valueOf() {
         final DssRestMethodType methodType = DssRestMethodType.valueOf("GET");
         assertEquals(DssRestMethodType.GET, methodType);
     }

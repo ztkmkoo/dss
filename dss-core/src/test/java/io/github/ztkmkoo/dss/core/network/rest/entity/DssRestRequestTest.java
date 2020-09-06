@@ -11,10 +11,10 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 12:54
  */
-public class DssRestRequestTest {
+class DssRestRequestTest {
 
     @Test
-    public void builder() {
+    void builder() {
 
         final DssRestRequest request = DssRestRequest
                 .builder()

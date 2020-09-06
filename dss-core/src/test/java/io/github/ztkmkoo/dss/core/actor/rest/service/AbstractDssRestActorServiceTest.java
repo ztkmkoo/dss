@@ -17,10 +17,10 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 4. 6. 오전 1:26
  */
-public class AbstractDssRestActorServiceTest {
+class AbstractDssRestActorServiceTest {
 
     @Test
-    public void testConstructor() {
+    void testConstructor() {
         final AbstractDssRestActorService service = new AbstractDssRestActorService("test", "test", DssRestMethodType.GET) {
             @Override
             protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
