@@ -12,36 +12,44 @@ import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommand;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRequest;
+import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 public class DssRestAuthenticationActor {
 	
-	private String userID;
-	private String userPassword;
-	
-	public static Behavior<DssAuthenticationCommand> create(Map<String, String> userList) {
-        return Behaviors.setup(context -> new DssRestAuthenticationActor(context, userList).dssRestAuthenticationActor());
+	public static Behavior<DssAuthenticationCommand> create(Map<String, String> userList, Map<String, String> tokenList) {
+        return Behaviors.setup(context -> new DssRestAuthenticationActor(context, userList, tokenList).dssRestAuthenticationActor());
     }
 	
 	private final ActorContext<DssAuthenticationCommand> context;
 	private final Map<String, String> userList;
+	private final Map<String, String> tokenList;
     
-    private DssRestAuthenticationActor(ActorContext<DssAuthenticationCommand> context, Map<String, String> userList) {
+    private DssRestAuthenticationActor(ActorContext<DssAuthenticationCommand> context, Map<String, String> userList, Map<String, String> tokenList) {
         this.context = context;
         this.userList = userList;
+        this.tokenList = tokenList;
     }
     
     private Behavior<DssAuthenticationCommand> dssRestAuthenticationActor() {
         return Behaviors
                 .receive(DssAuthenticationCommand.class)
                 .onMessage(DssAuthenticationCommandRequest.class, this::handlingDssAuthenticationCommandRequest)
+                .onMessage(DssAuthorizationCommandRequest.class, this::handlingDssAuthorizationCommandRequest)
                 .build();
     }
     
     private Behavior<DssAuthenticationCommand> handlingDssAuthenticationCommandRequest(DssAuthenticationCommandRequest request) {
     	
     	context.getLog().info("DssAuthenticationCommandRequest: {}", request);
+    	
+    	return Behaviors.same();
+    }
+    
+    private Behavior<DssAuthenticationCommand> handlingDssAuthorizationCommandRequest(DssAuthorizationCommandRequest request) {
+    	
+    	context.getLog().info("DssAuthorizationCommandRequest: {}", request);
     	
     	return Behaviors.same();
     }
@@ -64,7 +72,7 @@ public class DssRestAuthenticationActor {
                 .setClaims(payloads) 
                 .setSubject("user")
                 .setExpiration(ext)
-                .signWith(SignatureAlgorithm.HS256, userID.getBytes()) 
+                .signWith(SignatureAlgorithm.HS256, "id".getBytes()) 
                 .compact(); 
 
         return jwt;

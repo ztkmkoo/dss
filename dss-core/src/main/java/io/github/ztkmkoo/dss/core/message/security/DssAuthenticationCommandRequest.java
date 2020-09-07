@@ -8,7 +8,8 @@ import lombok.Getter;
 
 @Getter
 public class DssAuthenticationCommandRequest implements DssAuthenticationCommand {
-
+	private static final long serialVersionUID = 1163425179253222602L;
+	
 	private final String userID;
 	private final String userPassword;
 	
@@ -32,7 +33,8 @@ public class DssAuthenticationCommandRequest implements DssAuthenticationCommand
 	    public String toString() {
 	        return "DssAuthenticationCommandRequest{" +
 	        		"userID: '" + userID + "', " +
-	        		"userPassword: '" + userPassword + "', ";
+	        		"userPassword: '" + userPassword + "'" +
+	        		"}";
 	 }
 	
 }
