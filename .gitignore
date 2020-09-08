@@ -32,3 +32,8 @@ hs_err_pid*
 *.classpath
 *.project
 *.settings/
+
+# Gradle and Maven with auto-import
+# When using Gradle or Maven with auto-import, you should exclude module files,
+# since they will be recreated, and may cause churn.  Uncomment if using auto-import.
+*.iml
