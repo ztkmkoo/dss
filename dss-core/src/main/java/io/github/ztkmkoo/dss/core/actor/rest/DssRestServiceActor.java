@@ -1,12 +1,14 @@
 package io.github.ztkmkoo.dss.core.actor.rest;
 
-import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
+import io.github.ztkmkoo.dss.core.actor.exception.DssRestRequestMappingException;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
-import io.github.ztkmkoo.dss.core.message.rest.*;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommand;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import io.netty.handler.codec.http.HttpResponseStatus;
 
 import java.util.Objects;
@@ -18,18 +20,16 @@ import java.util.Objects;
  */
 public class DssRestServiceActor {
 
-    public static Behavior<DssRestServiceActorCommand> create(DssRestActorService dssRestActorService, ActorRef<DssRestExceptionHandlerCommand> exceptionHandler) {
-        return Behaviors.setup(context -> new DssRestServiceActor(context, dssRestActorService, exceptionHandler).dssRestServiceActor());
+    public static Behavior<DssRestServiceActorCommand> create(DssRestActorService dssRestActorService) {
+        return Behaviors.setup(context -> new DssRestServiceActor(context, dssRestActorService).dssRestServiceActor());
     }
 
     private final ActorContext<DssRestServiceActorCommand> context;
     private final DssRestActorService dssRestActorService;
-    private final ActorRef<DssRestExceptionHandlerCommand> exceptionHandler;
 
-    private DssRestServiceActor(ActorContext<DssRestServiceActorCommand> context, DssRestActorService dssRestActorService, ActorRef<DssRestExceptionHandlerCommand> exceptionHandler) {
+    private DssRestServiceActor(ActorContext<DssRestServiceActorCommand> context, DssRestActorService dssRestActorService) {
         this.context = context;
         this.dssRestActorService = dssRestActorService;
-        this.exceptionHandler = exceptionHandler;
     }
 
     private Behavior<DssRestServiceActorCommand> dssRestServiceActor() {
@@ -39,8 +39,7 @@ public class DssRestServiceActor {
                 .build();
     }
 
-    private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(
-            DssRestServiceActorCommandRequest request) {
+    private Behavior<DssRestServiceActorCommand> onHandlingDssRestServiceActorCommandRequest(DssRestServiceActorCommandRequest request) {
         context.getLog().info("onHandlingDssRestServiceActorCommandRequest: {}", request);
         if (Objects.isNull(request.getContentType())) {
             context.getLog().warn("Request content-type is null: {}", request);
@@ -55,14 +54,12 @@ public class DssRestServiceActor {
                         dssRestActorService.getConsume().getContentType(), request.getContentType());
                 replyRequest(request, HttpResponseStatus.BAD_REQUEST);
             }
-        }catch (Exception e) {
-            DssRestExceptionHandlerCommandRequest commandRequest = DssRestExceptionHandlerCommandRequest.builder()
-                    .service(this.dssRestActorService)
-                    .exception(e)
-                    .request(request)
-                    .build();
-
-            this.exceptionHandler.tell(commandRequest);
+        } catch (DssRestRequestMappingException e) {
+            context.getLog().error("Json request mapping error: ", e);
+            replyRequest(request, HttpResponseStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            context.getLog().error("Handling rest request error: ", e);
+            replyRequest(request, HttpResponseStatus.INTERNAL_SERVER_ERROR);
         }
 
         return Behaviors.same();
