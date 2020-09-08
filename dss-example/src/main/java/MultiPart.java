@@ -26,12 +26,6 @@ class MyService extends DssRestActorFormDataService {
 
     @Override
     protected DssRestServiceResponse handlingRequest(DssRestServiceRequest<HashMap<String, Object>> request) {
-        StringBuilder out = new StringBuilder();
-
-        request.getBody().forEach((s, o) -> {
-            out.append(s).append(" : ").append(o).append("\\n");
-        });
-
         MyServiceResponse myResponse = new MyServiceResponse();
         myResponse.setValues(request.getBody());
 
