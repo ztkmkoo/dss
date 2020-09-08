@@ -38,7 +38,7 @@ public abstract class DssRestActorFormDataService extends AbstractDssRestActorSe
         String[] splits = null;
         HashMap<String, Object> bodyMap = null;
 
-        if (commandRequest.getBoundary().isEmpty()) {
+        if (StringUtils.isEmpty(commandRequest.getBoundary())) {
             splits = commandRequest.getContent().split("&");
             bodyMap = new HashMap<>(splits.length);
 
