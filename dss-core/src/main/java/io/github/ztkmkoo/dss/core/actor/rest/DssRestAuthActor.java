@@ -2,15 +2,11 @@ package io.github.ztkmkoo.dss.core.actor.rest;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthCommand;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
@@ -51,7 +47,7 @@ public class DssRestAuthActor {
     	String userPassword = request.getUserPassword();
     	String token = null;
     	
-    	if(userList.get(userID) == userPassword) {
+    	if(userList.get(userID).equals(userPassword)) {
     		token = createToken(userID);
     		tokenList.put(userID, token);
     	}
@@ -68,7 +64,7 @@ public class DssRestAuthActor {
     	String userID = request.getUserID();
     	String token = request.getToken();
     	
-    	if(tokenList.get(userID) == token && verifyToken(userID, token)) {
+    	if(tokenList.get(userID).equals(token) && verifyToken(userID, token)) {
     		request.getValid().tell("true");
     	} else {
     		request.getValid().tell("false");
@@ -103,17 +99,21 @@ public class DssRestAuthActor {
     
     private boolean verifyToken(String userID, String token) {
         try {
-            Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(userID.getBytes("UTF-8"))
                     .parseClaimsJws(token)
                     .getBody();
+            
+            if(claims.get("data", String.class).equals(userID)) {
+            	return true;
+            } else {
+            	return false;
+            }
             
         } catch (ExpiredJwtException e) {
         	return false;
         } catch (Exception e) {
         	return false;
         }
-        
-        return true;
     }    
 }
