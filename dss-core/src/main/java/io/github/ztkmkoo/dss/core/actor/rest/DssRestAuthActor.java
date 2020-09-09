@@ -18,7 +18,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class DssRestAuthActor {
 	
 	public static Behavior<DssAuthCommand> create(Map<String, String> userList, Map<String, String> tokenList) {
-        return Behaviors.setup(context -> new DssRestAuthActor(context, userList, tokenList).dssRestAuthenticationActor());
+        return Behaviors.setup(context -> new DssRestAuthActor(context, userList, tokenList).dssRestAuthActor());
     }
 	
 	private final ActorContext<DssAuthCommand> context;
@@ -31,7 +31,7 @@ public class DssRestAuthActor {
         this.tokenList = tokenList;
     }
     
-    private Behavior<DssAuthCommand> dssRestAuthenticationActor() {
+    private Behavior<DssAuthCommand> dssRestAuthActor() {
         return Behaviors
                 .receive(DssAuthCommand.class)
                 .onMessage(DssAuthenticationCommandRequest.class, this::handlingDssAuthenticationCommandRequest)
