@@ -2,6 +2,7 @@ package io.github.ztkmkoo.dss.core.actor.rest;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import akka.actor.typed.Behavior;
@@ -17,15 +18,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class DssRestAuthActor {
 	
-	public static Behavior<DssAuthCommand> create(Map<String, String> userList, Map<String, String> tokenList) {
+	public static Behavior<DssAuthCommand> create(Map<String, String> userList, List<String> tokenList) {
         return Behaviors.setup(context -> new DssRestAuthActor(context, userList, tokenList).dssRestAuthActor());
     }
 	
 	private final ActorContext<DssAuthCommand> context;
 	private final Map<String, String> userList;
-	private final Map<String, String> tokenList;
+	private final List<String> tokenList;
     
-    private DssRestAuthActor(ActorContext<DssAuthCommand> context, Map<String, String> userList, Map<String, String> tokenList) {
+    private DssRestAuthActor(ActorContext<DssAuthCommand> context, Map<String, String> userList, List<String> tokenList) {
         this.context = context;
         this.userList = userList;
         this.tokenList = tokenList;
@@ -49,7 +50,7 @@ public class DssRestAuthActor {
     	
     	if(userList.get(userID).equals(userPassword)) {
     		token = createToken(userID);
-    		tokenList.put(userID, token);
+    		tokenList.add(token);
     	}
     	
     	request.getToken().tell(token);
@@ -64,7 +65,7 @@ public class DssRestAuthActor {
     	String userID = request.getUserID();
     	String token = request.getToken();
     	
-    	if(tokenList.get(userID).equals(token) && verifyToken(userID, token)) {
+    	if(tokenList.contains(token) && verifyToken(userID, token)) {
     		request.getValid().tell("true");
     	} else {
     		request.getValid().tell("false");
