@@ -80,7 +80,7 @@ public class DssRestAuthActor {
         headers.put("alg", "HS256");
 
         Map<String, Object> payloads = new HashMap<>();
-        payloads.put("data", "loginToken");
+        payloads.put("data", userID);
 
         Long expiredTime = 1000 * 60L * 60L * 2L;
 
