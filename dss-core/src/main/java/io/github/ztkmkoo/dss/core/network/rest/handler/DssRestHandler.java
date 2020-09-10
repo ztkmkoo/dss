@@ -87,7 +87,15 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
           boundary = content.substring(0, content.indexOf("\r\n"));
         }
 
-        return DssRestRequest
+        return boundary == null ? DssRestRequest
+                .builder()
+                .methodType(methodType)
+                .contentType(contentType)
+                .uri(uri)
+                .content(content)
+                .build()
+                :
+                DssRestRequest
                 .builder()
                 .methodType(methodType)
                 .contentType(contentType)
