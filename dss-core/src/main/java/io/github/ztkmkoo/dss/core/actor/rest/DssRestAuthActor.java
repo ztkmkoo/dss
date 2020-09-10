@@ -10,7 +10,9 @@ import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthCommand;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRequest;
+import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandResponse;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
+import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,18 +20,18 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class DssRestAuthActor {
 	
-	public static Behavior<DssAuthCommand> create(Map<String, String> userList, List<String> tokenList) {
-        return Behaviors.setup(context -> new DssRestAuthActor(context, userList, tokenList).dssRestAuthActor());
+	public static Behavior<DssAuthCommand> create(Map<String, String> userList) {
+        return Behaviors.setup(context -> new DssRestAuthActor(context, userList).dssRestAuthActor());
     }
 	
 	private final ActorContext<DssAuthCommand> context;
 	private final Map<String, String> userList;
 	private final List<String> tokenList;
     
-    private DssRestAuthActor(ActorContext<DssAuthCommand> context, Map<String, String> userList, List<String> tokenList) {
+    private DssRestAuthActor(ActorContext<DssAuthCommand> context, Map<String, String> userList) {
         this.context = context;
         this.userList = userList;
-        this.tokenList = tokenList;
+        this.tokenList = null;
     }
     
     private Behavior<DssAuthCommand> dssRestAuthActor() {
@@ -53,7 +55,11 @@ public class DssRestAuthActor {
     		tokenList.add(token);
     	}
     	
-    	request.getToken().tell(token);
+    	request.getToken().tell(DssAuthenticationCommandResponse
+    			.builder()
+    			.token(token)
+    			.build()
+    			);
     	
     	return Behaviors.same();
     }
@@ -64,12 +70,17 @@ public class DssRestAuthActor {
     	
     	String userID = request.getUserID();
     	String token = request.getToken();
+    	String valid = null;
     	
     	if(tokenList.contains(token) && verifyToken(userID, token)) {
-    		request.getValid().tell("true");
-    	} else {
-    		request.getValid().tell("false");
+    		valid = "true";
     	}
+    	
+    	request.getValid().tell(DssAuthorizationCommandResponse
+    			.builder()
+    			.valid(valid)
+    			.build()
+    			);
     	
     	return Behaviors.same();
     }

@@ -12,10 +12,10 @@ public class DssAuthenticationCommandRequest implements DssAuthCommand {
 	
 	private final String userID;
 	private final String userPassword;
-	ActorRef<String> token;
+	private final ActorRef<DssAuthCommand> token;
 	
 	@Builder
-	private DssAuthenticationCommandRequest(String userID, String userPassword, ActorRef<String> token) {
+	private DssAuthenticationCommandRequest(String userID, String userPassword, ActorRef<DssAuthCommand> token) {
 		Objects.requireNonNull(userID);
 		Objects.requireNonNull(userPassword);
 		
@@ -33,12 +33,12 @@ public class DssAuthenticationCommandRequest implements DssAuthCommand {
     }
 	
 	 @Override
-	    public String toString() {
-	        return "DssAuthenticationCommandRequest{" +
-	        		"userID: '" + userID + "', " +
-	        		"userPassword: '" + userPassword + "', " +
-	        		"token: '" + (Objects.nonNull(token)? token : "null") + "'" +
-	        		"}";
+	 public String toString() {
+		 return "DssAuthenticationCommandRequest{" +
+	        	"userID: '" + userID + "', " +
+	        	"userPassword: '" + userPassword + "', " +
+	        	"token: '" + (Objects.nonNull(token)? token.path().name() : "null") + "'" +
+	        	"}";
 	 }
 	
 }
