@@ -36,8 +36,10 @@ public class DssRestActorFormDataServiceTest {
         DssRestServiceActorCommandRequest sampleCommandRequest = new DssRestServiceActorCommandRequest(DssRestMasterActorCommandRequest
                 .builder()
                 .channelId("testChannelId")
-                .path("/test").methodType(DssRestMethodType.GET).sender(probe.getRef())
-                .content("id=kebron&password=1234567").build());
+                .path("/test").methodType(DssRestMethodType.GET)
+                .sender(probe.getRef())
+                .content("id=kebron&password=1234567")
+                .build());
 
         final HashMap<String, Object> map2 = service.getBody(sampleCommandRequest);
         assertFalse(map2.isEmpty());
