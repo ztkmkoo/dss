@@ -4,12 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
+import akka.actor.testkit.typed.javadsl.ActorTestKit;
+import akka.actor.testkit.typed.javadsl.TestProbe;
+import io.github.ztkmkoo.dss.core.message.rest.*;
 import org.junit.jupiter.api.Test;
-
+import akka.actor.testkit.typed.javadsl.TestProbe;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
@@ -20,6 +19,9 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Date: 20. 4. 6. 오전 1:16
  */
 public class DssRestActorFormDataServiceTest {
+    final ActorTestKit testKit = ActorTestKit.create();
+    final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe(DssRestChannelHandlerCommand.class);
+
 
     @Test
     public void getBody() {
@@ -31,13 +33,13 @@ public class DssRestActorFormDataServiceTest {
             }
         };
 
-        DssRestMasterActorCommand commandRequest = DssRestServiceActorCommandRequest.builder().build();
-        final HashMap<String, Object> map1 = service.getBody((DssRestServiceActorCommandRequest) commandRequest);
-        assertTrue(map1.isEmpty());
+        DssRestServiceActorCommandRequest sampleCommandRequest = new DssRestServiceActorCommandRequest(DssRestMasterActorCommandRequest
+                .builder()
+                .channelId("testChannelId")
+                .path("/test").methodType(DssRestMethodType.GET).sender(probe.getRef())
+                .content("id=kebron&password=1234567").build());
 
-        commandRequest = DssRestServiceActorCommandRequest.builder()
-                .content("id=kebron&password=1234567").build();
-        final HashMap<String, Object> map2 = service.getBody((DssRestServiceActorCommandRequest) commandRequest);
+        final HashMap<String, Object> map2 = service.getBody(sampleCommandRequest);
         assertFalse(map2.isEmpty());
         assertEquals("kebron", map2.get("id"));
         assertEquals("1234567", map2.get("password"));

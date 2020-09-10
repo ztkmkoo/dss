@@ -36,6 +36,7 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
             String content,
             String charset,
             String boundary) {
+
         Objects.requireNonNull(channelId);
         Objects.requireNonNull(sender);
         Objects.requireNonNull(methodType);
