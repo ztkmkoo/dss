@@ -16,11 +16,14 @@ import io.github.ztkmkoo.dss.core.actor.AbstractDssActorTest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthCommand;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandResponse;
+import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
+import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandResponse;
 
 public class DssRestAuthActorTest extends AbstractDssActorTest {
 
 	 private static final TestProbe<DssAuthCommand> probe = testKit.createTestProbe();
 	 private static final ActorRef<DssAuthCommand> restAuthActorRef = testKit.spawn(DssRestAuthActor.create(testUserList()), "rest-auth");
+	 private static String testToken;
 	 
 	 private static Map<String, String> testUserList() {
 		 final Map<String, String> userList = new HashMap<>();
@@ -38,27 +41,26 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 				 .token(probe.ref())
 				 .build());
 		 
-		 probe.expectMessageClass(DssAuthenticationCommandResponse.class);
+		 DssAuthenticationCommandResponse response = probe.expectMessageClass(DssAuthenticationCommandResponse.class);
+		 testToken = response.getToken();
+		 
 		 assertTrue(true);
+		 assertNotNull(response);
 	 }
 	 
 	 @Test
-	 void handlingDssAuthenticationCommandRequestErrorMethodType() {
-		 restAuthActorRef.tell(DssAuthenticationCommandRequest
+	 void handlingDssAuthorizationCommandRequest() {
+		 restAuthActorRef.tell(DssAuthorizationCommandRequest
 				 .builder()
 				 .userID("testID")
-				 .userPassword("testPassword")
-				 .token(probe.ref())
+				 .token(testToken)
+				 .valid(probe.ref())
 				 .build());
 		 
-		 final DssAuthCommand command = probe.receiveMessage(Duration.ofSeconds(1));
-		 assertEquals(DssAuthenticationCommandResponse.class, command.getClass());
+		 DssAuthorizationCommandResponse response = probe.expectMessageClass(DssAuthorizationCommandResponse.class);
 		 
-		 final DssAuthenticationCommandResponse response = (DssAuthenticationCommandResponse) command;
-	     assertNotNull(response);
-	     assertEquals("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9." + 
-	                  "eyJzdWIiOiJ1c2VyIiwiZGF0YSI6InRlc3RJRCIsImV4cCI6MTU5OTc0NTc0OX0." + 
-	    		      "pCJxMBr9HGiWW9Eq7U8L3nw_-sP-1U3ZwCxqWwMv9-o",
-	        		  response.getToken());
+		 assertTrue(true);
+		 assertNotNull(response);
+	     assertEquals("true", response.getValid());
 	 }
 }

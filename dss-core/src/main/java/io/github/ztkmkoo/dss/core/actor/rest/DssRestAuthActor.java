@@ -1,5 +1,6 @@
 package io.github.ztkmkoo.dss.core.actor.rest;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,7 @@ public class DssRestAuthActor {
     private DssRestAuthActor(ActorContext<DssAuthCommand> context, Map<String, String> userList) {
         this.context = context;
         this.userList = userList;
-        this.tokenList = null;
+        this.tokenList = new ArrayList<>();
     }
     
     private Behavior<DssAuthCommand> dssRestAuthActor() {

@@ -36,7 +36,7 @@ public class DssAuthorizationCommandRequest implements DssAuthCommand {
 	 public String toString() {
 		 return "DssAuthorizationCommandRequest{" +
 	        	"userID: '" + userID + "', " +
-	        	"token: '" + token + "'" +
+	        	"token: '" + token + "', " +
 	        	"valid: '" + (Objects.nonNull(valid)? valid.path().name() : "null") + "'" +
 	        	"}";
 	 }
