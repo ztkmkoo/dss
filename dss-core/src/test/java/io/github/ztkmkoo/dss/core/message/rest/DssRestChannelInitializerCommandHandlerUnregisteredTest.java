@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 4. 6. 오전 1:29
  */
-class DssRestChannelInitializerCommandHandlerUnregisteredTest {
+public class DssRestChannelInitializerCommandHandlerUnregisteredTest {
 
     private final DssRestChannelInitializerCommandHandlerUnregistered command = DssRestChannelInitializerCommandHandlerUnregistered
             .builder()
@@ -17,17 +17,17 @@ class DssRestChannelInitializerCommandHandlerUnregisteredTest {
             .handlerActor(null)
             .build();
     @Test
-    void getName() {
+    public void getName() {
         assertEquals("hi", command.getName());
     }
 
     @Test
-    void getHandlerActor() {
+    public void getHandlerActor() {
         assertNull(command.getHandlerActor());
     }
 
     @Test
-    void testToString() {
+    public void testToString() {
         assertNotNull(command.toString());
     }
 }

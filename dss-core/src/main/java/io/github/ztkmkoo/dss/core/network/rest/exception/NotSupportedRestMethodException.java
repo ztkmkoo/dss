@@ -6,6 +6,7 @@ package io.github.ztkmkoo.dss.core.network.rest.exception;
  * Date: 20. 3. 3. 오후 9:45
  */
 public class NotSupportedRestMethodException extends RuntimeException {
+
     private static final long serialVersionUID = 3588054506212254573L;
 
     public NotSupportedRestMethodException(String message) {

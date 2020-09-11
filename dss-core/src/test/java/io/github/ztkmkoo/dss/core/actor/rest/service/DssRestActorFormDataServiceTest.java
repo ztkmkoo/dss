@@ -24,7 +24,7 @@ public class DssRestActorFormDataServiceTest {
 
 
     @Test
-    void getBody() {
+    public void getBody() {
 
         final DssRestActorFormDataService service = new DssRestActorFormDataService("test", "/test", DssRestMethodType.GET) {
             @Override

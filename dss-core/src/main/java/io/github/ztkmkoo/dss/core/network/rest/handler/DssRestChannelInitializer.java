@@ -37,17 +37,6 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
     private static final int MAX_FREE_HANDLER_SIZE = 16;
     private static final int INITIAL_FREE_HANDLER_SIZE = 2;
 
-    private static DssRestHandler newAllocatedDssRestHandler(
-            ActorContext<DssRestChannelInitializerCommand> context,
-            ActorRef<DssRestMasterActorCommand> restMasterActorRef) {
-        final String handlerName = HANDLER_NAME_PREFIX + handlerIndex.incrementAndGet();
-        context.getLog().info("freeHandlerQueue is empty. try to initialize new one: {}", handlerName);
-        final DssRestHandler restHandler = new DssRestHandler(context.getSelf(), restMasterActorRef, handlerName);
-        context.spawn(restHandler.create(), handlerName);
-
-        return restHandler;
-    }
-
     private final Logger logger = LoggerFactory.getLogger(DssRestChannelInitializer.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
     private final List<DssRestActorService> serviceList;
@@ -57,8 +46,20 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
     private ActorContext<DssRestChannelInitializerCommand> context;
     private ActorRef<DssRestMasterActorCommand> restMasterActorRef;
 
+
     public DssRestChannelInitializer(List<DssRestActorService> serviceList) {
         this.serviceList = new ArrayList<>(serviceList);
+    }
+
+    private static DssRestHandler newAllocatedDssRestHandler(
+            ActorContext<DssRestChannelInitializerCommand> context,
+            ActorRef<DssRestMasterActorCommand> restMasterActorRef) {
+        final String handlerName = HANDLER_NAME_PREFIX + handlerIndex.incrementAndGet();
+        context.getLog().info("freeHandlerQueue is empty. try to initialize new one: {}", handlerName);
+        final DssRestHandler restHandler = new DssRestHandler(context.getSelf(), restMasterActorRef, handlerName);
+        context.spawn(restHandler.create(), handlerName);
+
+        return restHandler;
     }
 
     @Override
@@ -104,7 +105,6 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
         if (Objects.nonNull(handler)) {
             activeRestHandlerMap.putIfAbsent(handler.getName(), handler);
         }
-
         return handler;
     }
 
@@ -113,8 +113,8 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
         }
-        initializeBehavior.set(true);
 
+        initializeBehavior.set(true);
         return Behaviors.setup(this::dssRestChannelInitializer);
     }
 
@@ -144,6 +144,7 @@ public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel>
                 context.getLog().info("add {} to freeHandlerQueue", msg.getName());
                 freeHandlerQueue.add(dssRestHandler);
             }
+
         }
 
         return Behaviors.same();

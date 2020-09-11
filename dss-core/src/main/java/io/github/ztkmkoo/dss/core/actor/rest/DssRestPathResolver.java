@@ -17,11 +17,6 @@ import java.util.*;
 public class DssRestPathResolver {
 
     private static final Logger logger = LoggerFactory.getLogger(DssRestPathResolver.class);
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
     private final Map<DssRestMethodType, Map<String, ActorRef<DssRestServiceActorCommand>>> staticServiceActorMap;
 
     private DssRestPathResolver(Builder builder) {
@@ -35,6 +30,10 @@ public class DssRestPathResolver {
                                 .getOrDefault(methodType, Collections.emptyMap())
                                 .get(path)
                 );
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static class Builder {
@@ -60,8 +59,8 @@ public class DssRestPathResolver {
         public DssRestPathResolver build() {
             if (!staticServiceActorMap.isEmpty()) {
                 staticServiceActorMap.forEach((methodType, map) -> map.forEach((path, actorRef) ->
-                        logger.info("Add mapping {} {} to {}",
-                                methodType.name(), path, actorRef.path().name())
+                    logger.info("Add mapping {} {} to {}",
+                            methodType.name(), path, actorRef.path().name())
                 ));
             }
 

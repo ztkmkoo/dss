@@ -26,26 +26,13 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 10:57
  */
-class DssRestMasterActorTest extends AbstractDssActorTest {
+public class DssRestMasterActorTest extends AbstractDssActorTest {
 
     private static final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe();
     private static final ActorRef<DssRestMasterActorCommand> restMasterActorRef = testKit.spawn(DssRestMasterActor.create(testServiceList()), "rest-master");
 
-    private static List<DssRestActorService> testServiceList() {
-        final List<DssRestActorService> serviceList = new ArrayList<>();
-        serviceList.add(new DssRestActorJsonService("hi", "/test", DssRestMethodType.GET) {
-
-            @Override
-            protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
-                return null;
-            }
-        });
-
-        return serviceList;
-    }
-
     @Test
-    void handlingDssRestMasterActorCommandRequest() {
+    public void handlingDssRestMasterActorCommandRequest() {
         restMasterActorRef.tell(DssRestMasterActorCommandRequest
                 .builder()
                 .channelId("abcdefg")
@@ -59,7 +46,7 @@ class DssRestMasterActorTest extends AbstractDssActorTest {
     }
 
     @Test
-    void handlingDssRestMasterActorCommandRequestErrorMethodType() {
+    public void handlingDssRestMasterActorCommandRequestErrorMethodType() {
         restMasterActorRef.tell(DssRestMasterActorCommandRequest
                 .builder()
                 .channelId("abcdefg")
@@ -75,5 +62,18 @@ class DssRestMasterActorTest extends AbstractDssActorTest {
         assertNotNull(response);
         assertEquals("abcdefg", response.getChannelId());
         assertEquals(400, response.getStatus().intValue());
+    }
+
+    private static List<DssRestActorService> testServiceList() {
+        final List<DssRestActorService> serviceList = new ArrayList<>();
+        serviceList.add(new DssRestActorJsonService("hi", "/test", DssRestMethodType.GET) {
+
+            @Override
+            protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
+                return null;
+            }
+        });
+
+        return serviceList;
     }
 }

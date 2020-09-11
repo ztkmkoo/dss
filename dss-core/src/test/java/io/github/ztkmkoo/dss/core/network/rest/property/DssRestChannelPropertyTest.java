@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 1:02
  */
-class DssRestChannelPropertyTest {
+public class DssRestChannelPropertyTest {
 
     @Test
-    void builder() {
+    public void builder() {
 
         final DssRestChannelProperty property = DssRestChannelProperty
                 .builder()

@@ -23,6 +23,11 @@ public enum DssRestMethodType {
     ;
 
     private static final Map<HttpMethod, DssRestMethodType> nettyHttpMethodMapper = initNettyHttpMethodMapper();
+    private final HttpMethod method;
+
+    DssRestMethodType(HttpMethod method) {
+        this.method = method;
+    }
 
     public static DssRestMethodType fromNettyHttpMethod(HttpMethod method) {
 
@@ -39,6 +44,7 @@ public enum DssRestMethodType {
         if (methods.length == 0) {
             return Collections.unmodifiableMap(Collections.emptyMap());
         }
+
         return Collections
                 .unmodifiableMap(
                         Stream
@@ -50,11 +56,5 @@ public enum DssRestMethodType {
                                         )
                                 )
                 );
-    }
-
-    private final HttpMethod method;
-
-    DssRestMethodType(HttpMethod method) {
-        this.method = method;
     }
 }
