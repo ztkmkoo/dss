@@ -11,16 +11,14 @@ import io.github.ztkmkoo.dss.server.DssServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.SslContext;
-import io.netty.util.concurrent.ImmediateEventExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DssWebSocketServer implements DssServer {
 
@@ -33,7 +31,6 @@ public class DssWebSocketServer implements DssServer {
     private final AtomicBoolean active = new AtomicBoolean(false);
     private final AtomicBoolean shutdown = new AtomicBoolean(true);
 
-    private final ChannelGroup channelGroup = new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE);
     private Channel channel;
     private ActorSystem system;
 
@@ -51,7 +48,7 @@ public class DssWebSocketServer implements DssServer {
 
     @Override
     public void start() throws InterruptedException {
-        final DssWebSocketChannelInitializer channelInitializer = dssWebsocketChannelInitializer(channelGroup);
+        final DssWebSocketChannelInitializer channelInitializer = dssWebsocketChannelInitializer();
 
         final EventLoopGroup bossGroup = new NioEventLoopGroup();
         final EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -128,7 +125,7 @@ public class DssWebSocketServer implements DssServer {
                 .build();
     }
 
-    private DssWebSocketChannelInitializer dssWebsocketChannelInitializer(ChannelGroup group) throws InterruptedException {
-        return ssl ? new DssWebSocketSslChannelInitializer(group, sslContext) : new DssWebSocketChannelInitializer(group);
+    private DssWebSocketChannelInitializer dssWebsocketChannelInitializer() throws InterruptedException {
+        return ssl ? new DssWebSocketSslChannelInitializer(sslContext) : new DssWebSocketChannelInitializer();
     }
 }
