@@ -24,7 +24,7 @@ import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRespo
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandResponse;
 
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
 public class DssRestAuthActorTest /*extends AbstractDssActorTest*/ {
 
@@ -40,10 +40,10 @@ public class DssRestAuthActorTest /*extends AbstractDssActorTest*/ {
 		 return userList;
 	 }
 	 
-	/* @BeforeAll
+	 @BeforeAll
 	 public void prepareTestData() {
 
-	 }*/
+	 }
 	 
 	 @Test
 	 @Order(1)
@@ -64,17 +64,7 @@ public class DssRestAuthActorTest /*extends AbstractDssActorTest*/ {
 	 
 	 @Test
 	 @Order(2)
-	 void handlingDssAuthorizationCommandRequest() {	
-		 restAuthActorRef.tell(DssAuthenticationCommandRequest
-				 .builder()
-				 .userID("testID")
-				 .userPassword("testPassword")
-				 .token(probe.ref())
-				 .build());
-		 
-		 final DssAuthenticationCommandResponse r = probe.expectMessageClass(DssAuthenticationCommandResponse.class);
-		 testToken = r.getToken();
-		 
+	 void handlingDssAuthorizationCommandRequest() {			 
 		 restAuthActorRef.tell(DssAuthorizationCommandRequest
 				 .builder()
 				 .token(testToken)
