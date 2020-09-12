@@ -1,17 +1,16 @@
 package io.github.ztkmkoo.dss.core.actor.blocking.jdbc;
 
 import com.healthmarketscience.sqlbuilder.BinaryCondition;
-import com.healthmarketscience.sqlbuilder.InsertQuery;import com.healthmarketscience.sqlbuilder.InsertSelectQuery;
+import com.healthmarketscience.sqlbuilder.InsertQuery;
+import com.healthmarketscience.sqlbuilder.InsertSelectQuery;
 import com.healthmarketscience.sqlbuilder.SelectQuery;
 
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import io.github.ztkmkoo.dss.core.message.blocking.jdbc.DssJdbcCommand;
-import lombok.extern.log4j.Log4j;
 
 
-@Log4j
 public class DssDatabaseServiceActor implements DssDatabaseService<DssJdbcCommand, DssJdbcCommand> {
 	
 	private final ActorContext<DssJdbcCommand> context;
@@ -44,15 +43,14 @@ public class DssDatabaseServiceActor implements DssDatabaseService<DssJdbcComman
 				.addCustomFromTable(selectMsg.getTableName())
 				.addCustomColumns(selectMsg.getColumns())
 				.addCondition(BinaryCondition.equalTo("name", "이주현"))
+				.addCondition(BinaryCondition.equalTo("age", "10"))
 				.validate();
-		
 		String selectStatement = selectQuery.toString();
-		log.info("selectStatement: " + selectStatement);
 		
 		selectMsg.getSender().tell(DssJdbcCommand.SelectResponse.builder().query(selectStatement).build());
 		
 		return Behaviors.same();
-	}
+	} 
 	
 	@Override
 	public int insert(DssJdbcCommand msg) {
@@ -68,8 +66,4 @@ public class DssDatabaseServiceActor implements DssDatabaseService<DssJdbcComman
 	public int delete(DssJdbcCommand msg) {
 		return 0;
 	}
-
-
-
-
 }
