@@ -84,5 +84,21 @@
             <version>${akka.version}</version>
             <scope>test</scope>
         </dependency>
+     
+     	<!-- sqlbuilder -->
+        <dependency>
+            <groupId>com.healthmarketscience.sqlbuilder</groupId>
+            <artifactId>sqlbuilder</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        
+        
+        <!-- logging -->
+        <dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+        
     </dependencies>
 </project>
