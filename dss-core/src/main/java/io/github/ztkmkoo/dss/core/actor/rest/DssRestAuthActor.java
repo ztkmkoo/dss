@@ -1,9 +1,7 @@
 package io.github.ztkmkoo.dss.core.actor.rest;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
@@ -77,7 +75,7 @@ public class DssRestAuthActor {
     	
     	String token = request.getToken();
     	SecretKey key = request.getKey();
-    	String valid = null;
+    	String valid = "false";
     	
     	if(tokenList.get(token).equals(key) && verifyToken(token, key)) {
     		valid = "true";

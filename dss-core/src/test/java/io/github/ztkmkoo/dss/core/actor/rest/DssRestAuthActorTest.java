@@ -54,7 +54,7 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 		 key = response.getKey();
 		 
 		 assertTrue(true);
-		 assertNotNull(response);
+		 assertNotNull(response.getToken());
 	 }
 	 
 	 @Test
