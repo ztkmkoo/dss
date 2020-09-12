@@ -4,11 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.crypto.SecretKey;
 
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -29,8 +26,7 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 
 	 private static final TestProbe<DssAuthCommand> probe = testKit.createTestProbe();
 	 private static final ActorRef<DssAuthCommand> restAuthActorRef = testKit.spawn(DssRestAuthActor.create(testUserList()), "rest-auth");
-	 private static String testToken;
-	 private static SecretKey key;
+	 private String testToken;
 	 
 	 private static Map<String, String> testUserList() {
 		 final Map<String, String> userList = new HashMap<>();
@@ -46,12 +42,11 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 				 .builder()
 				 .userID("testID")
 				 .userPassword("testPassword")
-				 .tokenInfo(probe.ref())
+				 .token(probe.ref())
 				 .build());
 		 
-		 DssAuthenticationCommandResponse response = probe.expectMessageClass(DssAuthenticationCommandResponse.class);
+		 final DssAuthenticationCommandResponse response = probe.expectMessageClass(DssAuthenticationCommandResponse.class);
 		 testToken = response.getToken();
-		 key = response.getKey();
 		 
 		 assertTrue(true);
 		 assertNotNull(response.getToken());
@@ -63,11 +58,10 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 		 restAuthActorRef.tell(DssAuthorizationCommandRequest
 				 .builder()
 				 .token(testToken)
-				 .key(key)
 				 .valid(probe.ref())
 				 .build());
 		 
-		 DssAuthorizationCommandResponse response = probe.expectMessageClass(DssAuthorizationCommandResponse.class);
+		 final DssAuthorizationCommandResponse response = probe.expectMessageClass(DssAuthorizationCommandResponse.class);
 		 
 		 assertTrue(true);
 		 assertNotNull(response);

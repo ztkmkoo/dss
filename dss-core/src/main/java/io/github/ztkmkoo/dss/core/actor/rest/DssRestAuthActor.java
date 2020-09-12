@@ -1,8 +1,11 @@
 package io.github.ztkmkoo.dss.core.actor.rest;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.crypto.SecretKey;
 
@@ -29,12 +32,14 @@ public class DssRestAuthActor {
 	
 	private final ActorContext<DssAuthCommand> context;
 	private final Map<String, String> userList;
-	private final Map<String, SecretKey> tokenList;
+	private final List<String> tokenList;
+	private final SecretKey key;
     
     private DssRestAuthActor(ActorContext<DssAuthCommand> context, Map<String, String> userList) {
         this.context = context;
         this.userList = userList;
-        this.tokenList = new HashMap<>();
+        this.tokenList = new ArrayList<>();
+        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
     
     private Behavior<DssAuthCommand> dssRestAuthActor() {
@@ -52,17 +57,17 @@ public class DssRestAuthActor {
     	String userID = request.getUserID();
     	String userPassword = request.getUserPassword();
     	String token = null;
-    	SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     	
-    	if(userList.get(userID).equals(userPassword)) {
-    		token = createToken(userID, key);
-    		tokenList.put(token, key);
+    	String search = userList.get(userID);
+    	
+    	if(Objects.nonNull(search) && search.equals(userPassword)) {
+    		token = createToken(userID);
+    		tokenList.add(token);
     	}
     	
-    	request.getTokenInfo().tell(DssAuthenticationCommandResponse
+    	request.getToken().tell(DssAuthenticationCommandResponse
     			.builder()
     			.token(token)
-    			.key(key)
     			.build()
     			);
     	
@@ -74,10 +79,9 @@ public class DssRestAuthActor {
     	context.getLog().info("DssAuthorizationCommandRequest: {}", request);
     	
     	String token = request.getToken();
-    	SecretKey key = request.getKey();
     	String valid = "false";
     	
-    	if(tokenList.get(token).equals(key) && verifyToken(token, key)) {
+    	if(tokenList.contains(token) && verifyToken(token)) {
     		valid = "true";
     	}
     	
@@ -90,7 +94,7 @@ public class DssRestAuthActor {
     	return Behaviors.same();
     }
     
-    private String createToken(String userID, SecretKey key) {
+    private String createToken(String userID) {
     	Map<String, Object> headers = new HashMap<>();
     	
         headers.put("typ", "JWT");
@@ -115,7 +119,7 @@ public class DssRestAuthActor {
         return jwt;
     }
     
-    private boolean verifyToken(String token, SecretKey key) {
+    private boolean verifyToken(String token) {
     	Jws<Claims> jws;
     	
         try {

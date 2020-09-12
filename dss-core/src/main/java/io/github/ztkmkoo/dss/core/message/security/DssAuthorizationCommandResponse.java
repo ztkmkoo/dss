@@ -1,5 +1,7 @@
 package io.github.ztkmkoo.dss.core.message.security;
 
+import java.util.Objects;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -16,8 +18,8 @@ public class DssAuthorizationCommandResponse implements DssAuthCommand {
 	
 	@Override
 	public String toString() {
-		 return "DssAuthCommandResponse{" +
-	        	"valid: '" + valid + "', " +
+		 return "DssAuthorizationCommandResponse{" +
+	        	"valid: '" + (Objects.nonNull(valid)? valid : "null") + "'" +
 	        	"}";
 	 }
 }
