@@ -13,34 +13,34 @@ import java.util.Map;
 
 public interface DssJdbcCommand extends DssCommand {
 
-    @Getter @Setter
-    class SelectResponse implements DssJdbcCommand {
-        String query;
+	@Getter @Setter
+	class SelectResponse implements DssJdbcCommand {
+		private static final long serialVersionUID = -3627484230969177121L;
+		String query;
 
-        @Builder
-        public SelectResponse(String query) {
-            this.query = query;
-        }
-    }
+		@Builder
+		public SelectResponse(String query) {
+			this.query = query;
+		}
+	}
 
-    @Getter @Setter
-    class Select implements  DssJdbcCommand, DssSelectCommand {
+	@Getter @Setter
+	class Select implements  DssJdbcCommand, DssSelectCommand {
+		private static final long serialVersionUID = 1430528845479750266L;
+		private String tableName;
+		private String[] columns;
+		private Map<String, String> param;
+		private List<Condition> conditions;
+		private ActorRef<SelectResponse> sender;
 
-        private String tableName;
-        private String[] columns;
-        private Map<String, String> param;
-
-        private List<Condition> conditions;
-
-        private ActorRef<SelectResponse> sender;
-
-        @Builder
-        public Select(String tableName, String[] columns, Map<String, String> param, List<Condition> conditions, ActorRef<SelectResponse> sender) {
-            this.tableName = tableName;
-            this.columns = columns;
-            this.param = param;
-            this.conditions = conditions;
-            this.sender = sender;
-        }
-    }
+		@Builder
+		public Select(String tableName, String[] columns, Map<String, String> param, 
+				List<Condition> conditions, ActorRef<SelectResponse> sender) {
+			this.tableName = tableName;
+			this.columns = columns;
+			this.param = param;
+			this.conditions = conditions;
+			this.sender = sender;
+		}
+	}
 }
