@@ -22,6 +22,7 @@ public class DssHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpR
 
     private final String WEBSOCKET_PATH;
     private WebSocketServerHandshaker handshaker;
+    private FullHttpRequest request;
 
     public DssHttpRequestHandler(String WEBSOCKET_PATH) {
         this.WEBSOCKET_PATH = WEBSOCKET_PATH;
@@ -29,8 +30,8 @@ public class DssHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpR
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
-        if (msg instanceof FullHttpRequest) {
-            final FullHttpRequest request = (FullHttpRequest) msg;
+        if (msg != null) {
+            request = msg;
             handleHttpRequest(ctx, request);
         } else {
             throw new UnsupportedOperationException("Unsupported Message Type " + msg.getClass().getName());
@@ -38,7 +39,7 @@ public class DssHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpR
     }
 
     @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
     }
 
@@ -134,7 +135,7 @@ public class DssHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpR
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         logger.error("ExceptionCaught", cause);
 
         ctx.close();

@@ -1,6 +1,5 @@
 package io.github.ztkmkoo.dss.server.websocket;
 
-import akka.actor.ActorSystem;
 import io.github.ztkmkoo.dss.core.actor.DssActorService;
 import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
@@ -14,12 +13,11 @@ import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.ssl.SslContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DssWebSocketServer implements DssServer {
 
@@ -33,7 +31,6 @@ public class DssWebSocketServer implements DssServer {
     private final AtomicBoolean shutdown = new AtomicBoolean(true);
 
     private Channel channel;
-    private ActorSystem system;
 
     public DssWebSocketServer(String host, int port) { this(host, port, DssLogLevel.DEBUG, false,null); }
 
@@ -81,24 +78,7 @@ public class DssWebSocketServer implements DssServer {
             logger.info("Channel try to close. [Active: {}][Open: {}]", channel.isActive(), channel.isOpen());
             channel.close();
             active.set(false);
-        }
-
-        if (Objects.nonNull(system)) {
-            logger.info("Actor system try to terminate");
-            system.terminate();
-
-            final int waitMaxSecond = 10;
-            int count = 0;
-            while (count++ < waitMaxSecond) {
-                Thread.sleep(1000);
-                if (system.whenTerminated().isCompleted()) {
-                    break;
-                }
-            }
-
-            if (!system.whenTerminated().isCompleted()) {
-                logger.error("Cannot terminate actor system.");
-            }
+            shutdown.set(true);
         }
     }
 
