@@ -7,11 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import akka.actor.testkit.typed.javadsl.ActorTestKit;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.actor.AbstractDssActorTest;
@@ -21,11 +24,13 @@ import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRespo
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandResponse;
 
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(OrderAnnotation.class)
-public class DssRestAuthActorTest extends AbstractDssActorTest {
+public class DssRestAuthActorTest /*extends AbstractDssActorTest*/ {
 
-	 private static final TestProbe<DssAuthCommand> probe = testKit.createTestProbe();
-	 private static final ActorRef<DssAuthCommand> restAuthActorRef = testKit.spawn(DssRestAuthActor.create(testUserList()), "rest-auth");
+	 private final ActorTestKit testKit = ActorTestKit.create();
+	 private final TestProbe<DssAuthCommand> probe = testKit.createTestProbe();
+	 private final ActorRef<DssAuthCommand> restAuthActorRef = testKit.spawn(DssRestAuthActor.create(testUserList()), "rest-auth");
 	 private String testToken;
 	 
 	 private static Map<String, String> testUserList() {
@@ -34,6 +39,11 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 		 
 		 return userList;
 	 }
+	 
+	/* @BeforeAll
+	 public void prepareTestData() {
+
+	 }*/
 	 
 	 @Test
 	 @Order(1)
@@ -54,7 +64,17 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 	 
 	 @Test
 	 @Order(2)
-	 void handlingDssAuthorizationCommandRequest() {
+	 void handlingDssAuthorizationCommandRequest() {	
+		 restAuthActorRef.tell(DssAuthenticationCommandRequest
+				 .builder()
+				 .userID("testID")
+				 .userPassword("testPassword")
+				 .token(probe.ref())
+				 .build());
+		 
+		 final DssAuthenticationCommandResponse r = probe.expectMessageClass(DssAuthenticationCommandResponse.class);
+		 testToken = r.getToken();
+		 
 		 restAuthActorRef.tell(DssAuthorizationCommandRequest
 				 .builder()
 				 .token(testToken)
