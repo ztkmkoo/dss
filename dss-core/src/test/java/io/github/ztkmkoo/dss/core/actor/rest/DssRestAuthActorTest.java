@@ -8,7 +8,12 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
@@ -19,11 +24,13 @@ import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRespo
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandResponse;
 
+@TestMethodOrder(OrderAnnotation.class)
 public class DssRestAuthActorTest extends AbstractDssActorTest {
 
 	 private static final TestProbe<DssAuthCommand> probe = testKit.createTestProbe();
 	 private static final ActorRef<DssAuthCommand> restAuthActorRef = testKit.spawn(DssRestAuthActor.create(testUserList()), "rest-auth");
 	 private static String testToken;
+	 private static SecretKey key;
 	 
 	 private static Map<String, String> testUserList() {
 		 final Map<String, String> userList = new HashMap<>();
@@ -33,27 +40,30 @@ public class DssRestAuthActorTest extends AbstractDssActorTest {
 	 }
 	 
 	 @Test
+	 @Order(1)
 	 void handlingDssAuthenticationCommandRequest() {
 		 restAuthActorRef.tell(DssAuthenticationCommandRequest
 				 .builder()
 				 .userID("testID")
 				 .userPassword("testPassword")
-				 .token(probe.ref())
+				 .tokenInfo(probe.ref())
 				 .build());
 		 
 		 DssAuthenticationCommandResponse response = probe.expectMessageClass(DssAuthenticationCommandResponse.class);
 		 testToken = response.getToken();
+		 key = response.getKey();
 		 
 		 assertTrue(true);
 		 assertNotNull(response);
 	 }
 	 
 	 @Test
+	 @Order(2)
 	 void handlingDssAuthorizationCommandRequest() {
 		 restAuthActorRef.tell(DssAuthorizationCommandRequest
 				 .builder()
-				 .userID("testID")
 				 .token(testToken)
+				 .key(key)
 				 .valid(probe.ref())
 				 .build());
 		 

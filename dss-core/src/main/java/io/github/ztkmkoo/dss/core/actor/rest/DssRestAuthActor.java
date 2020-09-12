@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
@@ -15,9 +17,11 @@ import io.github.ztkmkoo.dss.core.message.security.DssAuthenticationCommandRespo
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandRequest;
 import io.github.ztkmkoo.dss.core.message.security.DssAuthorizationCommandResponse;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 public class DssRestAuthActor {
 	
@@ -27,12 +31,12 @@ public class DssRestAuthActor {
 	
 	private final ActorContext<DssAuthCommand> context;
 	private final Map<String, String> userList;
-	private final List<String> tokenList;
+	private final Map<String, SecretKey> tokenList;
     
     private DssRestAuthActor(ActorContext<DssAuthCommand> context, Map<String, String> userList) {
         this.context = context;
         this.userList = userList;
-        this.tokenList = new ArrayList<>();
+        this.tokenList = new HashMap<>();
     }
     
     private Behavior<DssAuthCommand> dssRestAuthActor() {
@@ -50,15 +54,17 @@ public class DssRestAuthActor {
     	String userID = request.getUserID();
     	String userPassword = request.getUserPassword();
     	String token = null;
+    	SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     	
     	if(userList.get(userID).equals(userPassword)) {
-    		token = createToken(userID);
-    		tokenList.add(token);
+    		token = createToken(userID, key);
+    		tokenList.put(token, key);
     	}
     	
-    	request.getToken().tell(DssAuthenticationCommandResponse
+    	request.getTokenInfo().tell(DssAuthenticationCommandResponse
     			.builder()
     			.token(token)
+    			.key(key)
     			.build()
     			);
     	
@@ -69,11 +75,11 @@ public class DssRestAuthActor {
     	
     	context.getLog().info("DssAuthorizationCommandRequest: {}", request);
     	
-    	String userID = request.getUserID();
     	String token = request.getToken();
+    	SecretKey key = request.getKey();
     	String valid = null;
     	
-    	if(tokenList.contains(token) && verifyToken(userID, token)) {
+    	if(tokenList.get(token).equals(key) && verifyToken(token, key)) {
     		valid = "true";
     	}
     	
@@ -86,8 +92,9 @@ public class DssRestAuthActor {
     	return Behaviors.same();
     }
     
-    private String createToken(String userID) {
+    private String createToken(String userID, SecretKey key) {
     	Map<String, Object> headers = new HashMap<>();
+    	
         headers.put("typ", "JWT");
         headers.put("alg", "HS256");
 
@@ -104,28 +111,22 @@ public class DssRestAuthActor {
                 .setClaims(payloads) 
                 .setSubject("user")
                 .setExpiration(ext)
-                .signWith(SignatureAlgorithm.HS256, userID.getBytes()) 
+                .signWith(key) 
                 .compact(); 
 
         return jwt;
     }
     
-    private boolean verifyToken(String userID, String token) {
+    private boolean verifyToken(String token, SecretKey key) {
+    	Jws<Claims> jws;
+    	
         try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(userID.getBytes("UTF-8"))
-                    .parseClaimsJws(token)
-                    .getBody();
-            
-            if(claims.get("data", String.class).equals(userID)) {
-            	return true;
-            } else {
-            	return false;
-            }
-            
-        } catch (ExpiredJwtException e) {
-        	return false;
-        } catch (Exception e) {
+            jws = Jwts.parserBuilder()
+            		.setSigningKey(key)
+            		.build()
+            		.parseClaimsJws(token);
+            return true;
+        } catch (JwtException e) {
         	return false;
         }
     }    
