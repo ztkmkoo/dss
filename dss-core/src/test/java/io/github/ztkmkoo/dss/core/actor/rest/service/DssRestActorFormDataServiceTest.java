@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
+import akka.actor.testkit.typed.javadsl.ActorTestKit;
+import akka.actor.testkit.typed.javadsl.TestProbe;
+import io.github.ztkmkoo.dss.core.message.rest.*;
 import org.junit.jupiter.api.Test;
-
+import akka.actor.testkit.typed.javadsl.TestProbe;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceResponse;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
@@ -15,10 +18,13 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 4. 6. 오전 1:16
  */
-class DssRestActorFormDataServiceTest {
+public class DssRestActorFormDataServiceTest {
+    final ActorTestKit testKit = ActorTestKit.create();
+    final TestProbe<DssRestChannelHandlerCommand> probe = testKit.createTestProbe(DssRestChannelHandlerCommand.class);
+
 
     @Test
-    void getBody() {
+    public void getBody() {
 
         final DssRestActorFormDataService service = new DssRestActorFormDataService("test", "/test", DssRestMethodType.GET) {
             @Override
@@ -27,10 +33,15 @@ class DssRestActorFormDataServiceTest {
             }
         };
 
-        final HashMap<String, Object> map1 = service.getBody("");
-        assertTrue(map1.isEmpty());
+        DssRestServiceActorCommandRequest sampleCommandRequest = new DssRestServiceActorCommandRequest(DssRestMasterActorCommandRequest
+                .builder()
+                .channelId("testChannelId")
+                .path("/test").methodType(DssRestMethodType.GET)
+                .sender(probe.getRef())
+                .content("id=kebron&password=1234567")
+                .build());
 
-        final HashMap<String, Object> map2 = service.getBody("id=kebron&password=1234567");
+        final HashMap<String, Object> map2 = service.getBody(sampleCommandRequest);
         assertFalse(map2.isEmpty());
         assertEquals("kebron", map2.get("id"));
         assertEquals("1234567", map2.get("password"));

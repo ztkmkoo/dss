@@ -22,15 +22,27 @@ public enum DssRestContentType {
     // multipart
     MULTIPART_FORM_DATA("multipart/form-data"),
     // text
+
     ;
 
     private static final Map<String, DssRestContentType> textMap = initTextMap();
+    @Getter(value = AccessLevel.PRIVATE)
+    private final String text;
 
-    public static DssRestContentType fromText(String text) {  
-    	if (Objects.nonNull(text)) {
-    		return textMap.get(text.split(";")[0]);
-    	}
-    	return null;
+    DssRestContentType(String text) {
+        this.text = text;
+    }
+
+    public static DssRestContentType fromText(String text) {
+        if (Objects.nonNull(text)) {
+            if (text.contains("multipart/form-data;")) {
+                String[] token = text.split(";");
+                text = token[0];
+            }
+
+            return textMap.get(text);
+        }
+        return null;
     }
 
     private static Map<String, DssRestContentType> initTextMap() {
@@ -44,12 +56,5 @@ public enum DssRestContentType {
                         )
                 )
         );
-    }
-
-    @Getter(value = AccessLevel.PRIVATE)
-    private final String text;
-
-    DssRestContentType(String text) {
-        this.text = text;
     }
 }

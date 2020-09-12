@@ -1,10 +1,7 @@
 package io.github.ztkmkoo.dss.server.rest;
 
 import akka.actor.typed.ActorSystem;
-import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
-import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
-import io.github.ztkmkoo.dss.core.exception.handler.DssRestExceptionHandlerResolver;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import io.github.ztkmkoo.dss.core.network.rest.DssRestChannel;
 import io.github.ztkmkoo.dss.core.network.rest.handler.DssRestChannelInitializer;
@@ -31,7 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DssRestServer implements DssServer<DssRestActorService> {
 
-    private final DssLogLevel dssLogLevel;
     private final Logger logger = LoggerFactory.getLogger(DssRestServer.class);
     private final String host;
     private final int port;
@@ -43,20 +39,14 @@ public class DssRestServer implements DssServer<DssRestActorService> {
 
     private Channel channel;
     private ActorSystem<DssRestChannelInitializerCommand> system;
-    private DssExceptionHandler exceptionHandler;
 
     public DssRestServer(String host, int port) {
-        this(host, port, DssLogLevel.DEBUG ,false, null);
+        this(host, port, false, null);
     }
 
-    public DssRestServer(String host, int port, DssLogLevel dssLogLevel) {
-        this(host, port, dssLogLevel, false, null);
-    }
-
-    public DssRestServer(String host, int port, DssLogLevel dssLogLevel, boolean ssl, SslContext sslContext) {
+    public DssRestServer(String host, int port, boolean ssl, SslContext sslContext) {
         this.host = host;
         this.port = port;
-        this.dssLogLevel = Objects.nonNull(dssLogLevel) ? dssLogLevel : DssLogLevel.DEBUG;
         this.ssl = ssl;
         this.sslContext = sslContext;
     }
@@ -75,8 +65,6 @@ public class DssRestServer implements DssServer<DssRestActorService> {
         final DssRestChannelInitializer channelInitializer = dssRestChannelInitializer();
         system = createActorSystem(channelInitializer);
         logger.info("Create actor system: {}", system);
-
-        setExceptionHandler();
 
         final EventLoopGroup bossGroup = new NioEventLoopGroup();
         final EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -138,18 +126,11 @@ public class DssRestServer implements DssServer<DssRestActorService> {
                 .builder()
                 .host(host)
                 .port(port)
-                .dssLogLevel(dssLogLevel)
                 .build();
     }
 
     private DssRestChannelInitializer dssRestChannelInitializer() throws InterruptedException {
         return ssl ? new DssRestSslChannelInitializer(serviceList, sslContext) : new DssRestChannelInitializer(serviceList);
-    }
-
-    private void setExceptionHandler() {
-        if (Objects.nonNull(this.exceptionHandler)) {
-            DssRestExceptionHandlerResolver.getInstance().setExceptionHandlerMap(this.exceptionHandler);
-        }
     }
 
     @Override
@@ -166,13 +147,6 @@ public class DssRestServer implements DssServer<DssRestActorService> {
     public DssServer<DssRestActorService> addDssService(DssRestActorService service) {
         Objects.requireNonNull(service);
         this.serviceList.add(service);
-        return this;
-    }
-
-    @Override
-    public DssServer<DssRestActorService> addExceptionHandler(DssExceptionHandler exceptionHandler) {
-        Objects.requireNonNull(exceptionHandler);
-        this.exceptionHandler = exceptionHandler;
         return this;
     }
 }

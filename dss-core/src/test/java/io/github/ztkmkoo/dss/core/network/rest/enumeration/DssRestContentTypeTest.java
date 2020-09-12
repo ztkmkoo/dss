@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 25. 오전 1:36
  */
-class DssRestContentTypeTest {
+public class DssRestContentTypeTest {
 
     @Test
-    void fromText() {
+    public void fromText() {
 
         final DssRestContentType type = DssRestContentType.fromText("application/json");
         assertEquals(DssRestContentType.APPLICATION_JSON, type);

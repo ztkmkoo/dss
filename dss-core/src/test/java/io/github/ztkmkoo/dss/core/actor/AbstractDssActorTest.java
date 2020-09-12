@@ -15,18 +15,19 @@ import akka.actor.testkit.typed.javadsl.ActorTestKit;
 public abstract class AbstractDssActorTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractDssActorTest.class);
+
     protected static ActorTestKit testKit;
 
+    protected AbstractDssActorTest() {}
+
     @BeforeAll
-    static void setUpBeforeClass() {
+    public static void setUpBeforeClass() {
         testKit = ActorTestKit.create();
     }
 
     @AfterAll
-    static void cleanup() {
+    public static void cleanup() {
         logger.info("AbstractDssActorTest cleanup.");
         testKit.shutdownTestKit();
     }
-
-    protected AbstractDssActorTest() {}
 }

@@ -9,22 +9,22 @@ import org.junit.jupiter.api.Test;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 1:00
  */
-class NotSupportedRestMethodExceptionTest {
+public class NotSupportedRestMethodExceptionTest {
 
     @Test
-    void constructor() {
+    public void constructor() {
         final NotSupportedRestMethodException exception = new NotSupportedRestMethodException("no");
         assertEquals("no", exception.getMessage());
     }
 
     @Test
-    void constructor2() {
+    public void constructor2() {
         final NotSupportedRestMethodException exception = new NotSupportedRestMethodException(new NullPointerException());
         assertEquals(NullPointerException.class, exception.getCause().getClass());
     }
 
     @Test
-    void constructor3() {
+    public void constructor3() {
         final NotSupportedRestMethodException exception = new NotSupportedRestMethodException("no", new Exception());
         assertEquals("no", exception.getMessage());
         assertEquals(Exception.class, exception.getCause().getClass());

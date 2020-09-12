@@ -1,6 +1,7 @@
 package io.github.ztkmkoo.dss.core.actor.rest.service;
 
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestContentInfo;
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
 import io.github.ztkmkoo.dss.core.util.StringUtils;
@@ -19,7 +20,7 @@ public abstract class DssRestActorFormDataService extends AbstractDssRestActorSe
 
     private static final DssRestContentInfo formDataContentInfo = DssRestContentInfo
             .builder()
-            .contentType(DssRestContentType.APPLICATION_WWW_FORM_URL_ENCODED)
+            .contentType(DssRestContentType.MULTIPART_FORM_DATA)
             .charset(CharsetUtil.UTF_8)
             .build();
 
@@ -29,26 +30,40 @@ public abstract class DssRestActorFormDataService extends AbstractDssRestActorSe
 
     @SuppressWarnings("unchecked")
     @Override
-    protected final HashMap<String, Object> getBody(String content) {
-
-        if (StringUtils.isEmpty(content)) {
+    protected final HashMap<String, Object> getBody(DssRestServiceActorCommandRequest commandRequest) {
+        if (StringUtils.isEmpty(commandRequest.getContent())) {
             return new HashMap<>();
         }
 
-        final String[] splits = content.split("&");
-        final HashMap<String, Object> bodyMap = new HashMap<>(splits.length);
+        String[] splits = null;
+        HashMap<String, Object> bodyMap = null;
 
-        for (int i = 0; i < splits.length; i++) {
-            final String element = splits[i];
-            if (!StringUtils.isEmpty(element)) {
-                final String[] formData = element.split("=");
-                if (formData.length == 2) {
-                    final String name = formData[0];
-                    final String preValue = formData[1];
-                    bodyMap.put(name, preValue);
-                } else {
-                    log.warn("Parse form data error: {}", element);
+        if (StringUtils.isEmpty(commandRequest.getBoundary())) {
+            splits = commandRequest.getContent().split("&");
+            bodyMap = new HashMap<>(splits.length);
+
+            for (int i = 0; i < splits.length; i++) {
+                final String element = splits[i];
+                if (!StringUtils.isEmpty(element)) {
+                    final String[] formData = element.split("=");
+                    if (formData.length == 2) {
+                        final String name = formData[0];
+                        final String preValue = formData[1];
+                        bodyMap.put(name, preValue);
+                    } else {
+                        log.warn("Parse form data error: {}", element);
+                    }
                 }
+            }
+        } else {
+            splits = commandRequest.getContent().split(commandRequest.getBoundary() + "\r\n");
+            bodyMap = new HashMap<>(splits.length);
+
+            for (int i = 1; i < splits.length; ++i) {
+                final String[] token = splits[i].split("\r\n");
+                final String name = token[0].substring(token[0].indexOf("\"") + 1, token[0].lastIndexOf("\""));
+                final String preValue = token[2];
+                bodyMap.put(name, preValue);
             }
         }
 

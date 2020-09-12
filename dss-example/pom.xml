@@ -12,18 +12,16 @@
     <artifactId>dss-example</artifactId>
     <packaging>jar</packaging>
     <version>0.4.4</version>
+    <dependencies>
+        <dependency>
+            <groupId>io.github.ztkmkoo</groupId>
+            <artifactId>dss-server</artifactId>
+            <version>0.4.4</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
 
     <name>DSS EXAMPLE</name>
     <description>Distributed server system</description>
     <url>https://github.com/ztkmkoo/dss</url>
-    
-    <dependencies>
-    	<dependency>
-    		<groupId>${project.groupId}</groupId>
-    		<artifactId>dss-server</artifactId>
-    		<version>0.4.4</version>
-    		<type>jar</type>
-           	<scope>compile</scope>
-		</dependency>
-    </dependencies>
 </project>

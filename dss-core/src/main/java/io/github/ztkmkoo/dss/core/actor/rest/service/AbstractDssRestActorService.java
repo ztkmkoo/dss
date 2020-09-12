@@ -50,7 +50,7 @@ public abstract class AbstractDssRestActorService<S extends Serializable> implem
     }
 
     protected abstract DssRestServiceResponse handlingRequest(DssRestServiceRequest<S> request);
-    protected abstract S getBody(String content);
+    protected abstract S getBody(DssRestServiceActorCommandRequest commandRequest);
 
     @Override
     public final DssRestServiceResponse handling(DssRestServiceActorCommandRequest commandRequest) {
@@ -61,7 +61,8 @@ public abstract class AbstractDssRestActorService<S extends Serializable> implem
     @SuppressWarnings("unchecked")
     private DssRestServiceRequest<S> makeRequest(DssRestServiceActorCommandRequest commandRequest) {
         Objects.requireNonNull(commandRequest);
-        final S body = getBody(commandRequest.getContent());
+
+        final S body = getBody(commandRequest);
         return (DssRestServiceRequest<S>) DssRestServiceRequestDefaultImpl
                 .builder()
                 .body(body)

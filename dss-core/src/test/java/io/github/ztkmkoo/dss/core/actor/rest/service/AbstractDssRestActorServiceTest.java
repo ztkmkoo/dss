@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Serializable;
 
+import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceActorCommandRequest;
 import org.junit.jupiter.api.Test;
 
 import io.github.ztkmkoo.dss.core.actor.rest.entity.DssRestServiceRequest;
@@ -16,10 +17,10 @@ import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestMethodType;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 4. 6. 오전 1:26
  */
-class AbstractDssRestActorServiceTest {
+public class AbstractDssRestActorServiceTest {
 
     @Test
-    void testConstructor() {
+    public void testConstructor() {
         final AbstractDssRestActorService service = new AbstractDssRestActorService("test", "test", DssRestMethodType.GET) {
             @Override
             protected DssRestServiceResponse handlingRequest(DssRestServiceRequest request) {
@@ -27,7 +28,7 @@ class AbstractDssRestActorServiceTest {
             }
 
             @Override
-            protected Serializable getBody(String content) {
+            protected Serializable getBody(DssRestServiceActorCommandRequest commandRequest) {
                 return null;
             }
         };

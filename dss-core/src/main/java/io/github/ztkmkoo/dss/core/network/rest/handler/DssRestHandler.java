@@ -1,14 +1,5 @@
 package io.github.ztkmkoo.dss.core.network.rest.handler;
 
-import java.time.Duration;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
@@ -16,12 +7,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommandHandlerUnregistered;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
+import io.github.ztkmkoo.dss.core.message.rest.*;
 import io.github.ztkmkoo.dss.core.network.DssHandler;
 import io.github.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
@@ -32,15 +18,17 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Project: dss
@@ -49,6 +37,29 @@ import lombok.Getter;
  */
 @ChannelHandler.Sharable
 class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssHandler<DssRestChannelHandlerCommand> {
+
+    private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
+    private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
+    private final StringBuilder buffer = new StringBuilder();
+    private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
+    private final ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor;
+    private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
+    @Getter
+    private final String name;
+    private final String restMasterActorName;
+
+    private ActorContext<DssRestChannelHandlerCommand> context;
+    private HttpRequest request;
+
+    DssRestHandler(
+            ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor,
+            ActorRef<DssRestMasterActorCommand> restMasterActorRef,
+            String name) {
+        this.restChannelInitializerActor = restChannelInitializerActor;
+        this.restMasterActorRef = restMasterActorRef;
+        this.name = name;
+        this.restMasterActorName = restMasterActorRef.path().name();
+    }
 
     private static DssRestRequest dssRestRequest(HttpRequest request, String content) {
 
@@ -59,12 +70,18 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         final DssRestContentType contentType = DssRestContentType.fromText(request.headers().get("content-Type"));
         final String uri = request.uri();
 
+        String boundary = null;
+        if (contentType == DssRestContentType.MULTIPART_FORM_DATA) {
+          boundary = content.substring(0, content.indexOf("\r\n"));
+        }
+
         return DssRestRequest
                 .builder()
                 .methodType(methodType)
                 .contentType(contentType)
                 .uri(uri)
                 .content(content)
+                .boundary(boundary)
                 .build();
     }
 
@@ -94,33 +111,9 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         }
     }
 
-    private final Logger logger = LoggerFactory.getLogger(DssRestHandler.class);
-    private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
-    private final StringBuilder buffer = new StringBuilder();
-    private final Map<String, ChannelHandlerContext> channelHandlerContextMap = new ConcurrentHashMap<>();
-    private final ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor;
-    private final ActorRef<DssRestMasterActorCommand> restMasterActorRef;
-    @Getter
-    private final String name;
-    private final String restMasterActorName;
-
-    private ActorContext<DssRestChannelHandlerCommand> context;
-    private HttpRequest request;
-
-    DssRestHandler(
-            ActorRef<DssRestChannelInitializerCommand> restChannelInitializerActor,
-            ActorRef<DssRestMasterActorCommand> restMasterActorRef,
-            String name) {
-        this.restChannelInitializerActor = restChannelInitializerActor;
-        this.restMasterActorRef = restMasterActorRef;
-        this.name = name;
-        this.restMasterActorName = restMasterActorRef.path().name();
-    }
-
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof HttpRequest) {
-
             request = (HttpRequest) msg;
             buffer.setLength(0);
         }
@@ -128,11 +121,12 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         if (msg instanceof HttpContent) {
 
             final HttpContent httpContent = (HttpContent) msg;
-            final ByteBuf content = httpContent.content();
 
+            final ByteBuf content = httpContent.content();
             if (content.isReadable()) {
                 buffer.append(content.toString(CharsetUtil.UTF_8));
             }
+
             if (msg instanceof LastHttpContent) {
                 final DssRestRequest dssRestRequest = dssRestRequest(request, buffer.toString());
                 handlingDssRestRequest(dssRestRequest, ctx);
@@ -164,6 +158,8 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
                 .contentType(dssRestRequest.getContentType())
                 .path(dssRestRequest.getUri())
                 .content(dssRestRequest.getContent())
+                .boundary(dssRestRequest.getBoundary())
+                .charset(dssRestRequest.getCharset())
                 .build();
 
         restMasterActorRef.tell(dssRestMasterActorCommandRequest);
@@ -204,8 +200,8 @@ class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssH
         if (initializeBehavior.get()) {
             throw new DssUserActorDuplicateBehaviorCreateException("Cannot setup twice for one object");
         }
-        initializeBehavior.set(true);
 
+        initializeBehavior.set(true);
         return Behaviors.setup(this::dssRestHandler);
     }
 

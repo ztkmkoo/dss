@@ -1,11 +1,10 @@
 package io.github.ztkmkoo.dss.core.network.rest.property;
-import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
+
 import io.github.ztkmkoo.dss.core.network.DssChannelProperty;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * Project: dss
@@ -14,16 +13,14 @@ import java.util.Objects;
  */
 @Getter
 public class DssRestChannelProperty implements Serializable, DssChannelProperty {
-    private static final long serialVersionUID = -6904414304979344025L;
 
+    private static final long serialVersionUID = -6904414304979344025L;
     private final String host;
     private final int port;
-    private final DssLogLevel dssLogLevel;
 
     @Builder
-    private DssRestChannelProperty(String host, int port, DssLogLevel dssLogLevel) {
+    private DssRestChannelProperty(String host, int port) {
         this.host = host;
         this.port = port;
-        this.dssLogLevel = Objects.nonNull(dssLogLevel) ? dssLogLevel : DssLogLevel.DEBUG;
     }
 }

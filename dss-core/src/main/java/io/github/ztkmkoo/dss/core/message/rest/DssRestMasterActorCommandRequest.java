@@ -15,14 +15,16 @@ import java.util.Objects;
  */
 @Getter
 public class DssRestMasterActorCommandRequest implements DssRestMasterActorCommand {
-    private static final long serialVersionUID = 6046370337632314401L;
 
+    private static final long serialVersionUID = 6046370337632314401L;
     private final String channelId;
     private final ActorRef<DssRestChannelHandlerCommand> sender;
     private final DssRestMethodType methodType;
     private final DssRestContentType contentType;
     private final String path;
     private final String content;
+    private final String charset;
+    private final String boundary;
 
     @Builder
     private DssRestMasterActorCommandRequest(
@@ -31,7 +33,10 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
             DssRestMethodType methodType,
             DssRestContentType contentType,
             String path,
-            String content) {
+            String content,
+            String charset,
+            String boundary) {
+
         Objects.requireNonNull(channelId);
         Objects.requireNonNull(sender);
         Objects.requireNonNull(methodType);
@@ -43,6 +48,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
         this.contentType = contentType;
         this.path = path;
         this.content = content;
+        this.charset = charset;
+        this.boundary = boundary;
     }
 
     protected DssRestMasterActorCommandRequest(DssRestMasterActorCommandRequest request) {
@@ -52,7 +59,9 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 request.getMethodType(),
                 request.getContentType(),
                 request.getPath(),
-                request.getContent()
+                request.getContent(),
+                request.getCharset(),
+                request.getBoundary()
         );
     }
 
@@ -65,6 +74,8 @@ public class DssRestMasterActorCommandRequest implements DssRestMasterActorComma
                 "contentType: '" + contentType + "', " +
                 "path: '" + path + "', " +
                 "content: '" + content + "'" +
+                "charset: '" + charset + "'" +
+                "boundary: '" + boundary + "'" +
                 "}";
     }
 }
