@@ -28,12 +28,21 @@ hs_err_pid*
 /.idea/
 /.gradle/
 
-# Eclipse #
+# Eclipse
 *.classpath
 *.project
 *.settings/
 
-# Gradle and Maven with auto-import
-# When using Gradle or Maven with auto-import, you should exclude module files,
-# since they will be recreated, and may cause churn.  Uncomment if using auto-import.
+# IntelliJ
+.idea/
 *.iml
+*.iws
+*.ipr
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# CMake
+cmake-build-*/
