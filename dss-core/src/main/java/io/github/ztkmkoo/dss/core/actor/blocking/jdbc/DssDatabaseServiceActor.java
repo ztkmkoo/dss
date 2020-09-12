@@ -13,6 +13,10 @@ import io.github.ztkmkoo.dss.core.message.blocking.jdbc.DssJdbcCommand;
 
 public class DssDatabaseServiceActor implements DssDatabaseService<DssJdbcCommand, DssJdbcCommand> {
 	
+    public static Behavior<DssJdbcCommand> create() {
+        return Behaviors.setup(context -> new DssDatabaseServiceActor(context).dssDatabaseServiceActor());
+    }
+    
 	private final ActorContext<DssJdbcCommand> context;
 	
 	private DssDatabaseServiceActor(ActorContext<DssJdbcCommand> context) {
@@ -26,9 +30,6 @@ public class DssDatabaseServiceActor implements DssDatabaseService<DssJdbcComman
 				.build();
 	}
 	
-    public static Behavior<DssJdbcCommand> create() {
-        return Behaviors.setup(context -> new DssDatabaseServiceActor(context).dssDatabaseServiceActor());
-    }
 
 	@Override
 	public void commit() {
