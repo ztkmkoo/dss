@@ -28,7 +28,21 @@ hs_err_pid*
 /.idea/
 /.gradle/
 
-# Eclipse #
+# Eclipse
 *.classpath
 *.project
 *.settings/
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Mac
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# CMake
+cmake-build-*/
