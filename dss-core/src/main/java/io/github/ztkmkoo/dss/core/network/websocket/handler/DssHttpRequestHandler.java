@@ -34,7 +34,7 @@ public class DssHttpRequestHandler extends SimpleChannelInboundHandler<FullHttpR
             request = msg;
             handleHttpRequest(ctx, request);
         } else {
-            throw new UnsupportedOperationException("Unsupported Message Type " + msg.getClass().getName());
+            throw new UnsupportedOperationException("FullHttpRequest message is null");
         }
     }
 
