@@ -43,7 +43,7 @@ public class DssDatabaseServiceActor implements DssDatabaseService<DssJdbcComman
 		SelectQuery selectQuery = new SelectQuery()
 				.addCustomFromTable(selectMsg.getTableName())
 				.addCustomColumns(selectMsg.getColumns())
-				.addCondition(BinaryCondition.equalTo("name", "이주현"))
+				.addCondition(BinaryCondition.equalTo("name", "JuHyun"))
 				.addCondition(BinaryCondition.equalTo("age", "10"))
 				.validate();
 		String selectStatement = selectQuery.toString();
