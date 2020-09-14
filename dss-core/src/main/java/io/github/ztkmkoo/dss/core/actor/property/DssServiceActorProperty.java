@@ -6,4 +6,7 @@ package io.github.ztkmkoo.dss.core.actor.property;
  */
 public interface DssServiceActorProperty extends DssActorProperty {
 
+    String getName();
+
+    String getKey();
 }
