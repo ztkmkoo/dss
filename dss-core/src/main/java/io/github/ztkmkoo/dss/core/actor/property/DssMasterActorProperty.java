@@ -10,7 +10,7 @@ import java.util.Objects;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-23 02:51
  */
-public interface DssMasterActorProperty {
+public interface DssMasterActorProperty extends DssActorProperty {
 
     // network
 
