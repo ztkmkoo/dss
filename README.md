@@ -19,7 +19,7 @@
 
 - [Project Structure](https://github.com/ztkmkoo/dss/wiki/Project-Structure)
 - [Code Convention](https://github.com/ztkmkoo/dss/wiki/Code-Style)
-- [Tutorial](https://github.com/ztkmkoo/dss/wiki/Project-Tuturial)
+- [Tutorial](https://github.com/ztkmkoo/dss/wiki/Dss-REST-Tuturial)
 - [Contribution Guide](https://github.com/ztkmkoo/dss/blob/develop/CONTRIBUTING.md)
 - Other Language
     - [한국어](https://github.com/ztkmkoo/dss/wiki/Home(KR))
