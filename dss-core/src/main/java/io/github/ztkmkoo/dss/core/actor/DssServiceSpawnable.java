@@ -23,10 +23,19 @@ public interface DssServiceSpawnable extends DssServiceAcceptable {
      */
     DssBehaviorCreator<DssServiceCommand, DssServiceActorProperty> getServiceBehaviorCreator();
 
+    /**
+     * Create DssServiceActorProperty list from DssMasterActorProperty
+     */
     <P extends DssServiceActorProperty, M extends DssMasterActorProperty> List<P> createDssServiceActorPropertyList(M masterProperty);
 
+    /**
+     * Create DssServiceActorResolvable from DssServiceActorProperty and service actor
+     */
     <P extends DssServiceActorProperty> DssServiceActorResolvable<String> createDssServiceActorResolvable(P property, ActorRef<DssServiceCommand> actor);
 
+    /**
+     * spawn service actors and set it
+     */
     default <M extends DssMasterActorProperty> void initializeServiceActor(AbstractDssActor<DssMasterCommand> master, M masterProperty) {
         final List<DssServiceActorProperty> propertyList = createDssServiceActorPropertyList(masterProperty);
         if (Objects.isNull(propertyList) || propertyList.isEmpty()) {
@@ -39,12 +48,18 @@ public interface DssServiceSpawnable extends DssServiceAcceptable {
                 .forEach(p -> initializeServiceActor(master, p));
     }
 
+    /**
+     * spawn service actor and set it
+     */
     default <P extends DssServiceActorProperty> void initializeServiceActor(AbstractDssActor<DssMasterCommand> master, P property) {
         final ActorRef<DssServiceCommand> actor = DssCommonActorUtils.spawn(master, getServiceBehaviorCreator(), property, "service-" + property.getName());
         final DssServiceActorResolvable<String> resolvable = createDssServiceActorResolvable(property, actor);
         putServiceActorResolvable(resolvable);
     }
 
+    /**
+     * put service actor
+     */
     default void putServiceActorResolvable(DssServiceActorResolvable<String> resolvable) {
         Objects.requireNonNull(resolvable);
         if (StringUtils.isEmpty(resolvable.getKey())) {

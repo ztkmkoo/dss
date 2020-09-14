@@ -25,6 +25,9 @@ public interface DssNetworkSpawnable extends DssNetworkAcceptable {
      */
     <P extends DssNetworkActorProperty, M extends DssMasterActorProperty> P createDssNetworkActorProperty(M masterProperty);
 
+    /**
+     * spawn network actor and set it
+     */
     default <M extends DssMasterActorProperty> void initializeNetworkActor(AbstractDssActor<DssMasterCommand> master, M masterProperty) {
         final DssNetworkActorProperty property = createDssNetworkActorProperty(Objects.requireNonNull(masterProperty));
         final ActorRef<DssNetworkCommand> actor = DssCommonActorUtils.spawn(master, getNetworkBehaviorCreator(), property, "network");

@@ -20,8 +20,14 @@ public interface DssResolverSpawnable extends DssResolverAcceptable {
      */
     DssBehaviorCreator<DssResolverCommand, DssResolverActorProperty> getResolverBehaviorCreator();
 
+    /**
+     * Create DssResolverActorProperty from DssMasterActorProperty
+     */
     <P extends DssResolverActorProperty, M extends DssMasterActorProperty> P createDssResolverActorProperty(M masterProperty);
 
+    /**
+     * spawn resolver actor and set it
+     */
     default <M extends DssMasterActorProperty> void initializeResolverActor(AbstractDssActor<DssMasterCommand> master, M masterProperty) {
         final DssResolverActorProperty property = createDssResolverActorProperty(Objects.requireNonNull(masterProperty));
         final ActorRef<DssResolverCommand> actor = DssCommonActorUtils.spawn(master, getResolverBehaviorCreator(), property, "resolver");

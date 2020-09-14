@@ -25,6 +25,9 @@ public interface DssExceptionSpawnable extends DssExceptionAcceptable {
      */
     <E extends DssExceptionActorProperty, M extends DssMasterActorProperty> E createDssExceptionActorProperty(M masterProperty);
 
+    /**
+     * spawn exception actor and set it
+     */
     default <M extends DssMasterActorProperty> void initializeExceptionActor(AbstractDssActor<DssMasterCommand> master, M masterProperty) {
         final DssExceptionActorProperty property = createDssExceptionActorProperty(Objects.requireNonNull(masterProperty));
         final ActorRef<DssExceptionCommand> actor = DssCommonActorUtils.spawn(master, getExceptionBehaviorCreator(), property, "exception");
