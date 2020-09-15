@@ -20,7 +20,7 @@ public interface DssMasterActor extends DssActor<DssMasterCommand>, DssException
     /**
      * Get master property
      */
-    <M extends DssMasterActorProperty> M getDssMasterActorProperty();
+    DssMasterActorProperty getDssMasterActorProperty();
 
     /**
      * Get current master actor status

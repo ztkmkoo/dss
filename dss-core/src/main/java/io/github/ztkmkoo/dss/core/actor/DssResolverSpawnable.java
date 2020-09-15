@@ -23,7 +23,7 @@ public interface DssResolverSpawnable extends DssResolverAcceptable {
     /**
      * Create DssResolverActorProperty from DssMasterActorProperty
      */
-    <P extends DssResolverActorProperty, M extends DssMasterActorProperty> P createDssResolverActorProperty(M masterProperty);
+    <M extends DssMasterActorProperty> DssResolverActorProperty createDssResolverActorProperty(M masterProperty);
 
     /**
      * spawn resolver actor and set it

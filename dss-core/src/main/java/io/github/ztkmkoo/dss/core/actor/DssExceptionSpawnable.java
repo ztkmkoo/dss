@@ -23,7 +23,7 @@ public interface DssExceptionSpawnable extends DssExceptionAcceptable {
     /**
      * Create DssExceptionActorProperty from DssMasterActorProperty
      */
-    <E extends DssExceptionActorProperty, M extends DssMasterActorProperty> E createDssExceptionActorProperty(M masterProperty);
+    <M extends DssMasterActorProperty> DssExceptionActorProperty createDssExceptionActorProperty(M masterProperty);
 
     /**
      * spawn exception actor and set it

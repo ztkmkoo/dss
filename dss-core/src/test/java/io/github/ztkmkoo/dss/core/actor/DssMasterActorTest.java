@@ -3,21 +3,23 @@ package io.github.ztkmkoo.dss.core.actor;
 import akka.actor.testkit.typed.javadsl.TestProbe;
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
-import io.github.ztkmkoo.dss.core.actor.property.DssMasterActorProperty;
-import io.github.ztkmkoo.dss.core.message.DssCommand;
-import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
-import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;
-import io.github.ztkmkoo.dss.core.message.DssResolverCommand;
+import io.github.ztkmkoo.dss.core.actor.property.*;
+import io.github.ztkmkoo.dss.core.message.*;
+import io.github.ztkmkoo.dss.core.service.DssServiceGenerator;
 import lombok.Builder;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -53,23 +55,13 @@ class DssMasterActorTest extends AbstractDssActorTest {
     }
 
     @Test
-    void spawnResolverActor() {
+    void initializeMasterActor() {
         final ActorRef<DssMasterCommand> masterActor = newMasterActorRef();
         final TestProbe<DssMasterCommand> probe = testKit.createTestProbe();
-        masterActor.tell(ResolverActorRefRequest.builder().sender(probe.getRef()).build());
+        masterActor.tell(new InitializeRequest(probe.getRef()));
 
-        final ResolverActorRefResponse response = getProbeResponse(probe, ResolverActorRefResponse.class);
-        assertNotNull(response.getActorRef());
-    }
-
-    @Test
-    void spawnNetworkActor() {
-        final ActorRef<DssMasterCommand> masterActor = newMasterActorRef();
-        final TestProbe<DssMasterCommand> probe = testKit.createTestProbe();
-        masterActor.tell(NetworkActorRefRequest.builder().sender(probe.getRef()).build());
-
-        final NetworkActorRefResponse response = getProbeResponse(probe, NetworkActorRefResponse.class);
-        assertNotNull(response.getActorRef());
+        final InitializeResponse response = getProbeResponse(probe, InitializeResponse.class);
+        assertNotNull(response);
     }
 
     @Test
@@ -107,21 +99,13 @@ class DssMasterActorTest extends AbstractDssActorTest {
 
         @Override
         public Receive<DssMasterCommand> createReceive() {
-            return newReceiveBuilder()
-                    .onMessage(ResolverActorRefRequest.class, msg -> {
-                        getLog().info("Receive: {}", msg);
-                        final ActorRef<DssResolverCommand> resolver = spawnResolverActor(this);
-                        msg.getSender().tell(ResolverActorRefResponse.builder().actorRef(resolver).build());
-                        return Behaviors.same();
+            return masterReceiveBuilder(this)
+                    .onMessage(InitializeRequest.class, msg -> {
+                        initializeMasterActor(this);
+                        Objects.requireNonNull(msg.getSender());
+                        msg.getSender().tell(new InitializeResponse());
+                        return this;
                     })
-                    .onMessage(NetworkActorRefRequest.class, msg -> {
-                        getLog().info("Receive: {}", msg);
-                        final ActorRef<DssNetworkCommand> network = spawnNetworkActor(this);
-                        msg.getSender().tell(NetworkActorRefResponse.builder().actorRef(network).build());
-                        return Behaviors.same();
-                    })
-                    .onMessage(DssMasterCommand.StatusRequest.class, this::handlingStatusRequest)
-                    .onMessage(DssMasterCommand.StatusUpdate.class, this::handlingStatusUpdate)
                     .build();
         }
 
@@ -136,27 +120,38 @@ class DssMasterActorTest extends AbstractDssActorTest {
         }
 
         @Override
+        public void setResolverActor(ActorRef<DssResolverCommand> actorRef) {
+
+        }
+
+        @Override
         public ActorRef<DssNetworkCommand> getNetworkActor() {
             return null;
         }
 
         @Override
-        public DssMasterActorProperty getProperty() {
-            return null;
+        public void setNetworkActor(ActorRef<DssNetworkCommand> actorRef) {
+
         }
 
         @Override
-        public Behavior<DssResolverCommand> createResolverActorBehavior() {
-            return Behaviors
-                    .receive(DssResolverCommand.class)
-                    .build();
-        }
+        public DssMasterActorProperty getDssMasterActorProperty() {
+            return new DssMasterActorProperty() {
+                @Override
+                public int getBossThreadCount() {
+                    return 0;
+                }
 
-        @Override
-        public Behavior<DssNetworkCommand> createNetworkActorBehavior() {
-            return Behaviors
-                    .receive(DssNetworkCommand.class)
-                    .build();
+                @Override
+                public int getWorkerThreadCount() {
+                    return 0;
+                }
+
+                @Override
+                public List<DssServiceGenerator> getServiceGeneratorList() {
+                    return null;
+                }
+            };
         }
 
         @Override
@@ -168,53 +163,111 @@ class DssMasterActorTest extends AbstractDssActorTest {
         public void setMasterActorStatus(DssMasterActorStatus status) {
             this.status = status;
         }
+
+        @Override
+        public DssBehaviorCreator<DssExceptionCommand, DssExceptionActorProperty> getExceptionBehaviorCreator() {
+            return property -> Behaviors.setup(TestActor::new);
+        }
+
+        @Override
+        public <M extends DssMasterActorProperty> DssExceptionActorProperty createDssExceptionActorProperty(M masterProperty) {
+            return new DssExceptionActorProperty() {};
+        }
+
+        @Override
+        public ActorRef<DssExceptionCommand> getExceptionActor() {
+            return null;
+        }
+
+        @Override
+        public void setExceptionActor(ActorRef<DssExceptionCommand> actorRef) {
+
+        }
+
+        @Override
+        public DssBehaviorCreator<DssNetworkCommand, DssNetworkActorProperty> getNetworkBehaviorCreator() {
+            return property -> Behaviors.setup(TestActor::new);
+        }
+
+        @Override
+        public <M extends DssMasterActorProperty> DssNetworkActorProperty createDssNetworkActorProperty(M masterProperty) {
+            return new DssNetworkActorProperty() {
+                @Override
+                public int getBossThreadCount() {
+                    return 1;
+                }
+
+                @Override
+                public int getWorkerThreadCount() {
+                    return 1;
+                }
+            };
+        }
+
+        @Override
+        public DssBehaviorCreator<DssResolverCommand, DssResolverActorProperty> getResolverBehaviorCreator() {
+            return property -> Behaviors.setup(TestActor::new);
+        }
+
+        @Override
+        public <M extends DssMasterActorProperty> DssResolverActorProperty createDssResolverActorProperty(M masterProperty) {
+            return new DssResolverActorProperty() {};
+        }
+
+        @Override
+        public DssBehaviorCreator<DssServiceCommand, DssServiceActorProperty> getServiceBehaviorCreator() {
+            return property -> Behaviors.setup(TestActor::new);
+        }
+
+        @Override
+        public <M extends DssMasterActorProperty> List<DssServiceActorProperty> createDssServiceActorPropertyList(M masterProperty) {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public <P extends DssServiceActorProperty> DssServiceActorResolvable<String> createDssServiceActorResolvable(P property, ActorRef<DssServiceCommand> actor) {
+            return null;
+        }
+
+        @Override
+        public Map<String, DssServiceActorResolvable<String>> getServiceActorMap() {
+            return null;
+        }
+
+        @Override
+        public void putServiceActorResolvable(String key, DssServiceActorResolvable<String> value) {
+
+        }
     }
 
-    private static class ResolverActorRefRequest implements DssMasterCommand{
+    private static class TestActor<T extends DssCommand> extends AbstractBehavior<T> {
+
+        public TestActor(ActorContext<T> context) {
+            super(context);
+        }
+
+        @Override
+        public Receive<T> createReceive() {
+            return null;
+        }
+    }
+
+    private static class InitializeRequest implements DssMasterCommand {
         private static final long serialVersionUID = -6715113886545519228L;
 
         @Getter
         private final ActorRef<DssMasterCommand> sender;
 
         @Builder
-        public ResolverActorRefRequest(ActorRef<DssMasterCommand> sender) {
+        public InitializeRequest(ActorRef<DssMasterCommand> sender) {
             this.sender = sender;
         }
     }
 
-    private static class ResolverActorRefResponse implements DssMasterCommand {
-        private static final long serialVersionUID = 6219916186960923214L;
-
-        @Getter
-        private final ActorRef<DssResolverCommand> actorRef;
+    private static class InitializeResponse implements DssMasterCommand {
+        private static final long serialVersionUID = -4705847872255308681L;
 
         @Builder
-        public ResolverActorRefResponse(ActorRef<DssResolverCommand> actorRef) {
-            this.actorRef = actorRef;
-        }
-    }
-
-    private static class NetworkActorRefRequest implements DssMasterCommand {
-        private static final long serialVersionUID = 249969752402472135L;
-
-        @Getter
-        private final ActorRef<DssMasterCommand> sender;
-
-        @Builder
-        public NetworkActorRefRequest(ActorRef<DssMasterCommand> sender) {
-            this.sender = sender;
-        }
-    }
-
-    private static class NetworkActorRefResponse implements DssMasterCommand {
-        private static final long serialVersionUID = -7299143779560419564L;
-
-        @Getter
-        private final ActorRef<DssNetworkCommand> actorRef;
-
-        @Builder
-        public NetworkActorRefResponse(ActorRef<DssNetworkCommand> actorRef) {
-            this.actorRef = actorRef;
-        }
+        public InitializeResponse() { }
     }
 }

@@ -15,6 +15,12 @@ import java.util.Objects;
  */
 public class DssCommonActorUtils {
 
+    private static final String MSG_BEHAVIOR_CREATOR_NULL = "DssBehaviorCreator is null";
+    private static final String MSG_PROPERTY_NULL = "DssActorProperty is null";
+    private static final String MSG_ACTOR_NULL = "AbstractDssActor is null";
+    private static final String MSG_ACTOR_CONTEXT_NULL = "ActorContext is null";
+    private static final String MSG_BEHAVIOR_NULL = "Behavior is null";
+
     private DssCommonActorUtils() {}
 
     public static <C extends DssCommand, P extends DssCommand, T extends DssActorProperty> ActorRef<C> spawn(
@@ -22,7 +28,12 @@ public class DssCommonActorUtils {
             DssBehaviorCreator<C, T> creator,
             T property,
             String name) {
-        return spawn(parent, Objects.requireNonNull(creator).create(Objects.requireNonNull(property)), name);
+        return spawn(
+                parent,
+                Objects
+                        .requireNonNull(creator, MSG_BEHAVIOR_CREATOR_NULL)
+                        .create(Objects.requireNonNull(property, MSG_PROPERTY_NULL)),
+                name);
     }
 
     public static <C extends DssCommand, P extends DssCommand> ActorRef<C> spawn(
@@ -30,7 +41,7 @@ public class DssCommonActorUtils {
             Behavior<C> behavior,
             String name) {
         return Objects
-                .requireNonNull(Objects.requireNonNull(parent).getContext())
-                .spawn(Objects.requireNonNull(behavior), name);
+                .requireNonNull(Objects.requireNonNull(parent, MSG_ACTOR_NULL).getContext(), MSG_ACTOR_CONTEXT_NULL)
+                .spawn(Objects.requireNonNull(behavior, MSG_BEHAVIOR_NULL), name);
     }
 }

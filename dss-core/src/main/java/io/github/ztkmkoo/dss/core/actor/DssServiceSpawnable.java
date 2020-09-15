@@ -26,7 +26,7 @@ public interface DssServiceSpawnable extends DssServiceAcceptable {
     /**
      * Create DssServiceActorProperty list from DssMasterActorProperty
      */
-    <P extends DssServiceActorProperty, M extends DssMasterActorProperty> List<P> createDssServiceActorPropertyList(M masterProperty);
+    <M extends DssMasterActorProperty> List<DssServiceActorProperty> createDssServiceActorPropertyList(M masterProperty);
 
     /**
      * Create DssServiceActorResolvable from DssServiceActorProperty and service actor

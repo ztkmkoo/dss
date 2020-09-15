@@ -23,7 +23,7 @@ public interface DssNetworkSpawnable extends DssNetworkAcceptable {
     /**
      * Create DssNetworkActorProperty from DssMasterActorProperty
      */
-    <P extends DssNetworkActorProperty, M extends DssMasterActorProperty> P createDssNetworkActorProperty(M masterProperty);
+    <M extends DssMasterActorProperty> DssNetworkActorProperty createDssNetworkActorProperty(M masterProperty);
 
     /**
      * spawn network actor and set it
