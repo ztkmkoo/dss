@@ -2,12 +2,11 @@ package io.github.ztkmkoo.dss.core.actor;
 
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
+import akka.actor.typed.javadsl.ReceiveBuilder;
 import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
 import io.github.ztkmkoo.dss.core.actor.property.DssMasterActorProperty;
 import io.github.ztkmkoo.dss.core.message.DssCommand;
 import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
-import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;
-import io.github.ztkmkoo.dss.core.message.DssResolverCommand;
 
 import java.util.Objects;
 
@@ -16,56 +15,52 @@ import java.util.Objects;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-24 01:59
  */
-public interface DssMasterActor extends DssActor<DssMasterCommand> {
+public interface DssMasterActor extends DssActor<DssMasterCommand>, DssExceptionSpawnable, DssServiceSpawnable, DssResolverSpawnable, DssNetworkSpawnable {
 
     /**
-     * Get actor ref of resolver actor
+     * Get master property
      */
-    ActorRef<DssResolverCommand> getResolverActor();
-
-    /**
-     * Get actor ref of network actor
-     */
-    ActorRef<DssNetworkCommand> getNetworkActor();
-
-    /**
-     * Get master actor properties
-     */
-    DssMasterActorProperty getProperty();
-
-    /**
-     * Create resolver actor method
-     */
-    Behavior<DssResolverCommand> createResolverActorBehavior();
-
-    /**
-     * Create network actor method
-     */
-    Behavior<DssNetworkCommand> createNetworkActorBehavior();
+    DssMasterActorProperty getDssMasterActorProperty();
 
     /**
      * Get current master actor status
      */
     DssMasterActorStatus getMasterActorStatus();
 
+    /**
+     * Set current master actor status
+     */
     void setMasterActorStatus(DssMasterActorStatus status);
 
-    default ActorRef<DssResolverCommand> spawnResolverActor(AbstractDssActor<DssMasterCommand> actor) {
-        final Behavior<DssResolverCommand> resolverBehavior = createResolverActorBehavior();
-        Objects.requireNonNull(resolverBehavior);
+    /**
+     * help spawn child exception, service, resolver, network actor
+     * do not change the spawn order
+     */
+    default void initializeMasterActor(AbstractDssActor<DssMasterCommand> master) {
+        Objects.requireNonNull(master);
+        final DssMasterActorProperty masterProperty = getDssMasterActorProperty();
+        Objects.requireNonNull(masterProperty);
 
-        final ActorRef<DssResolverCommand> resolverActor = actor.getContext().spawn(resolverBehavior, "resolver");
-        return Objects.requireNonNull(resolverActor);
+        initializeExceptionActor(master, masterProperty);
+        initializeServiceActor(master, masterProperty);
+        initializeResolverActor(master, masterProperty);
+        initializeNetworkActor(master, masterProperty);
     }
 
-    default ActorRef<DssNetworkCommand> spawnNetworkActor(AbstractDssActor<DssMasterCommand> actor) {
-        final Behavior<DssNetworkCommand> networkBehavior = createNetworkActorBehavior();
-        Objects.requireNonNull(networkBehavior);
-
-        final ActorRef<DssNetworkCommand> networkActor = actor.getContext().spawn(networkBehavior, "network");
-        return Objects.requireNonNull(networkActor);
+    /**
+     * make ReceiveBuilder for master actor with common handling message
+     */
+    default ReceiveBuilder<DssMasterCommand> masterReceiveBuilder(AbstractDssActor<DssMasterCommand> actor) {
+        return actor.newReceiveBuilder()
+                .onMessage(DssMasterCommand.StatusRequest.class, this::handlingStatusRequest)
+                .onMessage(DssMasterCommand.StatusUpdate.class, this::handlingStatusUpdate)
+                ;
     }
 
+    /**
+     * handling DssMasterCommand.StatusRequest
+     * response that current actor status
+     */
     default Behavior<DssMasterCommand> handlingStatusRequest(DssMasterCommand.StatusRequest msg) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(getMasterActorStatus());
@@ -85,6 +80,10 @@ public interface DssMasterActor extends DssActor<DssMasterCommand> {
         return getBehavior();
     }
 
+    /**
+     * handling DssMasterCommand.StatusUpdate
+     * update current status with request
+     */
     default Behavior<DssMasterCommand> handlingStatusUpdate(DssMasterCommand.StatusUpdate msg) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(getMasterActorStatus());
