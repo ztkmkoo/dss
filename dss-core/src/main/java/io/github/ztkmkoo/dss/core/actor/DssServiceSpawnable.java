@@ -38,7 +38,7 @@ public interface DssServiceSpawnable extends DssServiceAcceptable {
      */
     default <M extends DssMasterActorProperty> void initializeServiceActor(AbstractDssActor<DssMasterCommand> master, M masterProperty) {
         final List<DssServiceActorProperty> propertyList = createDssServiceActorPropertyList(masterProperty);
-        if (Objects.isNull(propertyList) || propertyList.isEmpty()) {
+        if (Objects.isNull(propertyList)) {
             return;
         }
 
