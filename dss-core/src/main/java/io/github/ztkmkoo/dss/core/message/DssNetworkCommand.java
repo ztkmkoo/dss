@@ -40,4 +40,10 @@ public interface DssNetworkCommand extends DssCommand {
             }
         }
     }
+
+    class Close implements DssNetworkCommand {
+        private static final long serialVersionUID = 952560633714242274L;
+
+        public static final Close INST = new Close();
+    }
 }
