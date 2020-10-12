@@ -3,7 +3,9 @@ package io.github.ztkmkoo.dss.core.actor;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.ReceiveBuilder;
+import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
 import io.github.ztkmkoo.dss.core.actor.enumeration.DssNetworkCloseStatus;
+import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
 import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;
 import io.github.ztkmkoo.dss.core.network.DssChannelProperty;
 import io.netty.bootstrap.ServerBootstrap;
@@ -76,7 +78,7 @@ public interface DssNetworkActor<P extends DssChannelProperty, S extends SocketC
         try {
             channel = bind(bootstrap, property, getChannelInitializer());
             channel.closeFuture().addListeners(closeFuture());
-            setActive(true);
+            afterBind(channel);
         } catch (Exception e) {
             getLog().error("Network actor bind error, ", e);
         }
@@ -126,6 +128,16 @@ public interface DssNetworkActor<P extends DssChannelProperty, S extends SocketC
         getContext().getSelf().tell(msg);
     }
 
+    default void afterBind(Channel channel) throws InterruptedException {
+        setActive(true);
+        if (Objects.nonNull(getMasterActor())) {
+            getMasterActor().tell(DssMasterCommand.StatusUpdate.builder().status(DssMasterActorStatus.START).build());
+        } else if (Objects.nonNull(channel)) {
+            getLog().error("Master actor is null!");
+            channel.close().sync();
+        }
+    }
+
     default Behavior<DssNetworkCommand> handlingClose(DssNetworkCommand.Close msg) {
         Objects.requireNonNull(msg);
 
@@ -139,6 +151,8 @@ public interface DssNetworkActor<P extends DssChannelProperty, S extends SocketC
             setWorkerGroup(null);
         }
 
-        return Behaviors.stopped();
+        Objects.requireNonNull(getMasterActor()).tell(DssMasterCommand.StatusUpdate.builder().status(DssMasterActorStatus.SHUTDOWN).build());
+
+        return Behaviors.same();
     }
 }
