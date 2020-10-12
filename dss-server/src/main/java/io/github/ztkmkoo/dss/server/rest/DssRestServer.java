@@ -1,8 +1,8 @@
 package io.github.ztkmkoo.dss.server.rest;
 
 import akka.actor.typed.ActorSystem;
-import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
+import io.github.ztkmkoo.dss.core.common.logging.DssLogLevel;
 import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
 import io.github.ztkmkoo.dss.core.exception.handler.DssRestExceptionHandlerResolver;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
@@ -59,15 +59,6 @@ public class DssRestServer implements DssServer<DssRestActorService> {
         this.dssLogLevel = Objects.nonNull(dssLogLevel) ? dssLogLevel : DssLogLevel.DEBUG;
         this.ssl = ssl;
         this.sslContext = sslContext;
-    }
-
-    /**
-     * @deprecated use addDssService
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public DssRestServer addDssRestService(DssRestActorService service) {
-        return (DssRestServer)addDssService(service);
     }
 
     @Override

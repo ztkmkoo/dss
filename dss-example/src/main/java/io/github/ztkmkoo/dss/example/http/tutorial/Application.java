@@ -8,7 +8,7 @@ public class Application {
         DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
 
         dssRestServer
-                .addDssRestService(new MyService());
+                .addDssService(new MyService());
         dssRestServer.start();
     }
 }
