@@ -29,7 +29,7 @@ public interface DssNetworkActor<P extends DssChannelProperty, S extends SocketC
     /**
      * Get ChannelInitializer for binding netty channel
      */
-    ChannelInitializer<S> getChannelInitializer();
+    ChannelInitializer<S> getChannelInitializer() throws InterruptedException;
 
     /**
      * Get boss event loop group to make netty server bootstrap
@@ -74,6 +74,7 @@ public interface DssNetworkActor<P extends DssChannelProperty, S extends SocketC
         final ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(getBossGroup(), getWorkerGroup());
         final P property = convertToChannelProperty(msg);
+        configExtraHandlingBind(msg);
         final Channel channel;
         try {
             channel = bind(bootstrap, property, getChannelInitializer());
@@ -84,6 +85,13 @@ public interface DssNetworkActor<P extends DssChannelProperty, S extends SocketC
         }
 
         return Behaviors.same();
+    }
+
+    /**
+     * override this if wanna config more
+     */
+    default void configExtraHandlingBind(DssNetworkCommand.Bind msg) {
+        // do nothing
     }
 
     default Channel bind(ServerBootstrap serverBootstrap, P property, ChannelInitializer<S> channelInitializer) throws InterruptedException {
