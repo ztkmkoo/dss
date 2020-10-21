@@ -1,14 +1,5 @@
 package io.github.ztkmkoo.dss.core.network.rest.handler;
 
-import java.time.Duration;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
@@ -16,12 +7,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelHandlerCommandResponse;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommandHandlerUnregistered;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommand;
-import io.github.ztkmkoo.dss.core.message.rest.DssRestMasterActorCommandRequest;
+import io.github.ztkmkoo.dss.core.message.rest.*;
 import io.github.ztkmkoo.dss.core.network.DssHandler;
 import io.github.ztkmkoo.dss.core.network.rest.entity.DssRestRequest;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
@@ -32,21 +18,24 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Duration;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 9:23
  */
+@Deprecated
 @ChannelHandler.Sharable
 class DssRestHandler extends SimpleChannelInboundHandler<Object> implements DssHandler<DssRestChannelHandlerCommand> {
 

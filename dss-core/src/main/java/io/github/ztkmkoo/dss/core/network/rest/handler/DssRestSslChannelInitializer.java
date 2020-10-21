@@ -21,6 +21,7 @@ import java.util.Objects;
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 6. 11. 오전 2:11
  */
+@Deprecated
 public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
 
     private static SslContext selfSignedSslContext() throws InterruptedException {
