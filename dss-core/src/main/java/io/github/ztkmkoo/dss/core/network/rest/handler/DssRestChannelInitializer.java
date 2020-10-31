@@ -5,7 +5,6 @@ import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import io.github.ztkmkoo.dss.core.actor.exception.DssUserActorDuplicateBehaviorCreateException;
-import io.github.ztkmkoo.dss.core.actor.rest.DssRestMasterActor;
 import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommand;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestChannelInitializerCommandHandlerUnregistered;
@@ -17,7 +16,10 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,9 +29,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 2. 오전 12:46
+ * @deprecated see {@link io.github.ztkmkoo.dss.core.network.rest.DssRestChannelInitializer}
  */
 @Deprecated
-//public class DssRestChannelInitializer extends ChannelInitializer<SocketChannel> implements DssChannelInitializer<DssRestChannelInitializerCommand> {
 public class DssRestChannelInitializer {
 
     private static final AtomicInteger handlerIndex = new AtomicInteger(0);
@@ -50,7 +52,6 @@ public class DssRestChannelInitializer {
 
     private final Logger logger = LoggerFactory.getLogger(DssRestChannelInitializer.class);
     private final AtomicBoolean initializeBehavior = new AtomicBoolean(false);
-    private final List<DssRestActorService> serviceList;
     private final Queue<DssRestHandler> freeHandlerQueue = new ConcurrentLinkedQueue<>();
     private final Map<String, DssRestHandler> activeRestHandlerMap = new ConcurrentHashMap<>();
 
@@ -58,11 +59,10 @@ public class DssRestChannelInitializer {
     private ActorRef<DssRestMasterActorCommand> restMasterActorRef;
 
     public DssRestChannelInitializer(List<DssRestActorService> serviceList) {
-        this.serviceList = new ArrayList<>(serviceList);
     }
 
 //    @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
+    protected void initChannel(SocketChannel ch) {
         logger.info("Try to initChannel");
 
         final ChannelPipeline p = ch.pipeline();
@@ -86,9 +86,7 @@ public class DssRestChannelInitializer {
     }
 
     private void initRestMasterActorRef() {
-        if (Objects.isNull(restMasterActorRef)) {
-            restMasterActorRef = context.spawn(DssRestMasterActor.create(serviceList), "rest-master");
-        }
+        // do nothing
     }
 
     private DssRestHandler getFreeDssRestHandler() {

@@ -10,7 +10,6 @@ import akka.actor.typed.javadsl.Receive;
 import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
 import io.github.ztkmkoo.dss.core.actor.property.*;
 import io.github.ztkmkoo.dss.core.message.*;
-import io.github.ztkmkoo.dss.core.service.DssServiceGenerator;
 import lombok.Builder;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
@@ -136,22 +135,7 @@ class DssMasterActorTest extends AbstractDssActorTest {
 
         @Override
         public DssMasterActorProperty getDssMasterActorProperty() {
-            return new DssMasterActorProperty() {
-                @Override
-                public int getBossThreadCount() {
-                    return 0;
-                }
-
-                @Override
-                public int getWorkerThreadCount() {
-                    return 0;
-                }
-
-                @Override
-                public List<DssServiceGenerator> getServiceGeneratorList() {
-                    return null;
-                }
-            };
+            return new DssMasterActorProperty();
         }
 
         @Override

@@ -4,73 +4,109 @@ import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
-import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
-import io.github.ztkmkoo.dss.core.exception.handler.DssRestExceptionHandlerResolver;
-import io.github.ztkmkoo.dss.core.message.rest.*;
-import io.netty.handler.codec.http.HttpResponseStatus;
+import akka.actor.typed.javadsl.Receive;
+import io.github.ztkmkoo.dss.core.actor.AbstractDssActor;
+import io.github.ztkmkoo.dss.core.actor.DssBehaviorCreator;
+import io.github.ztkmkoo.dss.core.actor.DssMasterActor;
+import io.github.ztkmkoo.dss.core.actor.DssServiceActorResolvable;
+import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
+import io.github.ztkmkoo.dss.core.actor.property.*;
+import io.github.ztkmkoo.dss.core.message.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 /**
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 10:06
  */
-public class DssRestMasterActor {
+public class DssRestMasterActor extends AbstractDssActor<DssMasterCommand> implements DssMasterActor {
 
-    public static Behavior<DssRestMasterActorCommand> create(List<DssRestActorService> serviceList) {
-        return Behaviors.setup(context -> new DssRestMasterActor(context, serviceList).dssRestMasterActor());
+    public static Behavior<DssMasterCommand> create() {
+        return Behaviors.setup(DssRestMasterActor::new);
     }
 
-    private final ActorContext<DssRestMasterActorCommand> context;
-    private final DssRestPathResolver dssRestPathResolver;
-    private final ActorRef<DssRestExceptionHandlerCommand> exceptionHandlerActor;
+    @Getter
+    private DssMasterActorProperty dssMasterActorProperty;
 
-    private DssRestMasterActor(ActorContext<DssRestMasterActorCommand> context, List<DssRestActorService> serviceList) {
-        this.context = context;
-        this.exceptionHandlerActor = context.spawn(DssRestExceptionHandlerActor.create(DssRestExceptionHandlerResolver.getInstance().getExceptionHandlerMap()), "exception-handler");
-        this.dssRestPathResolver = dssRestPathResolver(serviceList);
+    @Getter @Setter
+    private DssMasterActorStatus masterActorStatus = DssMasterActorStatus.READY;
+
+    @Getter @Setter
+    private ActorRef<DssNetworkCommand> networkActor;
+
+    @Getter @Setter
+    private ActorRef<DssResolverCommand> resolverActor;
+
+    @Getter @Setter
+    private ActorRef<DssExceptionCommand> exceptionActor;
+
+    private DssRestMasterActor(ActorContext<DssMasterCommand> context) {
+        super(context);
     }
 
-    private DssRestPathResolver dssRestPathResolver(List<DssRestActorService> serviceList) {
-        if (serviceList.isEmpty()) {
-            context.getLog().warn("Service list is empty");
-        }
-
-        final DssRestPathResolver.Builder builder = DssRestPathResolver.builder();
-        serviceList.forEach(service -> {
-            final ActorRef<DssRestServiceActorCommand> serviceActor = context.spawn(DssRestServiceActor.create(service, exceptionHandlerActor), service.getName());
-            builder.addServiceActor(service.getMethodType(), service.getPath(), serviceActor);
-        });
-        return builder.build();
-    }
-
-    private Behavior<DssRestMasterActorCommand> dssRestMasterActor() {
-        return Behaviors
-                .receive(DssRestMasterActorCommand.class)
-                .onMessage(DssRestMasterActorCommandRequest.class, this::handlingDssRestMasterActorCommandRequest)
+    @Override
+    public Receive<DssMasterCommand> createReceive() {
+        return masterReceiveBuilder(this)
                 .build();
     }
 
-    private Behavior<DssRestMasterActorCommand> handlingDssRestMasterActorCommandRequest(DssRestMasterActorCommandRequest request) {
+    @Override
+    public DssBehaviorCreator<DssExceptionCommand, DssExceptionActorProperty> getExceptionBehaviorCreator() {
+        return null;
+    }
 
-        context.getLog().info("DssRestMasterActorCommandRequest: {}", request);
+    @Override
+    public <M extends DssMasterActorProperty> DssExceptionActorProperty createDssExceptionActorProperty(M masterProperty) {
+        return null;
+    }
 
-        final Optional<ActorRef<DssRestServiceActorCommand>> optional = dssRestPathResolver.getStaticServiceActor(request.getMethodType(), request.getPath());
-        if (optional.isPresent()) {
-            optional.get().tell(new DssRestServiceActorCommandRequest(request));
-        } else {
-            request
-                    .getSender()
-                    .tell(DssRestChannelHandlerCommandResponse
-                            .builder()
-                            .channelId(request.getChannelId())
-                            .status(HttpResponseStatus.BAD_REQUEST.code())
-                            .build()
-                    );
-        }
+    @Override
+    public DssBehaviorCreator<DssNetworkCommand, DssNetworkActorProperty> getNetworkBehaviorCreator() {
+        return null;
+    }
 
-        return Behaviors.same();
+    @Override
+    public <M extends DssMasterActorProperty> DssNetworkActorProperty createDssNetworkActorProperty(M masterProperty) {
+        return null;
+    }
+
+    @Override
+    public DssBehaviorCreator<DssResolverCommand, DssResolverActorProperty> getResolverBehaviorCreator() {
+        return null;
+    }
+
+    @Override
+    public <M extends DssMasterActorProperty> DssResolverActorProperty createDssResolverActorProperty(M masterProperty) {
+        return null;
+    }
+
+    @Override
+    public DssBehaviorCreator<DssServiceCommand, DssServiceActorProperty> getServiceBehaviorCreator() {
+        return null;
+    }
+
+    @Override
+    public <M extends DssMasterActorProperty> List<DssServiceActorProperty> createDssServiceActorPropertyList(M masterProperty) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public <P extends DssServiceActorProperty> DssServiceActorResolvable<String> createDssServiceActorResolvable(P property, ActorRef<DssServiceCommand> actor) {
+        return null;
+    }
+
+    @Override
+    public Map<String, DssServiceActorResolvable<String>> getServiceActorMap() {
+        return null;
+    }
+
+    @Override
+    public void putServiceActorResolvable(String key, DssServiceActorResolvable<String> value) {
+        // do nothing
     }
 }

@@ -7,7 +7,9 @@ import io.netty.channel.ChannelInitializer;
 /**
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-01 21:30
+ * @deprecated see {@link DssNetworkChannel}
  */
+@Deprecated
 public interface DssChannel<P extends DssChannelProperty, C extends ChannelInitializer> {
 
     /**
