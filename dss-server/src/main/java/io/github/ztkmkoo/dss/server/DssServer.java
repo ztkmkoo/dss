@@ -6,7 +6,9 @@ import io.github.ztkmkoo.dss.core.exception.handler.DssExceptionHandler;
 /**
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-08-01 21:51
+ * @deprecated see {@link DssServerBootstrap}
  */
+@Deprecated
 public interface DssServer<S extends DssActorService> {
 
     /**

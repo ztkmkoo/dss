@@ -28,7 +28,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 5. 오전 1:47
+ * @deprecated see {@link DssRestServerBootstrap}
  */
+@Deprecated
 public class DssRestServer implements DssServer<DssRestActorService> {
 
     private final DssLogLevel dssLogLevel;
