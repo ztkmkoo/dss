@@ -16,7 +16,7 @@ import java.util.Objects;
  * @author Kebron ztkmkoo@gmail.com
  * @create 2020-10-22 07:12
  */
-public class DssDefaultRestChannelInitializer  extends ChannelInitializer<SocketChannel> implements DssRestChannelInitializer {
+public class DssDefaultRestChannelInitializer extends ChannelInitializer<SocketChannel> implements DssRestChannelInitializer {
 
     @Getter
     @Setter
