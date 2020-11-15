@@ -46,7 +46,7 @@ public class DssRestSslChannelInitializer extends DssRestChannelInitializer {
     }
 
     @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
+    protected void initChannel(SocketChannel ch) {
         logger.info("Try to initChannel");
         final ChannelPipeline p = ch.pipeline();
 
