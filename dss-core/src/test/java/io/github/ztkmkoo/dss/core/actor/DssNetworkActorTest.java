@@ -6,6 +6,7 @@ import io.github.ztkmkoo.dss.core.actor.enumeration.DssMasterActorStatus;
 import io.github.ztkmkoo.dss.core.common.logging.DssLogLevel;
 import io.github.ztkmkoo.dss.core.message.DssMasterCommand;
 import io.github.ztkmkoo.dss.core.message.DssNetworkCommand;
+import io.github.ztkmkoo.dss.core.message.DssResolverCommand;
 import io.github.ztkmkoo.dss.core.network.rest.DssRestNetworkChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,11 @@ class DssNetworkActorTest extends AbstractDssActorTest {
 
         final TestProbe<DssMasterCommand> probe = testKit.createTestProbe(DssMasterCommand.class);
         final ActorRef<DssNetworkCommand> networkActor = testKit.spawn(DssNetworkActor.create(new DssRestNetworkChannelBuilder(0, 0)));
+        networkActor.tell(DssNetworkCommand.ConfigMasterActor.builder().masterActor(probe.getRef()).build());
+
+        final TestProbe<DssResolverCommand> resolverProbe = testKit.createTestProbe(DssResolverCommand.class);
+        networkActor.tell(DssNetworkCommand.ConfigResolverActor.builder().resolverActor(resolverProbe.getRef()).build());
+
         networkActor.tell(DssNetworkCommand.Bind.builder().host(host).port(port).logLevel(DssLogLevel.INFO).build());
 
         final DssMasterCommand msg = probe.receiveMessage();
@@ -47,6 +53,7 @@ class DssNetworkActorTest extends AbstractDssActorTest {
         socket.connect(new InetSocketAddress(host, port));
 
         assertTrue(socket.isConnected());
+        log.info("Try to close the connection");
         socket.close();
 
         networkActor.tell(DssNetworkCommand.Close.INST);

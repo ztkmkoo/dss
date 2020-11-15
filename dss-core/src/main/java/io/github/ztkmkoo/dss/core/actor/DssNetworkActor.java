@@ -43,9 +43,27 @@ public class DssNetworkActor extends AbstractDssActor<DssNetworkCommand> impleme
     @Override
     public Receive<DssNetworkCommand> createReceive() {
         return newReceiveBuilder()
+                .onMessage(DssNetworkCommand.ConfigMasterActor.class, this::handlingConfigMasterActor)
+                .onMessage(DssNetworkCommand.ConfigResolverActor.class, this::handlingConfigResolverActor)
                 .onMessage(DssNetworkCommand.Bind.class, this::handlingBind)
                 .onMessage(DssNetworkCommand.Close.class, this::handlingClose)
                 .build();
+    }
+
+    public Behavior<DssNetworkCommand> handlingConfigMasterActor(DssNetworkCommand.ConfigMasterActor msg) {
+        if (Objects.nonNull(msg) && Objects.nonNull(msg.getMasterActor())) {
+            getLog().error("Config master actor in NetworkActor: {}", msg.getMasterActor().path());
+            setMasterActor(msg.getMasterActor());
+        }
+        return Behaviors.same();
+    }
+
+    public Behavior<DssNetworkCommand> handlingConfigResolverActor(DssNetworkCommand.ConfigResolverActor msg) {
+        if (Objects.nonNull(msg) && Objects.nonNull(msg.getResolverActor())) {
+            getLog().error("Config resolver actor in NetworkActor: {}", msg.getResolverActor().path());
+            setResolverActor(msg.getResolverActor());
+        }
+        return Behaviors.same();
     }
 
     public Behavior<DssNetworkCommand> handlingBind(DssNetworkCommand.Bind msg) {
