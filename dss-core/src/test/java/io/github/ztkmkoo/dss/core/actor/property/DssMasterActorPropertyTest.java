@@ -13,7 +13,9 @@ class DssMasterActorPropertyTest {
     @Test
     void validateProperty() {
         final DssMasterActorProperty property = new DssMasterActorProperty();
+        property.setNetworkActorProperty(new DssNetworkActorProperty());
 
         assertNotNull(property);
+        assertNotNull(property.getNetworkActorProperty());
     }
 }

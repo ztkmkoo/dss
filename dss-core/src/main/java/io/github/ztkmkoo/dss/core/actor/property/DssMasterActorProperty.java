@@ -9,6 +9,7 @@ import lombok.Setter;
  * @create 2020-08-23 02:51
  */
 public class DssMasterActorProperty implements DssActorProperty {
+    private static final long serialVersionUID = -5126815092091781619L;
 
     // network
     @Getter @Setter
