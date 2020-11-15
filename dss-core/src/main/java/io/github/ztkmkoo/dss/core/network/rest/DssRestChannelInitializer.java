@@ -19,7 +19,7 @@ public interface DssRestChannelInitializer extends DssChannelInitializer {
     static ChannelInitializer<SocketChannel> createChannelInitializer(ActorRef<DssResolverCommand> resolverActor, DssRestChannelInitializerProperty property) throws InterruptedException {
         Objects.requireNonNull(resolverActor, "resolverActor cannot be null");
         return property.isSsl() ?
-                new DssDefaultRestChannelInitializer(resolverActor) :
-                new DssDefaultRestSslChannelInitializer(resolverActor, property);
+                new DssDefaultRestSslChannelInitializer(resolverActor, property) :
+                new DssDefaultRestChannelInitializer(resolverActor);
     }
 }
