@@ -45,6 +45,7 @@ public class SslContextUtils {
                 return SslContextBuilder.forServer(privateKey, certificate).build();
             }
         } catch (Exception e) {
+            LOGGER.error("Exception", e);
             return null;
         }
     }
