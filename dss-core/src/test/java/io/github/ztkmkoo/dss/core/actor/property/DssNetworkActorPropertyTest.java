@@ -2,7 +2,7 @@ package io.github.ztkmkoo.dss.core.actor.property;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Kebron ztkmkoo@gmail.com
@@ -12,20 +12,11 @@ class DssNetworkActorPropertyTest {
 
     @Test
     void testAll() {
-        final TestProperty property = new TestProperty();
+        final DssNetworkActorProperty property = new DssNetworkActorProperty();
+        property.setBossThreadCount(2);
+        property.setWorkerThreadCount(16);
+
         assertEquals(2, property.getBossThreadCount());
         assertEquals(16, property.getWorkerThreadCount());
-    }
-
-    private static class TestProperty implements DssNetworkActorProperty {
-        @Override
-        public int getBossThreadCount() {
-            return 2;
-        }
-
-        @Override
-        public int getWorkerThreadCount() {
-            return 16;
-        }
     }
 }

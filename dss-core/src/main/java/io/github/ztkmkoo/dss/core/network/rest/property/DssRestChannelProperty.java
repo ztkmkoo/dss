@@ -1,5 +1,5 @@
 package io.github.ztkmkoo.dss.core.network.rest.property;
-import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssLogLevel;
+import io.github.ztkmkoo.dss.core.common.logging.DssLogLevel;
 import io.github.ztkmkoo.dss.core.network.DssChannelProperty;
 import lombok.Builder;
 import lombok.Getter;
