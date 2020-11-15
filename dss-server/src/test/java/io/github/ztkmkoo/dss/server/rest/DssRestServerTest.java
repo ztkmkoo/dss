@@ -23,7 +23,6 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import java.io.*;
@@ -127,7 +126,6 @@ class DssRestServerTest {
         return httpClient.execute(request);
     }
 
-    @Test
     void start() throws Exception {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
         dssRestServer
@@ -151,7 +149,6 @@ class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Test
     void test() throws InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
         dssRestServer
@@ -164,7 +161,6 @@ class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Test
     void testSsl() throws Exception {
         final PrivateKey privateKey = loadPrivateKeyFromFile(loadFromTestResources("ssl/private.der"));
         final X509Certificate certificate = loadX509CertificateFromFile(loadFromTestResources("ssl/private.crt"));
@@ -182,7 +178,6 @@ class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Test
     void testStartExceptionHandler() throws InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
         dssRestServer
@@ -196,7 +191,6 @@ class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Test
     @Timeout(value = 15)
     void testJsonPostRequest() throws IOException, InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
@@ -220,7 +214,6 @@ class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Test
     @Timeout(value = 15)
     void globalExceptionHandleMethodTest() throws IOException, InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
@@ -246,7 +239,6 @@ class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Test
     @Timeout(value = 15)
     void serviceExceptionHandleMethodTest() throws IOException, InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
@@ -272,7 +264,6 @@ class DssRestServerTest {
         assertTrue(dssRestServer.isShutdown());
     }
 
-    @Test
     @Timeout(value = 15)
     void occurExceptionTestWhileRunningExceptionHandleMethod() throws IOException, InterruptedException {
         final DssRestServer dssRestServer = new DssRestServer("127.0.0.1", 8181);
