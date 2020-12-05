@@ -22,7 +22,7 @@ public interface DssRestChannelHandler {
                 .path(StringUtils.requireNonEmpty(restRequest.getPath()))
                 .methodType(Objects.requireNonNull(restRequest.getMethodType()))
                 .contentType(Objects.requireNonNull(restRequest.getRestContentType()))
-                .content(StringUtils.requireNonEmpty(content))
+                .content(content)
                 .build();
     }
 }

@@ -19,6 +19,10 @@ public class StringUtils {
         return Objects.isNull(s) || s.isEmpty();
     }
 
+    public static boolean nonEmpty(String s) {
+        return !isEmpty(s);
+    }
+
     public static String requireNonEmpty(String s) {
         if (StringUtils.isEmpty(s)) {
             throw new DssStringEmptyException();

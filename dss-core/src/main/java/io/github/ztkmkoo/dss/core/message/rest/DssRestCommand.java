@@ -27,7 +27,7 @@ public interface DssRestCommand extends DssCommand {
             this.methodType = Objects.requireNonNull(builder.methodType);
             this.contentType = Objects.requireNonNull(builder.contentType);
             this.path = StringUtils.requireNonEmpty(builder.path);
-            this.content = StringUtils.requireNonEmpty(builder.content);
+            this.content = builder.content;
         }
 
         public abstract static class Builder <T extends RestRequest> {
