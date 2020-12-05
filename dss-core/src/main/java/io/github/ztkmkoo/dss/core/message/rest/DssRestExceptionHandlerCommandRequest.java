@@ -4,6 +4,10 @@ import io.github.ztkmkoo.dss.core.actor.rest.service.DssRestActorService;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * @deprecated remove before merge pr
+ */
+@Deprecated
 @Getter
 public class DssRestExceptionHandlerCommandRequest implements DssRestExceptionHandlerCommand {
     private static final long serialVersionUID = 5752260184738368572L;

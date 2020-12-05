@@ -1,5 +1,7 @@
 package io.github.ztkmkoo.dss.core.network.rest;
 
+import akka.actor.typed.ActorRef;
+import io.github.ztkmkoo.dss.core.message.DssResolverCommand;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
@@ -20,7 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class DssDefaultRestChannelHandlerTest {
 
     @Mock
-    ChannelHandlerContext ctx;
+    private ChannelHandlerContext ctx;
+
+    @Mock
+    private ActorRef<DssResolverCommand> resolverActor;
 
     @BeforeEach
     void setUp() {
@@ -29,7 +34,7 @@ class DssDefaultRestChannelHandlerTest {
 
     @Test
     void channelRead0() throws Exception {
-        final DssDefaultRestChannelHandler handler = new DssDefaultRestChannelHandler();
+        final DssDefaultRestChannelHandler handler = new DssDefaultRestChannelHandler(resolverActor);
 
         final Field field = DssDefaultRestChannelHandler.class.getDeclaredField("buffer");
         field.setAccessible(true);

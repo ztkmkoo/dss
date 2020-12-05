@@ -6,6 +6,8 @@ import io.github.ztkmkoo.dss.core.message.DssCommand;
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 14. 오후 9:40
+ * @deprecated remove before merge pr
  */
+@Deprecated
 public interface DssRestServiceActorCommand extends DssCommand {
 }

@@ -12,7 +12,9 @@ import java.util.Objects;
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 10:07
+ * @deprecated remove before merge pr
  */
+@Deprecated
 @Getter
 public class DssRestMasterActorCommandRequest implements DssRestMasterActorCommand {
     private static final long serialVersionUID = 6046370337632314401L;
