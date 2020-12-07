@@ -49,7 +49,7 @@ public interface DssRestResolverCommand extends DssResolverCommand {
     }
 
     @Getter
-    class RestResponse implements DssRestResolverCommand {
+    class RestResponse implements DssRestResolverCommand, DssServiceResponseCommand {
         private static final long serialVersionUID = -5830533960652834426L;
 
         private final String channelId;

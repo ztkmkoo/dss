@@ -12,7 +12,7 @@ import lombok.Getter;
 public interface DssRestServiceCommand extends DssServiceCommand {
 
     @Getter
-    class RestRequest extends DssRestCommand.RestRequest implements DssRestServiceCommand {
+    class RestRequest extends DssRestCommand.RestRequest implements DssRestServiceCommand, DssServiceRequestCommand {
         private static final long serialVersionUID = 336127423557058855L;
 
         private final String channelId;
