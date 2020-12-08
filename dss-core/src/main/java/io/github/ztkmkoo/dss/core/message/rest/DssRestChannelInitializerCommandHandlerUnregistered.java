@@ -10,7 +10,9 @@ import java.util.Objects;
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 15. 오전 2:33
+ * @deprecated remove before merge pr
  */
+@Deprecated
 @Getter
 public class DssRestChannelInitializerCommandHandlerUnregistered implements DssRestChannelInitializerCommand {
     private static final long serialVersionUID = -4010892587871866884L;

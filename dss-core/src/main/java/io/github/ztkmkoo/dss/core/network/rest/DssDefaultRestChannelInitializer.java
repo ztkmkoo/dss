@@ -35,6 +35,6 @@ public class DssDefaultRestChannelInitializer extends ChannelInitializer<SocketC
     protected void initRestChannel(ChannelPipeline p) {
         p.addLast(new HttpRequestDecoder());
         p.addLast(new HttpResponseEncoder());
-        p.addLast(new DssDefaultRestChannelHandler());
+        p.addLast(new DssDefaultRestChannelHandler(resolverActor));
     }
 }

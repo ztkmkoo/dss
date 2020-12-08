@@ -1,5 +1,7 @@
 package io.github.ztkmkoo.dss.core.util;
 
+import io.github.ztkmkoo.dss.core.exception.DssStringEmptyException;
+
 import java.util.Objects;
 
 /**
@@ -15,5 +17,17 @@ public class StringUtils {
 
     public static boolean isEmpty(String s) {
         return Objects.isNull(s) || s.isEmpty();
+    }
+
+    public static boolean nonEmpty(String s) {
+        return !isEmpty(s);
+    }
+
+    public static String requireNonEmpty(String s) {
+        if (StringUtils.isEmpty(s)) {
+            throw new DssStringEmptyException();
+        }
+
+        return s;
     }
 }

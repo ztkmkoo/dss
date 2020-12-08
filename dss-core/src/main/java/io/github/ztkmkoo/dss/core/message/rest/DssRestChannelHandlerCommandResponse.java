@@ -11,7 +11,9 @@ import java.util.Objects;
  * Project: dss
  * Created by: @ztkmkoo(ztkmkoo@gmail.com)
  * Date: 20. 3. 3. 오후 10:40
+ * @deprecated remove before merge pr
  */
+@Deprecated
 @Getter
 public class DssRestChannelHandlerCommandResponse implements DssRestChannelHandlerCommand {
     private static final long serialVersionUID = -8946124853931183362L;
