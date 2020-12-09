@@ -13,7 +13,11 @@ import io.github.ztkmkoo.dss.core.util.StringUtils;
  */
 public class DssRestRequestJsonConverter<D extends DssServiceRequest> implements DssRestRequestConverter<D> {
 
-    private final TypeReference<D> typeReference = new TypeReference<D>() {};
+    private final TypeReference<D> typeReference;
+
+    public DssRestRequestJsonConverter(TypeReference<D> typeReference) {
+        this.typeReference = typeReference;
+    }
 
     @Override
     public D convert(String source) {

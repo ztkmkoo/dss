@@ -1,8 +1,11 @@
 package io.github.ztkmkoo.dss.core.service;
 
+import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.exception.service.DssActorServiceRuntimeException;
 import io.github.ztkmkoo.dss.core.message.DssResolverCommand;
 import io.github.ztkmkoo.dss.core.message.DssServiceCommand;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +20,14 @@ public abstract class AbstractDssService<R1 extends DssServiceCommand.DssService
     private final AtomicLong sequenceGenerator = new AtomicLong(0);
     private final Map<Long, R1> requestMap = new HashMap<>();
 
-    public void start(R1 request) {
+    @Getter(value = AccessLevel.PACKAGE)
+    private final ActorRef<DssServiceCommand> serviceActor;
+
+    public AbstractDssService(ActorRef<DssServiceCommand> serviceActor) {
+        this.serviceActor = serviceActor;
+    }
+
+    public final void start(R1 request) {
         final long seq = sequenceGenerator.addAndGet(1);
         final R2 serviceRequest = makeRequest(request, seq);
 

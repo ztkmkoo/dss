@@ -1,6 +1,8 @@
 package io.github.ztkmkoo.dss.core.service.rest;
 
+import akka.actor.typed.ActorRef;
 import io.github.ztkmkoo.dss.core.exception.io.DssDeserializeRuntimeException;
+import io.github.ztkmkoo.dss.core.message.DssServiceCommand;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestResolverCommand;
 import io.github.ztkmkoo.dss.core.message.rest.DssRestServiceCommand;
 import io.github.ztkmkoo.dss.core.network.rest.enumeration.DssRestContentType;
@@ -29,12 +31,15 @@ public abstract class AbstractDssRestService<R extends DssServiceRequest, S exte
     private final DssRestResponseConverter<S> produceConverter;
 
     public AbstractDssRestService(
+            ActorRef<DssServiceCommand> serviceActor,
             String name,
             String path,
             DssRestMethodType methodType,
             DssRestRequestConverter<R> consumeConverter,
             DssRestResponseConverter<S> produceConverter
     ) {
+        super(serviceActor);
+
         this.name = name;
         this.path = path;
         this.methodType = Objects.requireNonNull(methodType);
